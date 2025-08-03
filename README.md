@@ -24,7 +24,6 @@ pip install any-llm
 ```python
 from any_llm import LLMClient
 
-# Auto-detects provider from environment
 client = LLMClient()
 response = client.query("What is Python?")
 print(response.content)
@@ -47,7 +46,6 @@ export GEMINI_API_KEY="your-key-here"
 ```python
 from any_llm import LLMClient
 
-# Automatically uses the first available provider
 client = LLMClient()
 print(f"Using: {client.get_current_provider()}")
 
@@ -57,7 +55,6 @@ print(response.content)
 
 ### Specify Provider  
 ```python
-# Use specific provider
 client = LLMClient(provider="anthropic")
 client = LLMClient(provider="openai")
 client = LLMClient(provider="gemini")
@@ -66,7 +63,6 @@ client = LLMClient(provider="ollama")
 
 ### Custom Models
 ```python
-# Use specific models
 client = LLMClient(provider="anthropic", model="claude-3-opus-20240229")
 client = LLMClient(provider="openai", model="gpt-4")
 client = LLMClient(provider="gemini", model="gemini-1.5-pro")
@@ -76,14 +72,13 @@ client = LLMClient(provider="gemini", model="gemini-1.5-pro")
 ```python
 client = LLMClient(provider="anthropic")
 
-# Switch providers anytime
 client.set_provider("openai")
 client.set_provider("gemini", model="gemini-1.5-flash")
 ```
 
 ### Response Details
 ```python
-response = client.query("Write a haiku")
+response = client.query("What is OpenStack?")
 
 print(f"Content: {response.content}")
 print(f"Provider: {response.provider}")
@@ -93,10 +88,7 @@ print(f"Latency: {response.latency:.2f}s")
 
 ### Automatic Fallback
 ```python
-# Enable fallback (default)
 client = LLMClient(fallback=True)
-
-# If primary provider fails, automatically tries others
 response = client.query("Hello world")
 print(f"Succeeded with: {response.provider}")
 ```
@@ -119,7 +111,7 @@ from any_llm import LLMClient
 
 class SimpleChatbot:
     def __init__(self):
-        self.llm = LLMClient()  # Auto-detects best provider
+        self.llm = LLMClient()
         
     def chat(self, message):
         response = self.llm.query(f"User: {message}\nAssistant:")
@@ -197,28 +189,6 @@ print(f"Available: {available}")
 if client.is_provider_available("anthropic"):
     client.set_provider("anthropic")
 ```
-
-### Error Handling
-```python
-from any_llm import LLMClient, ConfigurationError, ProviderError
-
-try:
-    client = LLMClient()
-    response = client.query("Hello")
-except ConfigurationError as e:
-    print(f"Setup error: {e}")
-except ProviderError as e:
-    print(f"Provider error: {e}")
-```
-
-## Contributing
-
-We welcome contributions! Here's how to help:
-
-1. **Add new providers** - Support for more LLM services
-2. **Improve error handling** - Better fallback logic
-3. **Add features** - Caching, configuration management, etc.
-4. **Write examples** - Real-world usage patterns
 
 ## License
 
