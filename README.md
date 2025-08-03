@@ -1,0 +1,235 @@
+# any-llm
+
+[![PyPI version](https://badge.fury.io/py/any-llm.svg)](https://badge.fury.io/py/any-llm)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+Simple interface for any LLM provider. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
+
+## Why any-llm?
+
+- Easy switching between LLM providers
+- Zero configuration - works with environment variables  
+- Automatic fallback when providers fail
+- Simple API - same interface for all providers
+
+## Quick Start
+
+### Installation
+```bash
+pip install any-llm
+```
+
+### Basic Usage
+```python
+from any_llm import LLMClient
+
+# Auto-detects provider from environment
+client = LLMClient()
+response = client.query("What is Python?")
+print(response.content)
+```
+
+### Set API Keys
+```bash
+# Choose your provider
+export ANTHROPIC_API_KEY="your-key-here"
+# OR
+export OPENAI_API_KEY="your-key-here"  
+# OR
+export GEMINI_API_KEY="your-key-here"
+# OR run Ollama locally
+```
+
+## Usage Examples
+
+### Provider Auto-Detection
+```python
+from any_llm import LLMClient
+
+# Automatically uses the first available provider
+client = LLMClient()
+print(f"Using: {client.get_current_provider()}")
+
+response = client.query("Explain machine learning")
+print(response.content)
+```
+
+### Specify Provider  
+```python
+# Use specific provider
+client = LLMClient(provider="anthropic")
+client = LLMClient(provider="openai")
+client = LLMClient(provider="gemini")
+client = LLMClient(provider="ollama")
+```
+
+### Custom Models
+```python
+# Use specific models
+client = LLMClient(provider="anthropic", model="claude-3-opus-20240229")
+client = LLMClient(provider="openai", model="gpt-4")
+client = LLMClient(provider="gemini", model="gemini-1.5-pro")
+```
+
+### Provider Switching
+```python
+client = LLMClient(provider="anthropic")
+
+# Switch providers anytime
+client.set_provider("openai")
+client.set_provider("gemini", model="gemini-1.5-flash")
+```
+
+### Response Details
+```python
+response = client.query("Write a haiku")
+
+print(f"Content: {response.content}")
+print(f"Provider: {response.provider}")
+print(f"Model: {response.model}")
+print(f"Latency: {response.latency:.2f}s")
+```
+
+### Automatic Fallback
+```python
+# Enable fallback (default)
+client = LLMClient(fallback=True)
+
+# If primary provider fails, automatically tries others
+response = client.query("Hello world")
+print(f"Succeeded with: {response.provider}")
+```
+
+
+## Supported Providers
+
+| Provider | Models | Setup |
+|----------|---------|-------|
+| **Anthropic** | Claude 3 (Sonnet, Haiku, Opus) | `export ANTHROPIC_API_KEY=...` |
+| **OpenAI** | GPT-3.5, GPT-4, GPT-4o | `export OPENAI_API_KEY=...` |
+| **Google** | Gemini 1.5 (Flash, Pro) | `export GEMINI_API_KEY=...` |
+| **Ollama** | Llama, Mistral, etc. | Run Ollama locally |
+
+## Real-World Example
+
+### Chatbot Integration
+```python
+from any_llm import LLMClient
+
+class SimpleChatbot:
+    def __init__(self):
+        self.llm = LLMClient()  # Auto-detects best provider
+        
+    def chat(self, message):
+        response = self.llm.query(f"User: {message}\nAssistant:")
+        return response.content
+        
+    def get_provider(self):
+        return f"Using {self.llm.get_current_provider()}"
+
+# Usage
+bot = SimpleChatbot()
+print(bot.chat("Hello!"))
+print(bot.get_provider())
+```
+
+### Migration from Existing Code
+```python
+# BEFORE: Direct provider usage
+import openai
+client = openai.OpenAI()
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": "Hello"}]
+)
+content = response.choices[0].message.content
+
+# AFTER: any-llm (works with any provider!)
+from any_llm import LLMClient
+client = LLMClient()
+response = client.query("Hello")
+content = response.content
+```
+
+## Configuration
+
+### Environment Variables
+```bash
+# API Keys (set at least one)
+export ANTHROPIC_API_KEY="your-anthropic-key"
+export OPENAI_API_KEY="your-openai-key"
+export GEMINI_API_KEY="your-gemini-key"
+
+# Ollama (if using local models)
+export OLLAMA_URL="http://localhost:11434"  # default
+```
+
+### Programmatic Configuration
+```python
+# With API key
+client = LLMClient(
+    provider="anthropic", 
+    api_key="your-key-here"
+)
+
+# With custom model
+client = LLMClient(
+    provider="openai",
+    model="gpt-4-turbo-preview"
+)
+
+# Disable fallback
+client = LLMClient(fallback=False)
+```
+
+## Advanced Features
+
+### Check Available Providers
+```python
+client = LLMClient()
+
+# List configured providers
+available = client.list_available_providers()
+print(f"Available: {available}")
+
+# Check specific provider
+if client.is_provider_available("anthropic"):
+    client.set_provider("anthropic")
+```
+
+### Error Handling
+```python
+from any_llm import LLMClient, ConfigurationError, ProviderError
+
+try:
+    client = LLMClient()
+    response = client.query("Hello")
+except ConfigurationError as e:
+    print(f"Setup error: {e}")
+except ProviderError as e:
+    print(f"Provider error: {e}")
+```
+
+## Contributing
+
+We welcome contributions! Here's how to help:
+
+1. **Add new providers** - Support for more LLM services
+2. **Improve error handling** - Better fallback logic
+3. **Add features** - Caching, configuration management, etc.
+4. **Write examples** - Real-world usage patterns
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Links
+
+- **GitHub**: https://github.com/sreenathmmenon/any-llm
+- **PyPI**: https://pypi.org/project/any-llm/
+- **Issues**: https://github.com/sreenathmmenon/any-llm/issues
+
+---
+
+Star this repo if any-llm helps simplify your LLM integration.
