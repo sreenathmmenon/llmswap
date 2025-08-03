@@ -1,11 +1,11 @@
 """
-any-llm: Simple interface for any LLM provider
+llmswap: Simple interface for any LLM provider
 
 Use any LLM provider with one simple interface.
 Perfect for chatbots, applications, and scripts.
 
 Basic usage:
-    from any_llm import LLMClient
+    from llmswap import LLMClient
     
     client = LLMClient()  # Auto-detects provider
     response = client.query("Hello, world!")
@@ -22,14 +22,14 @@ Advanced usage:
     client = LLMClient(provider="anthropic", model="claude-3-opus-20240229")
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.3"
 __author__ = "Sreenath Menon"
 __description__ = "Simple interface for any LLM provider"
 
 from .client import LLMClient
 from .response import LLMResponse
 from .exceptions import (
-    AnyLLMError,
+    LLMSwapError,
     ProviderError, 
     ConfigurationError,
     AllProvidersFailedError
@@ -38,7 +38,7 @@ from .exceptions import (
 __all__ = [
     "LLMClient",
     "LLMResponse", 
-    "AnyLLMError",
+    "LLMSwapError",
     "ProviderError",
     "ConfigurationError", 
     "AllProvidersFailedError"

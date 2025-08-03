@@ -1,6 +1,6 @@
-"""Basic usage examples for any-llm."""
+"""Basic usage examples for llmswap."""
 
-from any_llm import LLMClient
+from llmswap import LLMClient
 
 def basic_example():
     """Simple usage with auto-detection."""
@@ -121,7 +121,7 @@ def metadata_example():
 
 
 if __name__ == "__main__":
-    print("any-llm Basic Usage Examples")
+    print("llmswap Basic Usage Examples")
     print("=" * 40)
     
     try:

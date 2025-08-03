@@ -1,4 +1,4 @@
-"""Main LLMClient class for any-llm."""
+"""Main LLMClient class for llmswap."""
 
 import os
 from typing import Optional, List

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "1.0.1"
+version = "1.0.3"
 description = "Simple interface for any LLM provider"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -52,7 +52,7 @@ Issues = "https://github.com/sreenathmmenon/llmswap/issues"
 Changelog = "https://github.com/sreenathmmenon/llmswap/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
-packages = ["any_llm"]
+packages = ["llmswap"]
 
 [tool.black]
 line-length = 88

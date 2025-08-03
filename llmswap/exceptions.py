@@ -1,12 +1,12 @@
-"""Exception classes for any-llm."""
+"""Exception classes for llmswap."""
 
 
-class AnyLLMError(Exception):
-    """Base exception for any-llm."""
+class LLMSwapError(Exception):
+    """Base exception for llmswap."""
     pass
 
 
-class ProviderError(AnyLLMError):
+class ProviderError(LLMSwapError):
     """Exception raised when a provider fails."""
     
     def __init__(self, provider: str, message: str):
@@ -14,11 +14,11 @@ class ProviderError(AnyLLMError):
         super().__init__(f"Provider '{provider}' error: {message}")
 
 
-class ConfigurationError(AnyLLMError):
+class ConfigurationError(LLMSwapError):
     """Exception raised for configuration errors."""
     pass
 
 
-class AllProvidersFailedError(AnyLLMError):
+class AllProvidersFailedError(LLMSwapError):
     """Exception raised when all providers fail."""
     pass

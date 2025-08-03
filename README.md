@@ -22,7 +22,7 @@ pip install llmswap
 
 ### Basic Usage
 ```python
-from any_llm import LLMClient
+from llmswap import LLMClient
 
 client = LLMClient()
 response = client.query("What is Python?")
@@ -44,7 +44,7 @@ export GEMINI_API_KEY="your-key-here"
 
 ### Provider Auto-Detection
 ```python
-from any_llm import LLMClient
+from llmswap import LLMClient
 
 client = LLMClient()
 print(f"Using: {client.get_current_provider()}")
@@ -107,7 +107,7 @@ print(f"Succeeded with: {response.provider}")
 
 ### Chatbot Integration
 ```python
-from any_llm import LLMClient
+from llmswap import LLMClient
 
 class SimpleChatbot:
     def __init__(self):
@@ -137,8 +137,8 @@ response = client.chat.completions.create(
 )
 content = response.choices[0].message.content
 
-# AFTER: any-llm (works with any provider!)
-from any_llm import LLMClient
+# AFTER: llmswap (works with any provider!)
+from llmswap import LLMClient
 client = LLMClient()
 response = client.query("Hello")
 content = response.content
