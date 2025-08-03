@@ -1,12 +1,12 @@
-# any-llm
+# llmswap
 
-[![PyPI version](https://badge.fury.io/py/any-llm.svg)](https://badge.fury.io/py/any-llm)
+[![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Simple interface for any LLM provider. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
 
-## Why any-llm?
+## Why llmswap?
 
 - Easy switching between LLM providers
 - Zero configuration - works with environment variables  
@@ -17,7 +17,7 @@ Simple interface for any LLM provider. Switch between Anthropic, OpenAI, Google,
 
 ### Installation
 ```bash
-pip install any-llm
+pip install llmswap
 ```
 
 ### Basic Usage
@@ -196,10 +196,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Links
 
-- **GitHub**: https://github.com/sreenathmmenon/any-llm
-- **PyPI**: https://pypi.org/project/any-llm/
-- **Issues**: https://github.com/sreenathmmenon/any-llm/issues
+- **GitHub**: https://github.com/sreenathmmenon/llmswap
+- **PyPI**: https://pypi.org/project/llmswap/
+- **Issues**: https://github.com/sreenathmmenon/llmswap/issues
 
 ---
 
-Star this repo if any-llm helps simplify your LLM integration.
+Star this repo if llmswap helps simplify your LLM integration.
