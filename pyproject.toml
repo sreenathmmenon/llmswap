@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "any-llm"
-version = "1.0.0"
+name = "llmswap"
+version = "1.0.1"
 description = "Simple interface for any LLM provider"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Sreenath Menon", email = "sreenath.menon@example.com"},
+    {name = "Sreenath Menon", email = "zreenathmenon@gmail.com"},
 ]
 keywords = ["llm", "ai", "anthropic", "openai", "gemini", "ollama", "chatbot", "gpt", "claude"]
 classifiers = [
@@ -45,11 +45,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/sreenathmmenon/any-llm"
-Documentation = "https://github.com/sreenathmmenon/any-llm#readme"
-Repository = "https://github.com/sreenathmmenon/any-llm"
-Issues = "https://github.com/sreenathmmenon/any-llm/issues"
-Changelog = "https://github.com/sreenathmmenon/any-llm/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/sreenathmmenon/llmswap"
+Documentation = "https://github.com/sreenathmmenon/llmswap#readme"
+Repository = "https://github.com/sreenathmmenon/llmswap"
+Issues = "https://github.com/sreenathmmenon/llmswap/issues"
+Changelog = "https://github.com/sreenathmmenon/llmswap/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["any_llm"]
