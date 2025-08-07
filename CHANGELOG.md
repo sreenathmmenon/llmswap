@@ -2,17 +2,17 @@
 
 ## [1.4.0] - 2025-08-07
 ### Added
-- **GPT-OSS Support** - OpenAI's open-weight models via Ollama
-  - `gpt-oss-20b` (16GB RAM) for efficient local reasoning
-  - `gpt-oss-120b` (80GB VRAM) for advanced reasoning tasks
-- **Comprehensive Ollama Model Documentation** - 100+ supported models
-  - Llama 3.1/3.2 family (1B to 405B parameters)
-  - Mistral models including Codestral and Nemo
-  - Google Gemma 2/3 series
-  - Qwen 2.5 including specialized coder variants
-  - Microsoft Phi 3/4 models
-  - IBM Granite Code and other specialized models
-- **Enhanced Documentation** - Detailed model specifications and usage examples
+- GPT-OSS support via Ollama integration
+  - gpt-oss-20b model support (16GB RAM requirement)
+  - gpt-oss-120b model support (80GB VRAM requirement)
+- Complete documentation for Ollama model support
+  - Llama 3.1 and 3.2 model families (1B to 405B parameters)
+  - Mistral models including Codestral and Nemo variants
+  - Google Gemma 2 and 3 model series
+  - Qwen 2.5 models with coder-specific variants
+  - Microsoft Phi 3 and 4 models
+  - IBM Granite Code models and other specialized options
+- Updated documentation with model specifications and usage examples
 
 ## [1.0.4] - 2025-08-07
 ### Added

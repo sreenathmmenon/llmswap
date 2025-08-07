@@ -104,7 +104,7 @@ print(f"Succeeded with: {response.provider}")
 | **Google** | Gemini 1.5 (Flash, Pro) | `export GEMINI_API_KEY=...` |
 | **Ollama** | 100+ local models (see below) | Run Ollama locally |
 
-### 🆕 GPT-OSS Support (OpenAI's Open-Weight Models)
+### GPT-OSS Support (OpenAI's Open-Weight Models)
 
 OpenAI's new open-source models are now supported via Ollama:
 
@@ -113,41 +113,41 @@ OpenAI's new open-source models are now supported via Ollama:
 client = LLMClient(provider="ollama", model="gpt-oss-20b")
 client = LLMClient(provider="ollama", model="gpt-oss-120b")
 
-# Run reasoning tasks locally with no API costs!
+# Run reasoning tasks locally
 response = client.query("Solve this step by step: What is 47 * 23?")
 ```
 
 ### Popular Ollama Models Supported
 
-**🤖 GPT-OSS (OpenAI Open-Weight)**
+**GPT-OSS (OpenAI Open-Weight)**
 - `gpt-oss-20b` - Efficient 20B reasoning model (16GB RAM)
 - `gpt-oss-120b` - Advanced 120B model (80GB VRAM)
 
-**🦙 Llama Family**  
+**Llama Family**  
 - `llama3.2` (1B, 3B, 8B, 70B, 90B)
 - `llama3.1` (8B, 70B, 405B)
 - `llava-llama3` (Vision + Language)
 
-**⚡ Mistral Models**
+**Mistral Models**
 - `mistral` (7B)
 - `mistral-nemo` (12B)
 - `mistral-small` (22B)
 - `codestral` (22B - Code specialist)
 
-**💎 Google Gemma**
+**Google Gemma**
 - `gemma2` (2B, 9B, 27B)
 - `gemma3` (Latest from Google)
 
-**🧠 Qwen Series**  
+**Qwen Series**  
 - `qwen2.5` (0.5B, 1.5B, 3B, 7B, 14B, 32B)
 - `qwen2.5-coder` (Code specialist)
 - `qwq` (32B - Reasoning model)
 
-**🔬 Microsoft Phi**
+**Microsoft Phi**
 - `phi3` (3.8B - Efficient small model)
 - `phi4` (14B - Advanced reasoning)
 
-**⭐ Other Popular Models**
+**Other Popular Models**
 - `granite-code` (IBM - Code generation)
 - `deepseek-coder` (Code specialist)
 - `zephyr` (Assistant fine-tuned)
