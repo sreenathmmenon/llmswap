@@ -4,6 +4,16 @@
 ### Added
 - GPT-OSS provider support
 
+## [1.0.4] - 2025-08-07
+### Added
+- Comprehensive pytest test suite
+- GitHub Actions CI/CD pipeline
+- Enhanced SEO keywords and package description
+### Changed
+- Improved project documentation and professionalism
+### Added
+- GPT-OSS provider support
+
 ## [1.5.0] - Planned  
 ### Added
 - IBM watsonx provider support
