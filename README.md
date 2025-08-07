@@ -257,6 +257,17 @@ if client.is_provider_available("anthropic"):
     client.set_provider("anthropic")
 ```
 
+## Upcoming Features
+
+### v1.5.0 - IBM watsonx Integration
+Coming soon: Native support for IBM watsonx models and APIs.
+
+```python
+# Planned for v1.5.0
+client = LLMClient(provider="watsonx", model="granite-13b-instruct")
+response = client.query("Analyze this data")
+```
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
