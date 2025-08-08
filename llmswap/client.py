@@ -3,7 +3,7 @@
 import os
 from typing import Optional, List
 
-from .providers import AnthropicProvider, OpenAIProvider, GeminiProvider, OllamaProvider
+from .providers import AnthropicProvider, OpenAIProvider, GeminiProvider, OllamaProvider, WatsonxProvider
 from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
 
@@ -19,7 +19,7 @@ class LLMClient:
         """Initialize LLM client.
         
         Args:
-            provider: Provider name ("auto", "anthropic", "openai", "gemini", "ollama")
+            provider: Provider name ("auto", "anthropic", "openai", "gemini", "watsonx", "ollama")
             model: Model name (optional, uses provider defaults)
             api_key: API key (optional, uses environment variables)
             fallback: Enable fallback to other providers if primary fails
@@ -28,7 +28,7 @@ class LLMClient:
         self.current_provider = None
         
         # Provider priority order for auto-detection and fallback
-        self.provider_order = ["anthropic", "openai", "gemini", "ollama"]
+        self.provider_order = ["anthropic", "openai", "gemini", "watsonx", "ollama"]
         
         if provider == "auto":
             self.current_provider = self._detect_available_provider()
@@ -50,6 +50,7 @@ class LLMClient:
             "- ANTHROPIC_API_KEY\n"
             "- OPENAI_API_KEY\n"
             "- GEMINI_API_KEY\n"
+            "- WATSONX_API_KEY and WATSONX_PROJECT_ID\n"
             "Or run Ollama locally"
         )
     
@@ -63,6 +64,11 @@ class LLMClient:
             return GeminiProvider(api_key, model)
         elif provider_name == "ollama":
             return OllamaProvider(model or "llama3")
+        elif provider_name == "watsonx":
+            project_id = os.getenv("WATSONX_PROJECT_ID")
+            if not project_id:
+                raise ConfigurationError("WATSONX_PROJECT_ID environment variable required")
+            return WatsonxProvider(api_key, model, project_id)
         else:
             raise ConfigurationError(f"Unknown provider: {provider_name}")
     

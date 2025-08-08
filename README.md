@@ -38,6 +38,9 @@ export ANTHROPIC_API_KEY="your-key-here"
 export OPENAI_API_KEY="your-key-here"  
 # OR
 export GEMINI_API_KEY="your-key-here"
+# OR
+export WATSONX_API_KEY="your-ibm-api-key"
+export WATSONX_PROJECT_ID="your-project-id"
 # OR run Ollama locally
 ```
 
@@ -103,6 +106,7 @@ print(f"Succeeded with: {response.provider}")
 | **OpenAI** | GPT-3.5, GPT-4, GPT-4o | `export OPENAI_API_KEY=...` |
 | **Google** | Gemini 1.5 (Flash, Pro) | `export GEMINI_API_KEY=...` |
 | **Ollama** | 100+ local models (see below) | Run Ollama locally |
+| **IBM watsonx** | Granite, Llama, and foundation models | `export WATSONX_API_KEY=...` |
 
 ### GPT-OSS Support (OpenAI's Open-Weight Models)
 
@@ -170,6 +174,26 @@ client = LLMClient(provider="ollama", model="phi4")
 # ollama pull gpt-oss-20b
 ```
 
+### IBM watsonx Integration
+
+Enterprise-grade AI with IBM's foundation models:
+
+```python
+# Set environment variables
+# export WATSONX_API_KEY="your-ibm-cloud-api-key"
+# export WATSONX_PROJECT_ID="your-project-id"
+
+client = LLMClient(provider="watsonx")
+client = LLMClient(provider="watsonx", model="ibm/granite-3-8b-instruct")
+
+# Popular watsonx models
+client = LLMClient(provider="watsonx", model="ibm/granite-3-8b-instruct")
+client = LLMClient(provider="watsonx", model="meta-llama/llama-3-70b-instruct")
+client = LLMClient(provider="watsonx", model="mistralai/mixtral-8x7b-instruct-v01")
+
+response = client.query("Analyze this business data and provide insights")
+```
+
 ## Real-World Example
 
 ### Chatbot Integration
@@ -220,6 +244,10 @@ export ANTHROPIC_API_KEY="your-anthropic-key"
 export OPENAI_API_KEY="your-openai-key"
 export GEMINI_API_KEY="your-gemini-key"
 
+# IBM watsonx (enterprise models)
+export WATSONX_API_KEY="your-ibm-cloud-api-key"
+export WATSONX_PROJECT_ID="your-watsonx-project-id"
+
 # Ollama (if using local models)
 export OLLAMA_URL="http://localhost:11434"  # default
 ```
@@ -255,17 +283,6 @@ print(f"Available: {available}")
 # Check specific provider
 if client.is_provider_available("anthropic"):
     client.set_provider("anthropic")
-```
-
-## Upcoming Features
-
-### v1.5.0 - IBM watsonx Integration
-Coming soon: Native support for IBM watsonx models and APIs.
-
-```python
-# Planned for v1.5.0
-client = LLMClient(provider="watsonx", model="granite-13b-instruct")
-response = client.query("Analyze this data")
 ```
 
 ## License

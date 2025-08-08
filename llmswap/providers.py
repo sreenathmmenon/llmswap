@@ -210,3 +210,80 @@ class OllamaProvider(BaseProvider):
             return response.status_code == 200
         except:
             return False
+
+
+class WatsonxProvider(BaseProvider):
+    """Provider for IBM watsonx models."""
+    
+    def __init__(self, api_key: str, model: str = "ibm/granite-3-8b-instruct", 
+                 project_id: str = None, url: str = "https://eu-de.ml.cloud.ibm.com"):
+        super().__init__(api_key, model)
+        self.project_id = project_id
+        self.url = url
+        self.default_model = "ibm/granite-3-8b-instruct"
+        
+        try:
+            from ibm_watsonx_ai.foundation_models import ModelInference
+            from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+            from ibm_watsonx_ai import Credentials
+            self.ModelInference = ModelInference
+            self.GenParams = GenParams
+            self.Credentials = Credentials
+        except ImportError:
+            raise ConfigurationError("ibm-watsonx-ai package not installed. Run: pip install ibm-watsonx-ai")
+    
+    def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            # Set up credentials
+            credentials = self.Credentials(
+                url=self.url,
+                api_key=self.api_key
+            )
+            
+            # Configure generation parameters
+            parameters = {
+                self.GenParams.DECODING_METHOD: "greedy",
+                self.GenParams.MAX_NEW_TOKENS: 2000,
+                self.GenParams.MIN_NEW_TOKENS: 1,
+                self.GenParams.TEMPERATURE: 0.7,
+                self.GenParams.TOP_P: 1,
+                self.GenParams.STOP_SEQUENCES: []
+            }
+            
+            # Initialize model
+            model = self.ModelInference(
+                model_id=self.model,
+                params=parameters,
+                credentials=credentials,
+                project_id=self.project_id
+            )
+            
+            # Generate text
+            response_text = model.generate_text(prompt=prompt)
+            
+            latency = time.time() - start_time
+            
+            return LLMResponse(
+                content=response_text,
+                provider="watsonx",
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "project_id": self.project_id,
+                    "url": self.url
+                }
+            )
+        except Exception as e:
+            raise ProviderError("watsonx", str(e))
+    
+    def is_available(self) -> bool:
+        try:
+            # Simple check if we can create credentials
+            credentials = self.Credentials(
+                url=self.url,
+                api_key=self.api_key
+            )
+            return True
+        except:
+            return False

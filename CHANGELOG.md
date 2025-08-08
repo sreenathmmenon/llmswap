@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0] - 2025-08-07
+### Added
+- **IBM watsonx Integration** - Native support for IBM watsonx foundation models
+  - Complete WatsonxProvider implementation with authentication
+  - Support for IBM Granite models and other watsonx foundation models
+  - Environment variable configuration (WATSONX_API_KEY, WATSONX_PROJECT_ID)
+  - Auto-detection and fallback support for watsonx
+
 ## [1.4.0] - 2025-08-07
 ### Added
 - GPT-OSS support via Ollama integration
