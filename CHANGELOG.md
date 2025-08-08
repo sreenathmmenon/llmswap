@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.1] - 2025-08-07
+### Changed
+- Enhanced PyPI metadata with watsonx and IBM keywords for better discoverability
+- Updated package description to highlight enterprise capabilities
+
 ## [1.5.0] - 2025-08-07
 ### Added
 - **IBM watsonx Integration** - Native support for IBM watsonx foundation models
