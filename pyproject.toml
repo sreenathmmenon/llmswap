@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "llmswap"
 version = "1.5.0"
-description = "Universal Python SDK for seamless LLM provider switching - OpenAI, Anthropic Claude, Google Gemini, Ollama. Zero-config multi-provider LLM library with automatic fallback."
+description = "Universal Python SDK for seamless LLM provider switching - OpenAI, Anthropic Claude, Google Gemini, IBM watsonx, Ollama. Enterprise and local LLM library with automatic fallback."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 authors = [
     {name = "Sreenath Menon", email = "zreenathmenon@gmail.com"},
 ]
-keywords = ["llm", "ai", "anthropic", "openai", "gemini", "ollama", "chatbot", "gpt", "claude", "llm-api", "multi-llm", "llm-provider", "llm-client", "llm-wrapper", "llm-sdk", "gpt-4", "gpt-3.5", "claude-3", "gemini-pro", "langchain-alternative", "llm-abstraction", "ai-sdk", "llm-interface", "provider-switching", "llm-fallback", "unified-llm", "llm-gateway", "ai-gateway", "llm-router", "api-wrapper"]
+keywords = ["llm", "ai", "anthropic", "openai", "gemini", "ollama", "watsonx", "ibm", "chatbot", "gpt", "claude", "granite", "llm-api", "multi-llm", "llm-provider", "llm-client", "llm-wrapper", "llm-sdk", "gpt-4", "gpt-3.5", "claude-3", "gemini-pro", "watsonx-ai", "ibm-granite", "enterprise-llm", "langchain-alternative", "llm-abstraction", "ai-sdk", "llm-interface", "provider-switching", "llm-fallback", "unified-llm", "llm-gateway", "ai-gateway", "llm-router", "api-wrapper", "ibm-watsonx", "enterprise-ai", "foundation-models"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
