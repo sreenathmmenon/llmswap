@@ -22,11 +22,12 @@ Advanced usage:
     client = LLMClient(provider="anthropic", model="claude-3-opus-20240229")
 """
 
-__version__ = "1.5.1"
+__version__ = "2.0.1"
 __author__ = "Sreenath Menon"
 __description__ = "Simple interface for any LLM provider"
 
 from .client import LLMClient
+from .async_client import AsyncLLMClient
 from .response import LLMResponse
 from .exceptions import (
     LLMSwapError,
@@ -37,6 +38,7 @@ from .exceptions import (
 
 __all__ = [
     "LLMClient",
+    "AsyncLLMClient",
     "LLMResponse", 
     "LLMSwapError",
     "ProviderError",

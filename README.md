@@ -5,11 +5,16 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Simple interface for any LLM provider. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
+Simple interface for any large language model provider. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
+
+**Version 2.0 Features:**
+- Async support with streaming responses
+- Request logging for monitoring and debugging
+- Backward compatible with v1.x code
 
 ## Why llmswap?
 
-- Easy switching between LLM providers
+- Easy switching between language model providers
 - Zero configuration - works with environment variables  
 - Automatic fallback when providers fail
 - Simple API - same interface for all providers
@@ -45,6 +50,45 @@ export WATSONX_PROJECT_ID="your-project-id"
 ```
 
 ## Usage Examples
+
+### Async Support (New in v2.0)
+
+```python
+import asyncio
+from llmswap import AsyncLLMClient
+
+async def main():
+    client = AsyncLLMClient(provider="openai")
+    
+    # Async query
+    response = await client.query("Explain quantum computing")
+    print(response.content)
+    
+    # Streaming response
+    print("Streaming: ", end="")
+    async for chunk in client.stream("Write a haiku"):
+        print(chunk, end="", flush=True)
+
+asyncio.run(main())
+```
+
+### Request Logging (New in v2.0)
+
+```python
+from llmswap import AsyncLLMClient
+
+# Enable logging to file
+client = AsyncLLMClient(
+    provider="anthropic",
+    log_file="/tmp/requests.log",
+    log_level="info"
+)
+
+# All requests and responses are logged with metadata
+response = await client.query("Hello world")
+
+# Logs include: timestamp, provider, model, latency, token counts
+```
 
 ### Provider Auto-Detection
 ```python
@@ -297,4 +341,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-Star this repo if llmswap helps simplify your LLM integration.
+Star this repo if llmswap helps simplify your language model integration.

@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.1] - 2025-08-09
+### Added
+- Async support with AsyncLLMClient for non-blocking operations
+- Real-time streaming responses for OpenAI, Anthropic, and Ollama
+- Request logging system with JSON format and privacy protection
+- Enhanced performance for production workloads
+
+### Changed
+- Updated default Anthropic model to claude-3-5-sonnet-20241022
+- Package status upgraded to Production/Stable
+- Added async dependencies (aiohttp, aiofiles, httpx)
+- Maintained full backward compatibility with v1.x API
+
+### Fixed
+- Fixed model parameter handling in AnthropicProvider
+- Resolved async provider initialization issues
+
 ## [1.5.1] - 2025-08-07
 ### Changed
 - Enhanced PyPI metadata with watsonx and IBM keywords for better discoverability

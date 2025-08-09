@@ -30,8 +30,8 @@ class BaseProvider(ABC):
 class AnthropicProvider(BaseProvider):
     """Provider for Anthropic Claude models."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-sonnet-20240229"):
-        super().__init__(api_key or os.getenv("ANTHROPIC_API_KEY"), model)
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        super().__init__(api_key or os.getenv("ANTHROPIC_API_KEY"), model or "claude-3-5-sonnet-20241022")
         if not self.api_key:
             raise ConfigurationError("ANTHROPIC_API_KEY not found in environment variables")
         
