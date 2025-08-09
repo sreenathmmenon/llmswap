@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "2.0.1"
+version = "2.0.2"
 description = "Universal Python SDK for seamless LLM provider switching - OpenAI, Anthropic Claude, Google Gemini, IBM watsonx, Ollama. Enterprise and local LLM library with automatic fallback."
 readme = "README.md"
 requires-python = ">=3.8"

@@ -22,7 +22,7 @@ Advanced usage:
     client = LLMClient(provider="anthropic", model="claude-3-opus-20240229")
 """
 
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 __author__ = "Sreenath Menon"
 __description__ = "Simple interface for any LLM provider"
 

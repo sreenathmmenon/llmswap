@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.2] - 2025-08-09
+### Fixed
+- Fixed Anthropic model compatibility issues with claude-3-5-sonnet-20241022
+- Resolved async provider initialization and parameter handling
+- Fixed streaming functionality for all async providers
+- Corrected logging system implementation
+
+### Added
+- Complete async/await support with AsyncLLMClient
+- Real-time streaming responses for OpenAI, Anthropic, and Ollama
+- Comprehensive JSON logging system with privacy protection
+- Enhanced error handling and retry mechanisms
+
+### Changed
+- Updated default Anthropic model to latest version
+- Improved package stability and production readiness
+- Maintained full backward compatibility with v1.x API
+
 ## [2.0.1] - 2025-08-09
 ### Added
 - Async support with AsyncLLMClient for non-blocking operations
