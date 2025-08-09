@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.0.0] - 2025-08-09
+### Added
+- **Async Support** - Complete async/await functionality with AsyncLLMClient
+  - Non-blocking async queries for better performance
+  - Async streaming responses for real-time data processing
+  - Async provider switching and configuration
+- **Streaming Capabilities** - Real-time token streaming for supported providers
+  - OpenAI streaming with Server-Sent Events
+  - Anthropic streaming with proper error handling
+  - Ollama streaming for local model interactions
+- **Request Logging System** - Comprehensive logging for debugging and monitoring
+  - JSON-formatted logs with structured metadata
+  - Privacy-conscious logging (no prompt/response content stored)
+  - Configurable log levels and file destinations
+  - Request/response timing and token count tracking
+- **Enhanced Performance** - Built for production workloads
+  - Concurrent request handling with async support
+  - Reduced memory footprint with streaming responses
+  - Better error handling and retry mechanisms
+
+### Changed
+- Package status upgraded to Production/Stable
+- Added async dependencies (aiohttp, aiofiles)
+- Maintained full backward compatibility with v1.x synchronous API
+
 ## [1.5.1] - 2025-08-07
 ### Changed
 - Enhanced PyPI metadata with watsonx and IBM keywords for better discoverability

@@ -7,6 +7,11 @@
 
 Simple interface for any LLM provider. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
 
+**Version 2.0 Features:**
+- Async/await support with streaming
+- Request logging for debugging and monitoring
+- Backward compatible with v1.x code
+
 ## Why llmswap?
 
 - Easy switching between LLM providers
@@ -45,6 +50,45 @@ export WATSONX_PROJECT_ID="your-project-id"
 ```
 
 ## Usage Examples
+
+### Async Support (New in v2.0)
+
+```python
+import asyncio
+from llmswap import AsyncLLMClient
+
+async def main():
+    client = AsyncLLMClient(provider="openai")
+    
+    # Async query
+    response = await client.query("Explain quantum computing")
+    print(response.content)
+    
+    # Streaming response
+    print("Streaming: ", end="")
+    async for chunk in client.stream("Write a haiku"):
+        print(chunk, end="", flush=True)
+
+asyncio.run(main())
+```
+
+### Request Logging (New in v2.0)
+
+```python
+from llmswap import AsyncLLMClient
+
+# Enable logging to file
+client = AsyncLLMClient(
+    provider="anthropic",
+    log_file="/tmp/llm_requests.log",
+    log_level="info"
+)
+
+# All requests and responses are logged with metadata
+response = await client.query("Hello world")
+
+# Logs include: timestamp, provider, model, latency, token counts
+```
 
 ### Provider Auto-Detection
 ```python
