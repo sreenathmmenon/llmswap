@@ -149,9 +149,6 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# Internal documentation files - DO NOT COMMIT
-CLAUDE.md
-ANDREJ_KARPATHY.md
-claude.md
-andrej_karpathy.md
-.claude/
+# Temporary files
+*.tmp
+*.temp
