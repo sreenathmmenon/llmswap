@@ -46,7 +46,7 @@ class LLMLogger:
         Args:
             provider: Provider name
             model: Model name
-            prompt_length: Length of the prompt (for privacy, we don't log content)
+            prompt_length: Length of the prompt (for privacy, content not logged)
             metadata: Optional additional metadata
         """
         log_data = {
@@ -69,7 +69,7 @@ class LLMLogger:
         Args:
             provider: Provider name
             model: Model name
-            response_length: Length of the response (for privacy, we don't log content)
+            response_length: Length of the response (for privacy, content not logged)
             latency: Response latency in seconds
             metadata: Optional additional metadata (token counts, etc.)
         """
