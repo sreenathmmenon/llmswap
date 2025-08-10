@@ -315,7 +315,7 @@ class AsyncWatsonxProvider(AsyncBaseProvider):
         self.default_model = "ibm/granite-3-8b-instruct"
         
         # Note: watsonx SDK doesn't have async support yet
-        # We'll use sync in executor for now
+        # Execute watsonx sync call in thread executor
         try:
             from ibm_watsonx_ai.foundation_models import ModelInference
             from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams

@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.0] - 2025-08-10
+### Added
+- **Response Caching**: Built-in memory caching for cost savings and performance
+  - Disabled by default for security (multi-user safety)
+  - Configurable TTL (time-to-live) for cached responses
+  - Context-aware caching with user/session isolation support
+  - Memory limit protection with LRU eviction
+  - Cache statistics and management APIs
+- Cache methods: `clear_cache()`, `invalidate_cache()`, `get_cache_stats()`
+- `from_cache` attribute in LLMResponse to identify cached responses
+- Thread-safe cache operations
+
+### Changed
+- Enhanced LLMClient and AsyncLLMClient constructors with cache parameters
+- Updated query methods to support cache_context, cache_ttl, and cache_bypass options
+
 ## [2.0.2] - 2025-08-09
 ### Fixed
 - Fixed Anthropic model compatibility issues with claude-3-5-sonnet-20241022

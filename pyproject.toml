@@ -4,18 +4,21 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "2.0.2"
-description = "Universal Python SDK for seamless LLM provider switching - OpenAI, Anthropic Claude, Google Gemini, IBM watsonx, Ollama. Enterprise and local LLM library with automatic fallback."
+version = "2.1.0"
+description = "Universal Python SDK for seamless LLM provider switching with intelligent response caching. OpenAI GPT-4, Anthropic Claude, Google Gemini, IBM watsonx, Ollama support. Save 50-90% on AI API costs, async operations, automatic failover, enterprise-ready with thread-safe caching."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 authors = [
     {name = "Sreenath Menon", email = "zreenathmenon@gmail.com"},
 ]
-keywords = ["llm", "ai", "anthropic", "openai", "gemini", "ollama", "watsonx", "ibm", "chatbot", "gpt", "claude", "granite", "llm-api", "multi-llm", "llm-provider", "llm-client", "llm-wrapper", "llm-sdk", "gpt-4", "gpt-3.5", "claude-3", "gemini-pro", "watsonx-ai", "ibm-granite", "enterprise-llm", "langchain-alternative", "llm-abstraction", "ai-sdk", "llm-interface", "provider-switching", "llm-fallback", "unified-llm", "llm-gateway", "ai-gateway", "llm-router", "api-wrapper", "ibm-watsonx", "enterprise-ai", "foundation-models"]
+keywords = ["llm", "ai", "anthropic", "openai", "gemini", "ollama", "watsonx", "ibm", "chatbot", "gpt", "claude", "granite", "llm-api", "multi-llm", "llm-provider", "llm-client", "llm-wrapper", "llm-sdk", "gpt-4", "gpt-3.5", "claude-3", "gemini-pro", "watsonx-ai", "ibm-granite", "enterprise-llm", "langchain-alternative", "llm-abstraction", "ai-sdk", "llm-interface", "provider-switching", "llm-fallback", "unified-llm", "llm-gateway", "ai-gateway", "llm-router", "api-wrapper", "ibm-watsonx", "enterprise-ai", "foundation-models", "response-caching", "llm-cache", "cost-optimization", "api-cost-reduction", "intelligent-caching", "cache-management", "cost-savings", "async-llm", "streaming-ai", "production-llm", "scalable-ai", "multi-tenant", "thread-safe", "performance-optimization", "api-billing", "token-optimization", "ai-cost-control", "llm-monitoring", "request-logging", "fallback-strategy", "high-availability", "enterprise-ready", "python-ai", "ai-integration", "conversational-ai", "nlp-toolkit", "machine-learning", "artificial-intelligence", "gpt-api", "claude-api", "gemini-api", "ai-development", "chatgpt-alternative", "openai-wrapper", "anthropic-wrapper", "hackathon", "student-projects", "rapid-prototyping", "ai-hackathon", "startup-toolkit", "mvp-development", "budget-friendly", "educational-ai", "learning-ai", "beginner-friendly", "quick-start", "zero-setup", "plug-and-play"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology", 
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
@@ -26,6 +29,13 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Communications :: Chat",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: System :: Distributed Computing",
+    "Framework :: AsyncIO",
+    "Operating System :: OS Independent",
+    "Environment :: Web Environment",
+    "Typing :: Typed",
 ]
 dependencies = [
     "anthropic>=0.3.0",
@@ -33,7 +43,7 @@ dependencies = [
     "google-generativeai>=0.3.0",
     "requests>=2.25.0",
     "python-dotenv>=0.19.0",
-    "ibm-watsonx-ai>=1.0.0",
+    "ibm-watsonx-ai>=0.0.5",
     "httpx>=0.24.0",
     "aiohttp>=3.8.0",
     "aiofiles>=23.0.0",

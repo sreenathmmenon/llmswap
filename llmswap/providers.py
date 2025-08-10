@@ -279,7 +279,7 @@ class WatsonxProvider(BaseProvider):
     
     def is_available(self) -> bool:
         try:
-            # Simple check if we can create credentials
+            # Simple check if credentials can be created
             credentials = self.Credentials(
                 url=self.url,
                 api_key=self.api_key

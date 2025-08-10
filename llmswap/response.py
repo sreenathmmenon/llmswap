@@ -10,11 +10,14 @@ class LLMResponse:
     """Response from LLM query."""
     
     content: str
-    provider: str
-    model: str
+    provider: Optional[str] = None
+    model: Optional[str] = None
     latency: float = 0.0
     timestamp: Optional[datetime] = None
     metadata: Optional[Dict[str, Any]] = None
+    usage: Optional[Dict[str, Any]] = None
+    raw_response: Optional[Any] = None
+    from_cache: bool = False
     
     def __post_init__(self):
         if self.timestamp is None:

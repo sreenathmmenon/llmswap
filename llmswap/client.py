@@ -1,11 +1,12 @@
 """Main LLMClient class for llmswap."""
 
 import os
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from .providers import AnthropicProvider, OpenAIProvider, GeminiProvider, OllamaProvider, WatsonxProvider
 from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
+from .cache import InMemoryCache
 
 
 class LLMClient:
@@ -15,7 +16,10 @@ class LLMClient:
                  provider: str = "auto",
                  model: Optional[str] = None,
                  api_key: Optional[str] = None,
-                 fallback: bool = True):
+                 fallback: bool = True,
+                 cache_enabled: bool = False,
+                 cache_ttl: int = 3600,
+                 cache_max_size_mb: int = 100):
         """Initialize LLM client.
         
         Args:
@@ -23,12 +27,18 @@ class LLMClient:
             model: Model name (optional, uses provider defaults)
             api_key: API key (optional, uses environment variables)
             fallback: Enable fallback to other providers if primary fails
+            cache_enabled: Enable response caching (default: False for security)
+            cache_ttl: Default cache time-to-live in seconds (default: 3600)
+            cache_max_size_mb: Maximum cache size in megabytes (default: 100)
         """
         self.fallback_enabled = fallback
         self.current_provider = None
         
         # Provider priority order for auto-detection and fallback
         self.provider_order = ["anthropic", "openai", "gemini", "watsonx", "ollama"]
+        
+        # Initialize cache if enabled
+        self._cache = InMemoryCache(cache_max_size_mb, cache_ttl) if cache_enabled else None
         
         if provider == "auto":
             self.current_provider = self._detect_available_provider()
@@ -72,11 +82,18 @@ class LLMClient:
         else:
             raise ConfigurationError(f"Unknown provider: {provider_name}")
     
-    def query(self, prompt: str) -> LLMResponse:
-        """Send query to current provider with optional fallback.
+    def query(self, 
+              prompt: str,
+              cache_context: Optional[Dict[str, Any]] = None,
+              cache_ttl: Optional[int] = None,
+              cache_bypass: bool = False) -> LLMResponse:
+        """Send query to current provider with optional fallback and caching.
         
         Args:
             prompt: Text prompt to send to LLM
+            cache_context: Optional context dict (e.g., {"user_id": "123"}) for cache key
+            cache_ttl: Override default cache TTL in seconds
+            cache_bypass: Skip cache lookup and force fresh response
             
         Returns:
             LLMResponse with content, metadata, and usage info
@@ -84,8 +101,41 @@ class LLMClient:
         if not self.current_provider:
             raise ConfigurationError("No provider initialized")
         
+        # Check cache if enabled and not bypassed
+        if self._cache and not cache_bypass:
+            cache_key = InMemoryCache.create_cache_key(prompt, cache_context)
+            cached_data = self._cache.get(cache_key)
+            
+            if cached_data:
+                # Reconstruct response from cached data
+                response = LLMResponse(
+                    content=cached_data["content"],
+                    provider=cached_data.get("provider"),
+                    model=cached_data.get("model"),
+                    usage=cached_data.get("usage"),
+                    raw_response=cached_data.get("raw_response")
+                )
+                # Mark as from cache
+                response.from_cache = True
+                return response
+        
         try:
-            return self.current_provider.query(prompt)
+            response = self.current_provider.query(prompt)
+            
+            # Store in cache if enabled
+            if self._cache:
+                cache_key = InMemoryCache.create_cache_key(prompt, cache_context)
+                cache_data = {
+                    "content": response.content,
+                    "provider": response.provider,
+                    "model": response.model,
+                    "usage": response.usage,
+                    "raw_response": response.raw_response
+                }
+                self._cache.set(cache_key, cache_data, cache_ttl)
+            
+            return response
+            
         except Exception as e:
             if not self.fallback_enabled:
                 raise
@@ -100,6 +150,19 @@ class LLMClient:
                     provider = self._initialize_provider(provider_name)
                     if provider.is_available():
                         response = provider.query(prompt)
+                        
+                        # Store in cache if enabled
+                        if self._cache:
+                            cache_key = InMemoryCache.create_cache_key(prompt, cache_context)
+                            cache_data = {
+                                "content": response.content,
+                                "provider": response.provider,
+                                "model": response.model,
+                                "usage": response.usage,
+                                "raw_response": response.raw_response
+                            }
+                            self._cache.set(cache_key, cache_data, cache_ttl)
+                        
                         # Switch to working provider for future queries
                         self.current_provider = provider
                         return response
@@ -146,3 +209,36 @@ class LLMClient:
             if self.is_provider_available(provider_name):
                 available.append(provider_name)
         return available
+    
+    def clear_cache(self) -> None:
+        """Clear all cached responses."""
+        if self._cache:
+            self._cache.clear()
+    
+    def invalidate_cache(self, prompt: str, cache_context: Optional[Dict[str, Any]] = None) -> bool:
+        """
+        Invalidate a specific cached response.
+        
+        Args:
+            prompt: The prompt to invalidate
+            cache_context: Optional context used when caching
+            
+        Returns:
+            True if entry was removed, False if not found
+        """
+        if not self._cache:
+            return False
+        
+        cache_key = InMemoryCache.create_cache_key(prompt, cache_context)
+        return self._cache.invalidate(cache_key)
+    
+    def get_cache_stats(self) -> Optional[Dict[str, Any]]:
+        """
+        Get cache statistics.
+        
+        Returns:
+            Dictionary with cache stats or None if cache disabled
+        """
+        if not self._cache:
+            return None
+        return self._cache.get_stats()
