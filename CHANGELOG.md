@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.3] - 2025-08-16
+### Added
+- **Enhanced Model Keywords**: Added popular model names for better search discoverability
+- Added keywords: llama, llama3, mistral, phi, phi3, qwen, gemma for local model searches
+- Added OpenAI open-source model keywords: gpt-oss, openai-open-source
+- Added general open-source keywords: open-source-llm, local-llm, free-llm
+- Improved SEO coverage for developers seeking local and open-source AI models
+
 ## [2.1.2] - 2025-08-16
 ### Changed
 - **Critical SEO Fix**: Added explicit IBM WatsonX mention to main package description
