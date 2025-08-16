@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.2] - 2025-08-16
+### Changed
+- **Critical SEO Fix**: Added explicit IBM WatsonX mention to main package description
+- Enhanced enterprise discoverability with WatsonX in primary PyPI description
+- Improved B2B search visibility for IBM AI solution searches
+
 ## [2.1.1] - 2025-08-16
 ### Changed
 - **SEO Optimization**: Enhanced PyPI discoverability with trending keywords
