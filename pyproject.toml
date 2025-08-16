@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "2.1.1"
+version = "2.1.2"
 description = "Universal LLM SDK | OpenAI GPT-4, Claude, Gemini, IBM WatsonX API Wrapper with Cost Optimization. Seamless LLM provider switching with intelligent response caching. Save 50-90% on AI API costs, async operations, automatic failover, enterprise-ready with thread-safe caching."
 readme = "README.md"
 requires-python = ">=3.8"
