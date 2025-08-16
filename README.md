@@ -6,7 +6,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Universal LLM SDK | OpenAI GPT-4, Claude, Gemini API Wrapper with Cost Optimization. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
+Universal LLM SDK | OpenAI GPT-4, Claude, Gemini, IBM WatsonX API Wrapper with Cost Optimization. Switch between Anthropic, OpenAI, Google, IBM, and local models with one line of code.
 
 ## Top Features
 
