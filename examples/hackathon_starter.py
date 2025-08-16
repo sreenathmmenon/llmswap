@@ -73,7 +73,7 @@ def quick_chatbot_example():
         print(f"User: {user_message}")
         
         # Add context for better responses
-        prompt = f"You are a helpful AI assistant. User says: {user_message}"
+        prompt = f"You are a helpful chatbot. User says: {user_message}"
         
         try:
             response = client.query(prompt)

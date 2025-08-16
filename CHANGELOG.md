@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1] - 2025-08-16
+### Changed
+- **SEO Optimization**: Enhanced PyPI discoverability with trending keywords
+- Updated package description to "Universal LLM SDK | OpenAI GPT-4, Claude, Gemini API Wrapper with Cost Optimization"
+- Added quick install badge to README for improved GitHub visual appeal
+- Enhanced documentation with more targeted keyword optimization for better search visibility
+
 ## [2.1.0] - 2025-08-10
 ### Added
 - **Response Caching**: Built-in memory caching for cost savings and performance

@@ -1,11 +1,12 @@
 # llmswap
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
+[![pip install llmswap](https://img.shields.io/badge/pip%20install-llmswap-brightgreen)](https://pypi.org/project/llmswap/)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Simple interface for any large language model provider. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
+Universal LLM SDK | OpenAI GPT-4, Claude, Gemini API Wrapper with Cost Optimization. Switch between Anthropic, OpenAI, Google, and local models with one line of code.
 
 ## Top Features
 
@@ -24,7 +25,7 @@ Simple interface for any large language model provider. Switch between Anthropic
 - **Move Fast** - One line setup, focus on your idea not infrastructure
 - **Stay Within Budget** - 50-90% cost savings crucial for student projects
 - **Experiment Freely** - Switch between providers instantly, find what works
-- **Scale Effortlessly** - Start with free tiers, upgrade seamlessly
+- **Scale Easily** - Start with free tiers, upgrade when needed
 - **Multi-User Ready** - Build apps that serve your whole team/class
 - **Learn Best Practices** - Production-ready patterns from day one
 
