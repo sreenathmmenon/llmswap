@@ -24,7 +24,7 @@ Advanced usage:
 
 __version__ = "3.0.0"
 __author__ = "Sreenath Menon"
-__description__ = "Universal LLM SDK | OpenAI GPT-4, Claude, Gemini, IBM WatsonX API Wrapper with Cost Optimization"
+__description__ = "Universal AI Platform: CLI + Python SDK | Multi-Provider LLM Interface for Any Use Case"
 
 from .client import LLMClient
 from .async_client import AsyncLLMClient

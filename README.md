@@ -6,9 +6,9 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Professional LLM CLI Tool + Universal Python SDK**
+**Universal AI Platform: CLI + Python SDK**
 
-Transform your development workflow with AI-powered code review, debugging, and chat - all from the command line. Plus a complete Python SDK for building AI applications.
+Transform any workflow with AI-powered assistance: code review, content writing, data analysis, research, automation, and more. Professional command-line tool + complete Python SDK for any use case.
 
 ## v3.0.0 - Now with Professional CLI
 
@@ -18,11 +18,13 @@ Transform your development workflow with AI-powered code review, debugging, and 
 # Install once, use everywhere
 pip install llmswap
 
-# Professional AI workflows
-llmswap ask "How do I optimize this SQL query?"
+# Universal AI workflows for any use case
+llmswap ask "Write a professional email response"
+llmswap ask "Analyze this sales data trend"
+llmswap ask "Explain quantum physics simply"
 llmswap review myfile.py --focus security  
 llmswap debug --error "ConnectionError: timeout"
-llmswap chat  # Interactive session
+llmswap chat  # Interactive AI assistant
 ```
 
 ### Python SDK Features
