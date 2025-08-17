@@ -25,7 +25,7 @@ def cmd_ask(args):
     
     try:
         client = LLMClient(
-            provider=args.provider,
+            provider=args.provider or "auto",
             cache_enabled=not args.no_cache
         )
         response = client.query(args.question)
@@ -44,7 +44,7 @@ def cmd_chat(args):
     """Handle 'llmswap chat' command"""
     try:
         client = LLMClient(
-            provider=args.provider,
+            provider=args.provider or "auto",
             cache_enabled=not args.no_cache
         )
         
@@ -155,7 +155,10 @@ Keep feedback constructive and actionable.
 """
     
     try:
-        client = LLMClient(cache_enabled=not args.no_cache)
+        client = LLMClient(
+            provider=args.provider or "auto",
+            cache_enabled=not args.no_cache
+        )
         response = client.query(prompt)
         
         cache_indicator = "[cached]" if response.from_cache else "[fresh]"
@@ -194,7 +197,10 @@ Be practical and specific in your recommendations.
 """
     
     try:
-        client = LLMClient(cache_enabled=not args.no_cache)
+        client = LLMClient(
+            provider=args.provider or "auto",
+            cache_enabled=not args.no_cache
+        )
         response = client.query(prompt)
         
         cache_indicator = "[cached]" if response.from_cache else "[fresh]"

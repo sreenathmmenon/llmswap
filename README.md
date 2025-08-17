@@ -10,7 +10,7 @@
 
 Transform any workflow with AI-powered assistance: code review, content writing, data analysis, research, automation, and more. Professional command-line tool + complete Python SDK for any use case.
 
-## v3.0.0 - Now with Professional CLI
+## What's New in v3.0.0
 
 ### Command Line Interface (NEW!)
 
