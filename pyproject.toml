@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "3.1.0"
+version = "3.2.0"
 description = "Universal AI assistant with CLI and Python SDK. Multi-provider LLM interface supporting OpenAI GPT-4, Claude, Gemini, IBM WatsonX, Ollama. Built for developers, content creators, researchers. Features code review, content writing, data analysis, automation. 50-90% cost savings through intelligent caching."
 readme = "README.md"
 requires-python = ">=3.8"
