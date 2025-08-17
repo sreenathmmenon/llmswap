@@ -29,12 +29,7 @@ def cmd_ask(args):
             cache_enabled=not args.no_cache
         )
         response = client.query(args.question)
-        
-        cache_indicator = "[cached]" if response.from_cache else "[fresh]"
-        print(f"{cache_indicator} {response.content}")
-        
-        if response.from_cache and not args.quiet:
-            print("\nTip: This answer was cached (free!)")
+        print(response.content)
             
     except LLMSwapError as e:
         print(f"Error: {e}")
@@ -76,8 +71,7 @@ def cmd_chat(args):
                 
                 # Get response
                 response = client.query(user_input)
-                cache_indicator = "[cached]" if response.from_cache else "[fresh]"
-                print(f"\n{cache_indicator} {response.content}\n")
+                print(f"\n{response.content}\n")
                 
             except KeyboardInterrupt:
                 print("\nGoodbye!")
@@ -161,14 +155,9 @@ Keep feedback constructive and actionable.
         )
         response = client.query(prompt)
         
-        cache_indicator = "[cached]" if response.from_cache else "[fresh]"
-        
-        print(f"{cache_indicator} Code Review ({args.focus} focus):")
+        print(f"Code Review ({args.focus} focus):")
         print("=" * 60)
         print(response.content)
-        
-        if response.from_cache and not args.quiet:
-            print("\nTip: This review was cached (free!)")
             
     except LLMSwapError as e:
         print(f"Error: {e}")
@@ -203,14 +192,9 @@ Be practical and specific in your recommendations.
         )
         response = client.query(prompt)
         
-        cache_indicator = "[cached]" if response.from_cache else "[fresh]"
-        
-        print(f"{cache_indicator} Debug Analysis:")
+        print(f"Debug Analysis:")
         print("=" * 60)
         print(response.content)
-        
-        if response.from_cache and not args.quiet:
-            print("\nTip: This analysis was cached (free!)")
             
     except LLMSwapError as e:
         print(f"Error: {e}")
