@@ -6,16 +6,32 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Universal LLM SDK | OpenAI GPT-4, Claude, Gemini, IBM WatsonX API Wrapper with Cost Optimization. Switch between Anthropic, OpenAI, Google, IBM, and local models with one line of code.
+**Professional LLM CLI Tool + Universal Python SDK**
 
-## Top Features
+Transform your development workflow with AI-powered code review, debugging, and chat - all from the command line. Plus a complete Python SDK for building AI applications.
+
+## v3.0.0 - Now with Professional CLI
+
+### Command Line Interface (NEW!)
+
+```bash
+# Install once, use everywhere
+pip install llmswap
+
+# Professional AI workflows
+llmswap ask "How do I optimize this SQL query?"
+llmswap review myfile.py --focus security  
+llmswap debug --error "ConnectionError: timeout"
+llmswap chat  # Interactive session
+```
+
+### Python SDK Features
 
 - **Multi-provider support** - Anthropic, OpenAI, Google Gemini, IBM watsonx, Ollama
 - **Response caching** - Save 50-90% on API costs with intelligent caching
 - **Auto-fallback** - Automatic provider switching when one fails
 - **Zero configuration** - Works with environment variables out of the box
 - **Async support** - Non-blocking operations with streaming responses
-- **Request logging** - Monitor and debug API usage with detailed logs
 - **Thread-safe** - Safe for concurrent applications and multi-user environments
 
 ## Perfect for Hackathons & Students
@@ -38,15 +54,63 @@ response = client.query("Help me build an AI-powered app")
 print(response.content)
 ```
 
-**Version 2.1 Features:**
-- **Response caching for 50-90% cost reduction**
-- Async support with streaming responses
-- Request logging for monitoring and debugging
-- Backward compatible with v1.x code
-
-## Quick Start
+## CLI Quick Start
 
 ### Installation
+```bash
+pip install llmswap
+```
+
+### Set API Key
+```bash
+# Choose your provider (any one is enough)
+export ANTHROPIC_API_KEY="your-anthropic-key"
+export OPENAI_API_KEY="your-openai-key"  
+export GEMINI_API_KEY="your-gemini-key"
+```
+
+### CLI Commands
+
+```bash
+# Ask questions
+llmswap ask "What is Docker?"
+llmswap ask "How to optimize SQL queries?" --provider openai
+
+# Interactive chat
+llmswap chat
+
+# Code review with AI
+llmswap review app.py --focus security
+llmswap review script.js --focus performance  
+llmswap review main.go --focus bugs
+
+# Debug assistance
+llmswap debug --error "TypeError: 'NoneType' object is not callable"
+llmswap debug --error "ECONNREFUSED: Connection refused"
+
+# Get help
+llmswap --help
+llmswap review --help
+```
+
+### Production Examples
+
+```bash
+# DevOps workflows
+llmswap ask "Why is my Node.js app using too much memory?"
+llmswap debug --error "Error: listen EADDRINUSE: address already in use :::3000"
+
+# Code review automation
+find . -name "*.py" -exec llmswap review {} --focus security --quiet \;
+
+# Daily development
+llmswap ask "Best practices for REST API design"
+llmswap review pull_request.diff --focus style
+```
+
+## Python SDK Quick Start
+
+### Installation  
 ```bash
 pip install llmswap
 ```
