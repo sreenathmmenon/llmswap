@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.4] - 2025-08-16
+### Added
+- New examples showing practical use cases and cost savings
+- Smart cost optimizer example shows how caching reduces API bills
+- Provider comparison tool helps users test different LLMs
+- Simple chat interface example for quick testing
+- Examples documentation with getting started guide
+
 ## [2.1.3] - 2025-08-16
 ### Added
 - **Enhanced Model Keywords**: Added popular model names for better search discoverability
