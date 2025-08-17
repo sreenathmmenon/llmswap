@@ -68,6 +68,32 @@ class AnthropicProvider(BaseProvider):
     
     def is_available(self) -> bool:
         return self.api_key is not None
+    
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=4000,
+                messages=messages
+            )
+            
+            latency = time.time() - start_time
+            content = response.content[0].text
+            
+            return LLMResponse(
+                content=content,
+                provider="anthropic",
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("anthropic", str(e))
 
 
 class OpenAIProvider(BaseProvider):
@@ -90,6 +116,33 @@ class OpenAIProvider(BaseProvider):
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000
+            )
+            
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+            
+            return LLMResponse(
+                content=content,
+                provider="openai", 
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                    "finish_reason": response.choices[0].finish_reason,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("openai", str(e))
+    
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
                 max_tokens=4000
             )
             
@@ -133,6 +186,39 @@ class GeminiProvider(BaseProvider):
         start_time = time.time()
         try:
             response = self.model_instance.generate_content(prompt)
+            
+            latency = time.time() - start_time
+            content = response.text
+            
+            return LLMResponse(
+                content=content,
+                provider="gemini",
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "safety_ratings": getattr(response, 'safety_ratings', None),
+                    "finish_reason": getattr(response, 'finish_reason', None),
+                }
+            )
+        except Exception as e:
+            raise ProviderError("gemini", str(e))
+    
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            # Convert message format for Gemini
+            chat_history = []
+            for msg in messages[:-1]:  # All except the last message
+                role = "user" if msg["role"] == "user" else "model"
+                chat_history.append({"role": role, "parts": [msg["content"]]})
+            
+            # Start chat with history
+            chat = self.model_instance.start_chat(history=chat_history)
+            
+            # Send the current message
+            current_message = messages[-1]["content"]
+            response = chat.send_message(current_message)
             
             latency = time.time() - start_time
             content = response.text
@@ -204,6 +290,45 @@ class OllamaProvider(BaseProvider):
         except Exception as e:
             raise ProviderError("ollama", str(e))
     
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            # Convert messages to Ollama chat format
+            payload = {
+                "model": self.model,
+                "messages": messages,
+                "stream": False,
+                "options": {
+                    "temperature": 0.7,
+                    "num_predict": 4000,
+                }
+            }
+            
+            response = self.requests.post(
+                f"{self.url}/api/chat",
+                json=payload,
+                timeout=60
+            )
+            response.raise_for_status()
+            result = response.json()
+            
+            latency = time.time() - start_time
+            content = result.get('message', {}).get('content', 'No response generated')
+            
+            return LLMResponse(
+                content=content,
+                provider="ollama",
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "total_duration": result.get("total_duration"),
+                    "load_duration": result.get("load_duration"),
+                }
+            )
+        except Exception as e:
+            raise ProviderError("ollama", str(e))
+    
     def is_available(self) -> bool:
         try:
             response = self.requests.get(f"{self.url}/api/tags", timeout=5)
@@ -261,6 +386,58 @@ class WatsonxProvider(BaseProvider):
             
             # Generate text
             response_text = model.generate_text(prompt=prompt)
+            
+            latency = time.time() - start_time
+            
+            return LLMResponse(
+                content=response_text,
+                provider="watsonx",
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "project_id": self.project_id,
+                    "url": self.url
+                }
+            )
+        except Exception as e:
+            raise ProviderError("watsonx", str(e))
+    
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            # Convert messages to a single prompt for watsonx
+            conversation_prompt = ""
+            for msg in messages:
+                role = msg["role"].capitalize()
+                conversation_prompt += f"{role}: {msg['content']}\n\n"
+            
+            # Set up credentials
+            credentials = self.Credentials(
+                url=self.url,
+                api_key=self.api_key
+            )
+            
+            # Configure generation parameters
+            parameters = {
+                self.GenParams.DECODING_METHOD: "greedy",
+                self.GenParams.MAX_NEW_TOKENS: 2000,
+                self.GenParams.MIN_NEW_TOKENS: 1,
+                self.GenParams.TEMPERATURE: 0.7,
+                self.GenParams.TOP_P: 1,
+                self.GenParams.STOP_SEQUENCES: []
+            }
+            
+            # Initialize model
+            model = self.ModelInference(
+                model_id=self.model,
+                params=parameters,
+                credentials=credentials,
+                project_id=self.project_id
+            )
+            
+            # Generate text
+            response_text = model.generate_text(prompt=conversation_prompt)
             
             latency = time.time() - start_time
             

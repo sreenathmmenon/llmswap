@@ -69,8 +69,8 @@ def cmd_chat(args):
                     print(f"Current provider: {client.get_current_provider()}")
                     continue
                 
-                # Get response
-                response = client.query(user_input)
+                # Get response with conversation context
+                response = client.chat(user_input)
                 print(f"\n{response.content}\n")
                 
             except KeyboardInterrupt:

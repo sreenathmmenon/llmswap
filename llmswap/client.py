@@ -40,6 +40,10 @@ class LLMClient:
         # Initialize cache if enabled
         self._cache = InMemoryCache(cache_max_size_mb, cache_ttl) if cache_enabled else None
         
+        # Conversation history for chat mode
+        self._conversation_history = []
+        self._max_history_length = 50  # Limit conversation length
+        
         if provider == "auto":
             self.current_provider = self._detect_available_provider()
         else:
@@ -242,3 +246,61 @@ class LLMClient:
         if not self._cache:
             return None
         return self._cache.get_stats()
+    
+    def start_conversation(self):
+        """Start a new conversation by clearing history."""
+        self._conversation_history = []
+    
+    def add_to_conversation(self, user_message: str, assistant_response: str):
+        """Add message pair to conversation history."""
+        self._conversation_history.append({"role": "user", "content": user_message})
+        self._conversation_history.append({"role": "assistant", "content": assistant_response})
+        
+        # Trim conversation if too long
+        if len(self._conversation_history) > self._max_history_length:
+            # Remove oldest pair (user + assistant)
+            self._conversation_history = self._conversation_history[2:]
+    
+    def get_conversation_length(self) -> int:
+        """Get number of messages in conversation."""
+        return len(self._conversation_history)
+    
+    def clear_conversation(self):
+        """Clear conversation history."""
+        self._conversation_history = []
+    
+    def chat(self, 
+             message: str,
+             cache_context: Optional[Dict[str, Any]] = None,
+             cache_ttl: Optional[int] = None,
+             cache_bypass: bool = False) -> LLMResponse:
+        """Send message with conversation context.
+        
+        This method maintains conversation history for chat-like interactions.
+        Use this for conversational AI where context matters.
+        
+        Args:
+            message: User message to send
+            cache_context: Optional context dict for cache key
+            cache_ttl: Override default cache TTL in seconds
+            cache_bypass: Skip cache lookup and force fresh response
+            
+        Returns:
+            LLMResponse with content, metadata, and usage info
+        """
+        # Build messages with conversation history
+        messages = list(self._conversation_history)
+        messages.append({"role": "user", "content": message})
+        
+        # Use the provider's new chat method if available, fallback to query
+        response = None
+        if hasattr(self.current_provider, 'chat'):
+            response = self.current_provider.chat(messages)
+        else:
+            # Fallback: send just the message (backward compatibility)
+            response = self.current_provider.query(message)
+        
+        # Add to conversation history
+        self.add_to_conversation(message, response.content)
+        
+        return response
