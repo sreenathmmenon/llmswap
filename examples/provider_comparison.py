@@ -13,7 +13,7 @@ def compare_providers(question):
     # List of providers to try
     providers = ["anthropic", "openai", "gemini", "ollama"]
     
-    print(f"🔍 Comparing providers for: '{question}'\n")
+    print(f"Comparing providers for: '{question}'\n")
     
     results = {}
     
@@ -28,26 +28,26 @@ def compare_providers(question):
                 'model': response.model,
                 'latency': response.latency
             }
-            print("✅")
+            print("OK")
             
         except Exception as e:
-            print(f"❌ ({str(e)[:30]}...)")
+            print(f"FAILED ({str(e)[:30]}...)")
             results[provider] = None
     
     # Display results
-    print(f"\n📊 Results for: '{question}'")
+    print(f"\nResults for: '{question}'")
     print("=" * 60)
     
     for provider, result in results.items():
         if result:
-            print(f"\n🤖 {provider.upper()} ({result['model']}):")
+            print(f"\n{provider.upper()} ({result['model']}):")
             print(f"   Response: {result['content'][:150]}...")
             print(f"   Speed: {result['latency']:.2f}s")
         else:
-            print(f"\n❌ {provider.upper()}: Not available")
+            print(f"\n{provider.upper()}: Not available")
 
 def main():
-    print("🔄 LLM Provider Comparison Tool")
+    print("LLM Provider Comparison Tool")
     print("See how different providers respond to the same question\n")
     
     # Example questions

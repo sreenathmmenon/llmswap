@@ -345,9 +345,55 @@ client = LLMClient(provider="watsonx", model="mistralai/mixtral-8x7b-instruct-v0
 response = client.query("Analyze this business data and provide insights")
 ```
 
-## Real-World Example
+## Practical Examples & CLI Tools
 
-### Chatbot Integration
+The package includes ready-to-use examples and CLI tools for common developer workflows:
+
+### Available Examples
+
+#### Developer Workflow Tools
+- **`cli_assistant.py`** - Full-featured CLI with interactive mode and commands
+- **`code_reviewer.py`** - AI-powered code review with focus areas (bugs, security, style)
+- **`debug_helper.py`** - Error analysis, stack trace interpretation, debugging strategies
+- **`provider_comparison.py`** - Compare responses from different LLM providers
+
+#### Cost Optimization & Performance  
+- **`smart_cost_optimizer.py`** - Demonstrates 50-90% cost savings through caching
+- **`quick_chat.py`** - Minimal chat interface showing llmswap simplicity
+- **`ask`** - One-liner CLI script for quick questions
+
+#### Getting Started
+- **`basic_usage.py`** - Simple integration examples
+- **`hackathon_starter.py`** - Perfect starting point for hackathons and student projects
+
+### Quick CLI Usage
+
+```bash
+# One-liner questions  
+./examples/ask "What is Python?"
+./examples/ask "Explain machine learning"
+
+# Interactive chat
+python examples/cli_assistant.py
+
+# Code review
+python examples/code_reviewer.py myfile.py --focus security
+python examples/code_reviewer.py --language javascript --focus bugs < script.js
+
+# Debug assistance
+python examples/debug_helper.py --error "IndexError: list index out of range"
+python examples/debug_helper.py --stack-trace "$(cat error.log)"
+
+# Provider comparison
+python examples/provider_comparison.py
+
+# Cost optimization demo
+python examples/smart_cost_optimizer.py
+```
+
+### Integration Examples
+
+#### Chatbot Integration
 ```python
 from llmswap import LLMClient
 
