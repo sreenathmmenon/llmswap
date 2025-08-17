@@ -41,7 +41,7 @@ llmswap chat  # Interactive AI assistant
 **Built from hackathon experience to help developers ship faster:**
 
 - **Move Fast** - One line setup, focus on your idea not infrastructure
-- **Stay Within Budget** - 50-90% cost savings crucial for student projects
+- **Stay Within Budget** - Python SDK offers cost savings for repeated queries
 - **Experiment Freely** - Switch between providers instantly, find what works
 - **Scale Easily** - Start with free tiers, upgrade when needed
 - **Multi-User Ready** - Build apps that serve your whole team/class
@@ -424,7 +424,7 @@ The package includes ready-to-use examples and CLI tools for common developer wo
 - **`provider_comparison.py`** - Compare responses from different LLM providers
 
 #### Cost Optimization & Performance  
-- **`smart_cost_optimizer.py`** - Demonstrates 50-90% cost savings through caching
+- **`smart_cost_optimizer.py`** - Demonstrates cost savings through caching (Python SDK)
 - **`quick_chat.py`** - Minimal chat interface showing llmswap simplicity
 - **`ask`** - One-liner CLI script for quick questions
 
