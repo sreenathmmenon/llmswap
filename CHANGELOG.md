@@ -1,6 +1,46 @@
 # Changelog
 
-## [2.1.4] - 2025-08-16
+## [3.0.0] - 2024-08-17 - Major Release: Professional CLI Tool
+
+### 🚀 Added - Revolutionary CLI Interface
+- **Global `llmswap` command** - Professional command-line interface installed system-wide
+- **Ask command** (`llmswap ask`) - Quick one-line questions with AI assistance
+- **Interactive chat** (`llmswap chat`) - Full conversational AI sessions  
+- **Code review** (`llmswap review`) - AI-powered code analysis with specialized focus areas
+- **Debug assistant** (`llmswap debug`) - Error analysis and troubleshooting guidance
+- **Log analysis** (`llmswap logs`) - Framework for future log file analysis capabilities
+
+### 🛠️ CLI Features & Options
+- **Focus areas for code review**: bugs, security, style, performance, general analysis
+- **Provider selection** - Choose specific LLM provider via `--provider` flag
+- **Caching control** - `--no-cache` flag for real-time queries
+- **Quiet mode** - `--quiet` flag perfect for automation and scripting
+- **Auto language detection** - Automatic programming language detection for code review
+- **Comprehensive help** - Built-in help system for all commands and options
+
+### 📚 Professional Documentation
+- **CLI Usage Guide** - Complete documentation with real-world examples  
+- **Production workflows** - DevOps, development, and automation use cases
+- **Shell integration** - Aliases, scripting, and automation examples
+- **Error handling** - Clear error messages and troubleshooting guidance
+
+### 🏗️ Technical Implementation
+- **Entry point** - `llmswap.cli:main` provides global `llmswap` command
+- **Argument parsing** - Professional CLI with subcommands and global options
+- **Error handling** - Graceful error handling with helpful user messages
+- **Cross-platform** - Full compatibility with Linux, macOS, and Windows
+
+### 📈 Enhanced Package Structure
+- **README restructured** - CLI prominently featured as primary interface
+- **Package scripts** - Added CLI entry point via `[project.scripts]`
+- **Version management** - Updated to 3.0.0 across all project files
+
+### ⚡ Backward Compatibility
+- **No breaking changes** - All existing Python SDK functionality preserved
+- **Seamless upgrade** - `pip install llmswap` provides both SDK and CLI
+- **Migration friendly** - Existing Python code continues to work unchanged
+
+## [2.1.5] - 2024-08-17
 ### Added
 - New examples showing practical use cases and cost savings
 - Smart cost optimizer example shows how caching reduces API bills
