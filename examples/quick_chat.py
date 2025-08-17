@@ -11,7 +11,7 @@ def main():
     # Setup - automatically detects available provider
     client = LLMClient(cache_enabled=True)
     
-    print("💬 Quick Chat with llmswap")
+    print("Quick Chat with llmswap")
     print(f"Using provider: {client.get_current_provider()}")
     print("Type 'quit' to exit, 'help' for commands\n")
     
@@ -20,7 +20,7 @@ def main():
         user_input = input("You: ").strip()
         
         if user_input.lower() in ['quit', 'exit', 'bye']:
-            print("Goodbye! 👋")
+            print("Goodbye!")
             break
             
         elif user_input.lower() == 'help':
@@ -50,7 +50,7 @@ def main():
         # Get response
         try:
             response = client.query(user_input)
-            cache_indicator = "💾" if response.from_cache else "🔍"
+            cache_indicator = "[cached]" if response.from_cache else "[fresh]"
             print(f"AI {cache_indicator}: {response.content}\n")
             
         except Exception as e:

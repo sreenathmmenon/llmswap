@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""
+Quick ask script - One-liner CLI for llmswap
+
+Usage:
+    ./ask "What is Python?"
+    ./ask "Explain immutability"  
+    ./ask "How to view functions of a package"
+"""
+
+import sys
+import os
+
+# Add parent directory to path to import llmswap
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from llmswap import LLMClient
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: ./ask \"your question here\"")
+        print("\nExamples:")
+        print("  ./ask \"What is Python?\"")
+        print("  ./ask \"Explain immutability\"")
+        print("  ./ask \"How to view functions of a package\"")
+        sys.exit(1)
+    
+    question = sys.argv[1]
+    
+    try:
+        client = LLMClient(cache_enabled=True)
+        response = client.query(question)
+        
+        cache_indicator = "[cached]" if response.from_cache else "[fresh]"
+        print(f"{cache_indicator} {response.content}")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        print("Make sure you have an API key set:")
+        print("  export ANTHROPIC_API_KEY=your-key")
+        print("  export OPENAI_API_KEY=your-key")
+        print("  export GEMINI_API_KEY=your-key")
+
+if __name__ == "__main__":
+    main()

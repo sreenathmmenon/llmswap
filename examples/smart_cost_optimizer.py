@@ -19,21 +19,21 @@ def smart_assistant(question):
     # Setup different cost tiers
     cached = LLMClient(cache_enabled=True)
     
-    print(f"📝 Question: {question}")
+    print(f"Question: {question}")
     
     # Step 1: Check cache first (FREE)
-    print("🔍 Checking cache...", end=" ")
+    print("Checking cache...", end=" ")
     response = cached.query(question)
     
     if response.from_cache:
-        print("✅ Found in cache (Cost: $0.00)")
+        print("Found in cache (Cost: $0.00)")
         return response.content
     else:
-        print(f"💰 API call made (Cost: ~$0.01)")
+        print(f"API call made (Cost: ~$0.01)")
         return response.content
 
 def main():
-    print("🤖 Smart Cost Optimizer Demo")
+    print("Smart Cost Optimizer Demo")
     print("Watch how llmswap saves money automatically!\n")
     
     # Demo queries - some will be cached, some won't
@@ -59,16 +59,16 @@ def main():
         
         if response.from_cache:
             cached_calls += 1
-            print("✅ Served from cache (FREE)")
+            print("Served from cache (FREE)")
         else:
             api_calls += 1
-            print("💳 API call made")
+            print("API call made")
             
         print(f"Answer: {response.content[:100]}...")
         time.sleep(0.5)  # Small delay for demo effect
     
     # Show savings
-    print(f"\n📊 Cost Analysis:")
+    print(f"\nCost Analysis:")
     print(f"   API calls: {api_calls} × $0.01 = ${api_calls * 0.01:.3f}")
     print(f"   Cached calls: {cached_calls} × $0.00 = $0.000")
     print(f"   Total cost: ${api_calls * 0.01:.3f}")
@@ -76,9 +76,9 @@ def main():
     
     if cached_calls > 0:
         savings_percent = (cached_calls / total_queries) * 100
-        print(f"   💰 Savings: {savings_percent:.0f}%")
+        print(f"   Savings: {savings_percent:.0f}%")
     
-    print(f"\n🎉 In production, this scales to massive savings!")
+    print(f"\nIn production, this scales to massive savings!")
     print(f"   FAQ bots: 90% cost reduction")
     print(f"   Documentation assistants: 80% savings") 
     print(f"   Repeated workflows: 85% cost cut")
