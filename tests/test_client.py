@@ -1,6 +1,6 @@
 import pytest
 from llmswap import LLMClient
-from llmswap.exceptions import NoProvidersAvailableError
+from llmswap.exceptions import ConfigurationError
 
 def test_client_initialization():
     """Test that client can be initialized"""
@@ -44,7 +44,7 @@ def test_is_provider_available():
 
 def test_no_providers_error(mock_env_vars):
     """Test error when no providers available"""
-    with pytest.raises(NoProvidersAvailableError):
+    with pytest.raises(ConfigurationError):
         client = LLMClient()
         client.query("test")
 
