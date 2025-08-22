@@ -1,4 +1,4 @@
-# llmswap
+# llmswap - Complete AI CLI Suite + Python SDK
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![pip install llmswap](https://img.shields.io/badge/pip%20install-llmswap-brightgreen)](https://pypi.org/project/llmswap/)
@@ -6,9 +6,42 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Universal AI Platform: CLI + Python SDK**
+**Two Powerful Interfaces: 5 AI CLI Tools + Complete Python SDK**
 
-Transform any workflow with AI-powered assistance: code review, content writing, data analysis, research, automation, and more. Professional command-line tool + complete Python SDK for any use case.
+## 🚀 Terminal AI Suite - No Browser Required
+
+```bash
+# Install once, get 5 AI CLI tools
+pip install llmswap
+
+# 1. One-line AI assistant
+llmswap ask "How to optimize PostgreSQL queries?"
+
+# 2. Interactive AI chat  
+llmswap chat
+
+# 3. AI code reviewer
+llmswap review app.py --focus security
+
+# 4. AI debugger
+llmswap debug --error "ConnectionTimeout: Connection timed out"
+
+# 5. AI log analyzer
+llmswap logs --analyze /var/log/app.log --since "2h ago"
+```
+
+## 📦 Python SDK for Applications
+
+```python
+pip install llmswap
+from llmswap import LLMClient
+
+client = LLMClient()  # Auto-detects OpenAI, Claude, Gemini, etc.
+response = client.query("Analyze this data trend")
+print(response.content)
+```
+
+**Complete AI-powered development workflow in your terminal + Python library for applications**
 
 ## What's New in v3.0.0
 
