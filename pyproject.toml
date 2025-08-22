@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "3.2.0"
+version = "3.2.1"
 description = "Complete AI CLI Suite + Python SDK. 5 Terminal AI Tools: ask, chat, review, debug, logs. Multi-provider LLM interface supporting OpenAI GPT-4, Claude, Gemini, IBM WatsonX, Ollama. Built for developers, DevOps, students. Features AI CLI debugger, terminal code review, log analysis. 50-90% cost savings through intelligent caching."
 readme = "README.md"
 requires-python = ">=3.8"
