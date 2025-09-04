@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "4.0.0"
+version = "4.0.1"
 description = "Universal LLM SDK: OpenAI GPT-4, Claude, Gemini, Ollama, IBM watsonx. 5 CLI tools. 50-90% cost savings. Simpler than LangChain."
 readme = "README.md"
 requires-python = ">=3.8"

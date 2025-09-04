@@ -280,14 +280,6 @@ export WATSONX_PROJECT_ID="..."         # watsonx project
 # Or run Ollama locally for 100% free usage
 ```
 
-## 🌟 What Our Users Say
-
-> "Switched from LangChain to llmswap and reduced our codebase by 70%" - Startup Founder
-
-> "The caching feature alone saved us $2,000/month" - AI Developer
-
-> "Perfect for hackathons - got running in literally 1 minute" - Student Developer
-
 ## 📈 Token Usage Guidelines
 
 | Task Type | Input Tokens | Output Tokens | Estimated Cost |
