@@ -4,15 +4,54 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "3.2.1"
-description = "Complete AI CLI Suite + Python SDK. 5 Terminal AI Tools: ask, chat, review, debug, logs. Multi-provider LLM interface supporting OpenAI GPT-4, Claude, Gemini, IBM WatsonX, Ollama. Built for developers, DevOps, students. Features AI CLI debugger, terminal code review, log analysis. 50-90% cost savings through intelligent caching."
+version = "4.0.0"
+description = "Universal LLM SDK: OpenAI GPT-4, Claude, Gemini, Ollama, IBM watsonx. 5 CLI tools. 50-90% cost savings. Simpler than LangChain."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 authors = [
     {name = "Sreenath Menon", email = "zreenathmenon@gmail.com"},
 ]
-keywords = ["ai-cli", "ai-cli-tool", "ai-cli-debugger", "ai-cli-chat", "ai-cli-assistant", "terminal-ai", "command-line-ai", "cli-ai-helper", "one-line-ai-cli", "interactive-ai-cli", "ai-cli-code-review", "cli-code-reviewer", "terminal-code-analyzer", "ai-cli-log-analyzer", "cli-log-analysis", "terminal-log-reviewer", "developer-ai-cli", "devops-ai-cli", "coding-assistant-cli", "programming-cli-tool", "ai-debugging-cli", "terminal-debugger", "cli-error-analyzer", "ai-powered-cli", "intelligent-cli", "smart-terminal-tool", "terminal-ai-assistant", "cli-chatbot", "terminal-chatbot", "ai-chat-terminal", "cli-conversation-ai", "interactive-terminal-ai", "terminal-question-answering", "cli-ai-qa", "ai-help-cli", "terminal-ai-help", "cli-ai-support", "bash-ai-integration", "shell-ai-assistant", "terminal-assistant", "automation-cli-ai", "ci-cd-cli-tool", "cli-debugging-tool", "command-line-debugger", "error-analysis-cli", "bug-finder-cli", "security-scanner-cli", "ai-powered-debugging-cli", "intelligent-debugging-terminal", "automated-code-review-terminal", "cli-security-scanner", "terminal-ai-for-developers", "command-line-ai-for-devops", "developer-productivity-cli", "workflow-automation-cli", "openstack-ai", "openstack-ai-cli", "openstack-ai-debug", "aws-ai", "aws-ai-cli", "aws-ai-debug", "azure-ai", "azure-ai-cli", "azure-ai-debug", "gcp-ai", "gcp-ai-cli", "gcp-ai-debug", "cloud-ai-cli", "cloud-ai-debug", "llm", "ai", "anthropic", "openai", "gemini", "ollama", "watsonx", "ibm", "chatbot", "gpt", "claude", "granite", "llm-api", "multi-llm", "llm-provider", "llm-client", "llm-wrapper", "llm-sdk", "gpt-4", "gpt-3.5", "claude-3", "gemini-pro", "watsonx-ai", "ibm-granite", "enterprise-llm", "langchain-alternative", "llm-abstraction", "ai-sdk", "llm-interface", "provider-switching", "llm-fallback", "unified-llm", "llm-gateway", "ai-gateway", "llm-router", "api-wrapper", "ibm-watsonx", "enterprise-ai", "foundation-models", "response-caching", "llm-cache", "cost-optimization", "api-cost-reduction", "intelligent-caching", "cache-management", "cost-savings", "async-llm", "streaming-ai", "production-llm", "scalable-ai", "multi-tenant", "thread-safe", "performance-optimization", "api-billing", "token-optimization", "ai-cost-control", "llm-monitoring", "request-logging", "fallback-strategy", "high-availability", "enterprise-ready", "python-ai", "ai-integration", "conversational-ai", "nlp-toolkit", "machine-learning", "artificial-intelligence", "gpt-api", "claude-api", "gemini-api", "ai-development", "chatgpt-alternative", "openai-wrapper", "anthropic-wrapper", "hackathon", "student-projects", "rapid-prototyping", "ai-hackathon", "startup-toolkit", "mvp-development", "budget-friendly", "educational-ai", "learning-ai", "beginner-friendly", "quick-start", "zero-setup", "plug-and-play", "llama", "llama3", "mistral", "phi", "phi3", "qwen", "gemma", "gpt-oss", "openai-open-source", "open-source-llm", "local-llm", "free-llm", "cli", "command-line", "cli-tool", "terminal", "bash", "shell", "command-line-interface", "developer-tools", "devops", "devops-tools", "linux", "unix", "macos", "windows", "cross-platform", "system-administration", "sysadmin", "automation", "scripting", "workflow", "code-review", "code-analysis", "static-analysis", "debugging", "error-analysis", "troubleshooting", "log-analysis", "production-debugging", "ai-code-review", "ai-debugging", "ai-assistant", "developer-assistant", "programming-assistant", "code-assistant", "terminal-ai", "cli-ai", "shell-integration", "git-integration", "ci-cd", "continuous-integration", "pipeline", "jenkins", "github-actions", "gitlab-ci", "professional", "enterprise-cli", "production-ready", "mcp-alternative", "mcp-client", "claude-desktop-alternative", "ai-platform", "content-writing", "content-creation", "copywriting", "content-marketing", "data-analysis", "business-intelligence", "research-assistant", "customer-support", "education", "academic", "tutoring", "writing-assistant", "text-generation", "creative-writing", "technical-writing", "documentation", "report-generation", "analysis", "summarization", "translation", "multi-purpose", "versatile", "flexible", "general-purpose", "productivity", "workflow-automation", "business-automation", "marketing", "sales", "consulting", "freelancer", "agency", "startup", "enterprise", "small-business", "remote-work", "digital-transformation"]
+keywords = [
+    "llm",
+    "ai", 
+    "openai",
+    "anthropic",
+    "claude",
+    "gemini",
+    "watsonx",
+    "ibm-watsonx",
+    "ollama",
+    "groq",
+    "gpt-4",
+    "granite",
+    "llama",
+    "mistral",
+    "llm-api",
+    "langchain-alternative",
+    "litellm-alternative",
+    "multi-llm",
+    "cli",
+    "ai-cli",
+    "terminal-ai",
+    "ai-chat",
+    "ai-assistant",
+    "cost-optimization",
+    "response-caching",
+    "code-review",
+    "ai-code-review",
+    "debugging",
+    "ai-debugging",
+    "log-analysis",
+    "ai-logs",
+    "token-tracking",
+    "usage-analytics",
+    "cost-analytics",
+    "developer-tools",
+    "hackathon",
+    "llm-gateway",
+    "enterprise-ai"
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -34,7 +73,7 @@ classifiers = [
     "Topic :: System :: Distributed Computing",
     "Framework :: AsyncIO",
     "Operating System :: OS Independent",
-    "Environment :: Web Environment",
+    "Environment :: Console",
     "Typing :: Typed",
 ]
 dependencies = [

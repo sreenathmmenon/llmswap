@@ -6,13 +6,17 @@ Usage:
     llmswap ask "What is Python?"
     llmswap chat
     llmswap logs --analyze /var/log/app.log --since "2h ago"
-    llmswap review myfile.py --focus security
+    llmswap review myfile.py --focus security  
     llmswap debug --error "IndexError: list index out of range"
+    llmswap compare --input-tokens 500 --output-tokens 300
+    llmswap usage --days 7
+    llmswap costs
 """
 
 import sys
 import argparse
 import subprocess
+import json
 from pathlib import Path
 from .client import LLMClient
 from .exceptions import LLMSwapError
@@ -449,11 +453,147 @@ Be practical and specific in your recommendations.
         print(f"Error: {e}")
         return 1
 
+def cmd_compare(args):
+    """Handle 'llmswap compare' command - Provider cost comparison"""
+    try:
+        from .metrics import CostEstimator
+        estimator = CostEstimator()
+        
+        comparison = estimator.compare_provider_costs(
+            input_tokens=args.input_tokens,
+            output_tokens=args.output_tokens
+        )
+        
+        if args.format == 'json':
+            print(json.dumps(comparison, indent=2))
+        elif args.format == 'csv':
+            print("provider,model,total_cost,input_cost,output_cost,confidence")
+            for provider, data in comparison['comparison'].items():
+                print(f"{provider},{data.get('model','')},{data['total_cost']},{data.get('input_cost',0)},{data.get('output_cost',0)},{data.get('confidence','')}")
+        else:  # table format (default)
+            print(f"💰 Provider Cost Comparison ({args.input_tokens} input + {args.output_tokens} output tokens)")
+            print("=" * 80)
+            print(f"{'Provider':<12} {'Model':<20} {'Total Cost':<12} {'Savings':<12} {'Confidence'}")
+            print("-" * 80)
+            
+            # Sort by cost for better comparison
+            providers = [(k, v) for k, v in comparison['comparison'].items()]
+            providers.sort(key=lambda x: x[1]['total_cost'])
+            
+            max_cost = comparison['most_expensive_cost']
+            for provider, data in providers:
+                savings = ((max_cost - data['total_cost']) / max_cost * 100) if max_cost > 0 else 0
+                savings_str = f"{savings:.1f}%" if savings > 0 else "-"
+                cost_str = f"${data['total_cost']:.6f}"
+                
+                print(f"{provider:<12} {data.get('model','')[:19]:<20} {cost_str:<12} {savings_str:<12} {data.get('confidence','')}")
+            
+            print("-" * 80)
+            print(f"🏆 Cheapest: {comparison['cheapest']} (${comparison['cheapest_cost']:.6f})")
+            print(f"💸 Most Expensive: {comparison['most_expensive']} (${comparison['most_expensive_cost']:.6f})")
+            print(f"💡 Max Savings: {comparison['max_savings_percentage']:.1f}%")
+            
+    except ImportError:
+        print("Error: Analytics features not available. Please check installation.")
+        return 1
+    except Exception as e:
+        print(f"Error: {e}")
+        return 1
+
+def cmd_usage(args):
+    """Handle 'llmswap usage' command - Usage statistics"""
+    try:
+        client = LLMClient(analytics_enabled=True)
+        stats = client.get_usage_stats()
+        
+        if not stats:
+            print("No usage data available. Make some queries with analytics enabled first.")
+            return 1
+            
+        if args.format == 'json':
+            print(json.dumps(stats, indent=2))
+        elif args.format == 'csv':
+            print("date,queries,tokens,cost,provider")
+            for day in stats['daily_breakdown']:
+                for provider, data in day['provider_breakdown'].items():
+                    print(f"{day['date']},{data['queries']},{data['tokens']},{data['cost']},{provider}")
+        else:  # table format (default)
+            print("📊 Usage Statistics")
+            print("=" * 60)
+            print(f"Period: {stats['period']['days']} days ({stats['period']['start_date']} to {stats['period']['end_date']})")
+            print()
+            
+            # Totals
+            totals = stats['totals']
+            print("📈 Summary:")
+            print(f"  Total Queries: {totals['queries']}")
+            print(f"  Total Tokens:  {totals['tokens']:,}")
+            print(f"  Total Cost:    ${totals['cost']:.4f}")
+            print(f"  Avg per Query: ${totals['avg_cost_per_query']:.4f}")
+            print()
+            
+            # Provider breakdown
+            if stats['provider_breakdown']:
+                print("🏢 By Provider:")
+                print(f"{'Provider':<12} {'Queries':<8} {'Tokens':<10} {'Cost':<10} {'Avg Response'}")
+                print("-" * 55)
+                for provider in stats['provider_breakdown']:
+                    tokens_str = f"{provider['tokens']:,}" if provider['tokens'] else "0"
+                    cost_str = f"${provider['cost']:.4f}"
+                    response_str = f"{provider['avg_response_time_ms']:.0f}ms"
+                    print(f"{provider['provider']:<12} {provider['queries']:<8} {tokens_str:<10} {cost_str:<10} {response_str}")
+                    
+    except Exception as e:
+        print(f"Error: {e}")
+        return 1
+
+def cmd_costs(args):
+    """Handle 'llmswap costs' command - Cost analysis and optimization"""
+    try:
+        client = LLMClient(analytics_enabled=True)
+        analysis = client.get_cost_breakdown()
+        
+        if not analysis:
+            print("No cost data available. Make some queries with analytics enabled first.")
+            return 1
+            
+        if args.format == 'json':
+            print(json.dumps(analysis, indent=2))
+        else:  # table format (default)
+            print("💡 Cost Analysis & Optimization")
+            print("=" * 50)
+            
+            # Current spend
+            spend = analysis.get('current_spend', {})
+            print(f"📊 Current Spend: ${spend.get('monthly_total', 0):.2f}/month")
+            print(f"🏆 Cheapest Provider: {spend.get('cheapest_provider', 'N/A')}")
+            print(f"💸 Most Expensive: {spend.get('most_expensive_provider', 'N/A')}")
+            print()
+            
+            # Optimization opportunities
+            opt = analysis.get('optimization_opportunities', {})
+            print("💰 Optimization Opportunities:")
+            print(f"  Provider Savings:    ${opt.get('potential_provider_savings', 0):.2f}")
+            print(f"  Cache Savings Est:   ${opt.get('cache_savings_estimate', 0):.2f}")
+            print(f"  Cache Hit Rate:      {opt.get('overall_cache_hit_rate', 0)*100:.1f}%")
+            print()
+            
+            # Recommendations
+            recommendations = analysis.get('recommendations', [])
+            if recommendations:
+                print("🎯 Recommendations:")
+                for i, rec in enumerate(recommendations, 1):
+                    print(f"  {i}. {rec}")
+                    
+    except Exception as e:
+        print(f"Error: {e}")
+        return 1
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
         prog='llmswap',
-        description='Universal LLM CLI for developers',
+        description='Universal LLM CLI for developers with cost analytics',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -462,6 +602,15 @@ Examples:
   llmswap review app.py --focus security
   llmswap debug --error "IndexError: list index out of range"
   llmswap logs --analyze /var/log/app.log --since "2h ago"
+  
+  # Cost comparison examples
+  llmswap compare --input-tokens 100 --output-tokens 50      # Simple Q&A
+  llmswap compare --input-tokens 1000 --output-tokens 300    # Code review
+  llmswap compare --input-tokens 3000 --output-tokens 800    # Document analysis
+  llmswap compare --input-tokens 500 --output-tokens 2000    # Creative writing
+  
+  llmswap usage --days 7 --format table
+  llmswap costs
         """
     )
     
@@ -531,6 +680,29 @@ Examples:
     logs_parser.add_argument('--max-lines', type=int, default=10000, 
                            help='Maximum log lines to analyze (default: 10000)')
     
+    # Analytics commands - new v4.0.0 features
+    
+    # compare command - Provider cost comparison
+    compare_parser = subparsers.add_parser('compare', help='Compare provider costs')
+    compare_parser.add_argument('--input-tokens', type=int, default=500,
+                               help='Input tokens: Simple Q&A=100, Code review=1000, Document analysis=3000')
+    compare_parser.add_argument('--output-tokens', type=int, default=300, 
+                               help='Output tokens: Brief answer=50, Explanation=300, Detailed analysis=800')
+    compare_parser.add_argument('--format', choices=['table', 'json', 'csv'],
+                               default='table', help='Output format')
+    
+    # usage command - Usage statistics  
+    usage_parser = subparsers.add_parser('usage', help='Show usage statistics')
+    usage_parser.add_argument('--format', choices=['table', 'json', 'csv'],
+                             default='table', help='Output format')
+    usage_parser.add_argument('--days', type=int, default=30,
+                             help='Number of days to analyze (default: 30)')
+    
+    # costs command - Cost analysis and optimization
+    costs_parser = subparsers.add_parser('costs', help='Analyze costs and get optimization suggestions')  
+    costs_parser.add_argument('--format', choices=['table', 'json'],
+                             default='table', help='Output format')
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -544,6 +716,9 @@ Examples:
         'review': cmd_review,
         'debug': cmd_debug,
         'logs': cmd_logs,
+        'compare': cmd_compare,
+        'usage': cmd_usage,
+        'costs': cmd_costs,
     }
     
     return commands[args.command](args)

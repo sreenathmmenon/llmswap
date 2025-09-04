@@ -58,6 +58,10 @@ class AnthropicProvider(BaseProvider):
                 provider="anthropic",
                 model=self.model,
                 latency=latency,
+                usage={
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
+                },
                 metadata={
                     "input_tokens": response.usage.input_tokens,
                     "output_tokens": response.usage.output_tokens,
@@ -87,6 +91,10 @@ class AnthropicProvider(BaseProvider):
                 provider="anthropic",
                 model=self.model,
                 latency=latency,
+                usage={
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
+                },
                 metadata={
                     "input_tokens": response.usage.input_tokens,
                     "output_tokens": response.usage.output_tokens,
@@ -127,6 +135,10 @@ class OpenAIProvider(BaseProvider):
                 provider="openai", 
                 model=self.model,
                 latency=latency,
+                usage={
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                },
                 metadata={
                     "prompt_tokens": response.usage.prompt_tokens,
                     "completion_tokens": response.usage.completion_tokens,
@@ -154,6 +166,10 @@ class OpenAIProvider(BaseProvider):
                 provider="openai", 
                 model=self.model,
                 latency=latency,
+                usage={
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                },
                 metadata={
                     "prompt_tokens": response.usage.prompt_tokens,
                     "completion_tokens": response.usage.completion_tokens,
@@ -190,14 +206,30 @@ class GeminiProvider(BaseProvider):
             latency = time.time() - start_time
             content = response.text
             
+            # Extract usage data if available (Gemini provides usage_metadata)
+            usage_data = {}
+            if hasattr(response, 'usage_metadata'):
+                usage_data = {
+                    "prompt_token_count": getattr(response.usage_metadata, 'prompt_token_count', None),
+                    "candidates_token_count": getattr(response.usage_metadata, 'candidates_token_count', None),
+                    "total_token_count": getattr(response.usage_metadata, 'total_token_count', None),
+                }
+                # Map to standard field names for analytics
+                if usage_data.get("prompt_token_count"):
+                    usage_data["input_tokens"] = usage_data["prompt_token_count"]
+                if usage_data.get("candidates_token_count"):
+                    usage_data["output_tokens"] = usage_data["candidates_token_count"]
+            
             return LLMResponse(
                 content=content,
                 provider="gemini",
                 model=self.model,
                 latency=latency,
+                usage=usage_data if usage_data else None,
                 metadata={
                     "safety_ratings": getattr(response, 'safety_ratings', None),
                     "finish_reason": getattr(response, 'finish_reason', None),
+                    "usage_metadata": usage_data,
                 }
             )
         except Exception as e:
@@ -223,14 +255,30 @@ class GeminiProvider(BaseProvider):
             latency = time.time() - start_time
             content = response.text
             
+            # Extract usage data if available (Gemini provides usage_metadata)
+            usage_data = {}
+            if hasattr(response, 'usage_metadata'):
+                usage_data = {
+                    "prompt_token_count": getattr(response.usage_metadata, 'prompt_token_count', None),
+                    "candidates_token_count": getattr(response.usage_metadata, 'candidates_token_count', None),
+                    "total_token_count": getattr(response.usage_metadata, 'total_token_count', None),
+                }
+                # Map to standard field names for analytics
+                if usage_data.get("prompt_token_count"):
+                    usage_data["input_tokens"] = usage_data["prompt_token_count"]
+                if usage_data.get("candidates_token_count"):
+                    usage_data["output_tokens"] = usage_data["candidates_token_count"]
+            
             return LLMResponse(
                 content=content,
                 provider="gemini",
                 model=self.model,
                 latency=latency,
+                usage=usage_data if usage_data else None,
                 metadata={
                     "safety_ratings": getattr(response, 'safety_ratings', None),
                     "finish_reason": getattr(response, 'finish_reason', None),
+                    "usage_metadata": usage_data,
                 }
             )
         except Exception as e:
@@ -277,14 +325,25 @@ class OllamaProvider(BaseProvider):
             latency = time.time() - start_time
             content = result.get('response', 'No response generated')
             
+            # Extract usage data if available (Ollama provides token counts in response)
+            usage_data = {}
+            if "prompt_eval_count" in result or "eval_count" in result:
+                usage_data = {
+                    "input_tokens": result.get("prompt_eval_count"),
+                    "output_tokens": result.get("eval_count"),
+                }
+                
             return LLMResponse(
                 content=content,
                 provider="ollama",
                 model=self.model,
                 latency=latency,
+                usage=usage_data if usage_data else None,
                 metadata={
                     "total_duration": result.get("total_duration"),
                     "load_duration": result.get("load_duration"),
+                    "prompt_eval_count": result.get("prompt_eval_count"),
+                    "eval_count": result.get("eval_count"),
                 }
             )
         except Exception as e:
@@ -316,14 +375,25 @@ class OllamaProvider(BaseProvider):
             latency = time.time() - start_time
             content = result.get('message', {}).get('content', 'No response generated')
             
+            # Extract usage data if available (Ollama provides token counts in response)
+            usage_data = {}
+            if "prompt_eval_count" in result or "eval_count" in result:
+                usage_data = {
+                    "input_tokens": result.get("prompt_eval_count"),
+                    "output_tokens": result.get("eval_count"),
+                }
+                
             return LLMResponse(
                 content=content,
                 provider="ollama",
                 model=self.model,
                 latency=latency,
+                usage=usage_data if usage_data else None,
                 metadata={
                     "total_duration": result.get("total_duration"),
                     "load_duration": result.get("load_duration"),
+                    "prompt_eval_count": result.get("prompt_eval_count"),
+                    "eval_count": result.get("eval_count"),
                 }
             )
         except Exception as e:
@@ -389,14 +459,26 @@ class WatsonxProvider(BaseProvider):
             
             latency = time.time() - start_time
             
+            # Extract usage data if available (watsonx provides token counts)
+            usage_data = {}
+            if hasattr(results, 'results') and results.results:
+                result_data = results.results[0]
+                if hasattr(result_data, 'input_token_count') or hasattr(result_data, 'generated_token_count'):
+                    usage_data = {
+                        "input_tokens": getattr(result_data, 'input_token_count', None),
+                        "output_tokens": getattr(result_data, 'generated_token_count', None),
+                    }
+
             return LLMResponse(
                 content=response_text,
                 provider="watsonx",
                 model=self.model,
                 latency=latency,
+                usage=usage_data if usage_data else None,
                 metadata={
                     "project_id": self.project_id,
-                    "url": self.url
+                    "url": self.url,
+                    "usage_details": usage_data,
                 }
             )
         except Exception as e:
@@ -441,14 +523,26 @@ class WatsonxProvider(BaseProvider):
             
             latency = time.time() - start_time
             
+            # Extract usage data if available (watsonx provides token counts)
+            usage_data = {}
+            if hasattr(results, 'results') and results.results:
+                result_data = results.results[0]
+                if hasattr(result_data, 'input_token_count') or hasattr(result_data, 'generated_token_count'):
+                    usage_data = {
+                        "input_tokens": getattr(result_data, 'input_token_count', None),
+                        "output_tokens": getattr(result_data, 'generated_token_count', None),
+                    }
+
             return LLMResponse(
                 content=response_text,
                 provider="watsonx",
                 model=self.model,
                 latency=latency,
+                usage=usage_data if usage_data else None,
                 metadata={
                     "project_id": self.project_id,
-                    "url": self.url
+                    "url": self.url,
+                    "usage_details": usage_data,
                 }
             )
         except Exception as e:

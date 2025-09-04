@@ -1,6 +1,7 @@
 """Main LLMClient class for llmswap."""
 
 import os
+import time
 from typing import Optional, List, Dict, Any
 
 from .providers import AnthropicProvider, OpenAIProvider, GeminiProvider, OllamaProvider, WatsonxProvider
@@ -19,7 +20,8 @@ class LLMClient:
                  fallback: bool = True,
                  cache_enabled: bool = False,
                  cache_ttl: int = 3600,
-                 cache_max_size_mb: int = 100):
+                 cache_max_size_mb: int = 100,
+                 analytics_enabled: bool = False):
         """Initialize LLM client.
         
         Args:
@@ -30,6 +32,7 @@ class LLMClient:
             cache_enabled: Enable response caching (default: False for security)
             cache_ttl: Default cache time-to-live in seconds (default: 3600)
             cache_max_size_mb: Maximum cache size in megabytes (default: 100)
+            analytics_enabled: Enable privacy-first usage analytics (default: False)
         """
         self.fallback_enabled = fallback
         self.current_provider = None
@@ -39,6 +42,22 @@ class LLMClient:
         
         # Initialize cache if enabled
         self._cache = InMemoryCache(cache_max_size_mb, cache_ttl) if cache_enabled else None
+        
+        # Initialize analytics if enabled (NEW - optional feature)
+        self._analytics_enabled = analytics_enabled
+        self._usage_tracker = None
+        self._cost_estimator = None
+        
+        if analytics_enabled:
+            try:
+                from .analytics.usage_tracker import UsageTracker
+                from .metrics.cost_estimator import CostEstimator
+                
+                self._usage_tracker = UsageTracker()
+                self._cost_estimator = CostEstimator()
+            except ImportError:
+                # Analytics modules not available - continue without them
+                self._analytics_enabled = False
         
         # Conversation history for chat mode
         self._conversation_history = []
@@ -90,7 +109,8 @@ class LLMClient:
               prompt: str,
               cache_context: Optional[Dict[str, Any]] = None,
               cache_ttl: Optional[int] = None,
-              cache_bypass: bool = False) -> LLMResponse:
+              cache_bypass: bool = False,
+              use_local_knowledge: bool = False) -> LLMResponse:
         """Send query to current provider with optional fallback and caching.
         
         Args:
@@ -98,6 +118,7 @@ class LLMClient:
             cache_context: Optional context dict (e.g., {"user_id": "123"}) for cache key
             cache_ttl: Override default cache TTL in seconds
             cache_bypass: Skip cache lookup and force fresh response
+            use_local_knowledge: Use local knowledge base for context (future feature)
             
         Returns:
             LLMResponse with content, metadata, and usage info
@@ -105,12 +126,21 @@ class LLMClient:
         if not self.current_provider:
             raise ConfigurationError("No provider initialized")
         
+        # Start timing for analytics (if enabled)
+        start_time = time.time()
+        cache_hit = False
+        fallback_used = False
+        retry_count = 0
+        
+        # Pre-query setup (removed estimation features)
+        
         # Check cache if enabled and not bypassed
         if self._cache and not cache_bypass:
             cache_key = InMemoryCache.create_cache_key(prompt, cache_context)
             cached_data = self._cache.get(cache_key)
             
             if cached_data:
+                cache_hit = True
                 # Reconstruct response from cached data
                 response = LLMResponse(
                     content=cached_data["content"],
@@ -121,6 +151,13 @@ class LLMClient:
                 )
                 # Mark as from cache
                 response.from_cache = True
+                
+                # Record analytics for cached response (if enabled)
+                self._record_analytics(
+                    response, start_time, cache_hit, fallback_used, 
+                    retry_count, success=True
+                )
+                
                 return response
         
         try:
@@ -138,18 +175,31 @@ class LLMClient:
                 }
                 self._cache.set(cache_key, cache_data, cache_ttl)
             
+            # Record analytics for successful response (if enabled)
+            self._record_analytics(
+                response, start_time, cache_hit, fallback_used, 
+                retry_count, success=True
+            )
+            
             return response
             
         except Exception as e:
             if not self.fallback_enabled:
+                # Record analytics for failed response (if enabled)
+                self._record_analytics(
+                    None, start_time, cache_hit, fallback_used, 
+                    retry_count, success=False, error=e
+                )
                 raise
             
             # Try fallback providers
+            fallback_used = True
             current_provider_name = self.get_current_provider()
             for provider_name in self.provider_order:
                 if provider_name == current_provider_name:
                     continue  # Skip current provider
                 
+                retry_count += 1
                 try:
                     provider = self._initialize_provider(provider_name)
                     if provider.is_available():
@@ -169,12 +219,83 @@ class LLMClient:
                         
                         # Switch to working provider for future queries
                         self.current_provider = provider
+                        
+                        # Record analytics for successful fallback (if enabled)
+                        self._record_analytics(
+                            response, start_time, cache_hit, fallback_used, 
+                            retry_count, success=True
+                        )
+                        
                         return response
                 except:
                     continue
             
+            # All providers failed - record analytics
+            self._record_analytics(
+                None, start_time, cache_hit, fallback_used, 
+                retry_count, success=False, error=e
+            )
+            
             # All providers failed
             raise AllProvidersFailedError(f"All providers failed. Last error: {str(e)}")
+    
+    def _record_analytics(self, response: Optional[LLMResponse], start_time: float,
+                         cache_hit: bool, fallback_used: bool, retry_count: int,
+                         success: bool, error: Optional[Exception] = None):
+        """Record analytics data (privacy-first - no query content stored)."""
+        if not self._analytics_enabled or not self._usage_tracker:
+            return
+        
+        try:
+            response_time_ms = int((time.time() - start_time) * 1000)
+            
+            # Extract token counts and costs from response
+            input_tokens = None
+            output_tokens = None
+            actual_cost = None
+            
+            if response and response.usage:
+                input_tokens = response.usage.get("input_tokens") or response.usage.get("prompt_tokens")
+                output_tokens = response.usage.get("output_tokens") or response.usage.get("completion_tokens")
+                
+                # Calculate actual cost if we have token counts
+                if input_tokens and output_tokens and self._cost_estimator:
+                    cost_info = self._cost_estimator.estimate_cost(
+                        input_tokens, output_tokens, 
+                        response.provider, response.model
+                    )
+                    actual_cost = cost_info.get("total_cost")
+            
+            # Determine error category (general category only, no sensitive details)
+            error_category = None
+            if error:
+                error_type = type(error).__name__
+                if "Connection" in error_type or "Timeout" in error_type:
+                    error_category = "connection"
+                elif "Auth" in error_type or "Permission" in error_type:
+                    error_category = "authentication"
+                elif "Rate" in error_type or "Quota" in error_type:
+                    error_category = "rate_limit"
+                else:
+                    error_category = "other"
+            
+            # Record the usage (NO query content stored)
+            self._usage_tracker.record_usage(
+                provider=response.provider if response else self.get_current_provider(),
+                model=response.model if response else getattr(self.current_provider, 'model', None),
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                actual_cost=actual_cost,
+                response_time_ms=response_time_ms,
+                cache_hit=cache_hit,
+                fallback_used=fallback_used,
+                retry_count=retry_count,
+                success=success,
+                error_category=error_category
+            )
+        except Exception as e:
+            # Never let analytics break the main functionality
+            pass
     
     def set_provider(self, provider: str, model: Optional[str] = None, api_key: Optional[str] = None):
         """Switch to different provider.
@@ -304,3 +425,104 @@ class LLMClient:
         self.add_to_conversation(message, response.content)
         
         return response
+    
+    def get_usage_stats(self) -> Optional[Dict[str, Any]]:
+        """
+        Get usage analytics and statistics.
+        
+        Returns:
+            Dict with usage stats or None if analytics disabled
+        """
+        if not self._analytics_enabled or not self._usage_tracker:
+            return None
+        
+        try:
+            return self._usage_tracker.get_usage_stats()
+        except Exception:
+            return None
+    
+    def get_cost_breakdown(self, days: int = 7) -> Optional[Dict[str, Any]]:
+        """
+        Get cost breakdown for recent usage.
+        
+        Args:
+            days: Number of days to analyze
+            
+        Returns:
+            Dict with cost analysis or None if analytics disabled
+        """
+        if not self._analytics_enabled or not self._usage_tracker:
+            return None
+        
+        try:
+            result = self._usage_tracker.get_cost_analysis()
+            if isinstance(result, dict) and "error" in result:
+                return result  # Return the error dict instead of None
+            return result
+        except Exception:
+            return None
+    
+    def get_provider_comparison(self, input_tokens: int = 1000, 
+                              output_tokens: int = 500) -> Optional[Dict[str, Any]]:
+        """
+        Compare costs across providers for sample token counts.
+        
+        Args:
+            input_tokens: Sample input tokens for comparison
+            output_tokens: Sample output tokens for comparison
+            
+        Returns:
+            Dict with provider comparison or None if analytics disabled
+        """
+        if not self._analytics_enabled or not self._cost_estimator:
+            return None
+        
+        try:
+            return self._cost_estimator.compare_provider_costs(input_tokens, output_tokens)
+        except Exception:
+            return None
+    
+    
+    def get_pricing_trends(self, provider: str = None) -> Optional[Dict[str, Any]]:
+        """
+        Get pricing trends for current or specified provider.
+        
+        Args:
+            provider: Provider to analyze (defaults to current)
+            
+        Returns:
+            Dict with trend analysis or None if analytics disabled
+        """
+        if not self._analytics_enabled:
+            return None
+        
+        try:
+            from .analytics.price_manager import PriceManager
+            price_manager = PriceManager()
+            
+            target_provider = provider or self.get_current_provider()
+            target_model = self.get_current_model()
+            
+            return price_manager.analyze_price_trends(target_provider, target_model)
+        except Exception:
+            return None
+    
+    def export_analytics(self, output_file: str, format: str = "json", days: int = 30):
+        """
+        Export analytics data for external analysis.
+        
+        Args:
+            output_file: Path to output file
+            format: Export format ("json" or "csv")
+            days: Number of days to include
+            
+        Returns:
+            Success message or None if analytics disabled
+        """
+        if not self._analytics_enabled or not self._usage_tracker:
+            return None
+        
+        try:
+            return self._usage_tracker.export_data(output_file, format, days)
+        except Exception:
+            return None
