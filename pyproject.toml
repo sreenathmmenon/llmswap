@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "4.0.1"
+version = "4.0.2"
 description = "Universal LLM SDK: OpenAI GPT-4, Claude, Gemini, Ollama, IBM watsonx. 5 CLI tools. 50-90% cost savings. Simpler than LangChain."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -23,6 +23,8 @@ keywords = [
     "ibm-watsonx",
     "ollama",
     "groq",
+    "groq-inference",
+    "fast-inference",
     "gpt-4",
     "granite",
     "llama",
@@ -31,6 +33,8 @@ keywords = [
     "langchain-alternative",
     "litellm-alternative",
     "multi-llm",
+    "llm-switching",
+    "provider-fallback",
     "cli",
     "ai-cli",
     "terminal-ai",
@@ -86,6 +90,7 @@ dependencies = [
     "httpx>=0.24.0",
     "aiohttp>=3.8.0",
     "aiofiles>=23.0.0",
+    "groq>=0.4.0",
 ]
 
 [project.optional-dependencies]

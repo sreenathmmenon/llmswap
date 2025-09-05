@@ -407,6 +407,85 @@ class OllamaProvider(BaseProvider):
             return False
 
 
+class GroqProvider(BaseProvider):
+    """Provider for Groq high-performance inference models."""
+    
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        super().__init__(api_key or os.getenv("GROQ_API_KEY"), model or "llama-3.1-8b-instant")
+        if not self.api_key:
+            raise ConfigurationError("GROQ_API_KEY not found in environment variables")
+        
+        try:
+            from groq import Groq
+            self.client = Groq(api_key=self.api_key)
+        except ImportError:
+            raise ConfigurationError("groq package not installed. Run: pip install groq")
+    
+    def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+            
+            return LLMResponse(
+                content=content,
+                provider="groq",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("groq", str(e))
+    
+    def is_available(self) -> bool:
+        return self.api_key is not None
+    
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+            
+            return LLMResponse(
+                content=content,
+                provider="groq",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("groq", str(e))
+
+
 class WatsonxProvider(BaseProvider):
     """Provider for IBM watsonx models."""
     

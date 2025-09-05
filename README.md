@@ -5,7 +5,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**One SDK for All LLMs**: OpenAI GPT-4, Anthropic Claude, Google Gemini, IBM watsonx, Ollama (100+ local models), Groq - switch with one line.
+**One SDK for All LLMs**: OpenAI GPT-4, Anthropic Claude, Google Gemini, IBM watsonx, Ollama (100+ local models), Groq (ultra-fast inference) - switch with one line.
 
 **Save 50-90% on Costs**: Intelligent caching, provider comparison, usage analytics. Simpler than LangChain, more unified than LiteLLM.
 
@@ -65,7 +65,7 @@ client = LLMClient(provider="openai")     # GPT-4, GPT-3.5
 client = LLMClient(provider="gemini")     # Google Gemini Pro/Flash
 client = LLMClient(provider="watsonx")    # IBM watsonx.ai Granite
 client = LLMClient(provider="ollama")     # Llama, Mistral, Phi, 100+ local
-client = LLMClient(provider="groq")       # Groq Cloud (coming soon)
+client = LLMClient(provider="groq")       # Groq ultra-fast inference
 
 # Automatic failover
 client = LLMClient(fallback=True)
@@ -277,6 +277,7 @@ export OPENAI_API_KEY="sk-..."          # For GPT-4
 export GEMINI_API_KEY="..."             # For Google Gemini
 export WATSONX_API_KEY="..."            # For IBM watsonx
 export WATSONX_PROJECT_ID="..."         # watsonx project
+export GROQ_API_KEY="gsk_..."           # For Groq ultra-fast inference
 # Or run Ollama locally for 100% free usage
 ```
 

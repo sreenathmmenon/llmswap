@@ -4,7 +4,7 @@ import os
 import time
 from typing import Optional, List, Dict, Any
 
-from .providers import AnthropicProvider, OpenAIProvider, GeminiProvider, OllamaProvider, WatsonxProvider
+from .providers import AnthropicProvider, OpenAIProvider, GeminiProvider, OllamaProvider, WatsonxProvider, GroqProvider
 from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
 from .cache import InMemoryCache
@@ -25,7 +25,7 @@ class LLMClient:
         """Initialize LLM client.
         
         Args:
-            provider: Provider name ("auto", "anthropic", "openai", "gemini", "watsonx", "ollama")
+            provider: Provider name ("auto", "anthropic", "openai", "gemini", "watsonx", "groq", "ollama")
             model: Model name (optional, uses provider defaults)
             api_key: API key (optional, uses environment variables)
             fallback: Enable fallback to other providers if primary fails
@@ -38,7 +38,7 @@ class LLMClient:
         self.current_provider = None
         
         # Provider priority order for auto-detection and fallback
-        self.provider_order = ["anthropic", "openai", "gemini", "watsonx", "ollama"]
+        self.provider_order = ["anthropic", "openai", "gemini", "watsonx", "groq", "ollama"]
         
         # Initialize cache if enabled
         self._cache = InMemoryCache(cache_max_size_mb, cache_ttl) if cache_enabled else None
@@ -102,6 +102,8 @@ class LLMClient:
             if not project_id:
                 raise ConfigurationError("WATSONX_PROJECT_ID environment variable required")
             return WatsonxProvider(api_key, model, project_id)
+        elif provider_name == "groq":
+            return GroqProvider(api_key, model)
         else:
             raise ConfigurationError(f"Unknown provider: {provider_name}")
     

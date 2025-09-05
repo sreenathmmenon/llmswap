@@ -67,6 +67,11 @@ class CostEstimator:
                 "granite-13b": {"input": 0.0002, "output": 0.0002},  # Updated pricing
                 "granite-7b": {"input": 0.0002, "output": 0.0002}   # Updated pricing
             },
+            "groq": {
+                "llama-3.1-8b-instant": {"input": 0.00005, "output": 0.00008},    # $0.05/$0.08 per M
+                "llama-3.3-70b-versatile": {"input": 0.00059, "output": 0.00079}, # $0.59/$0.79 per M  
+                "gpt-oss-20b": {"input": 0.0001, "output": 0.0005}               # $0.10/$0.50 per M
+            },
             "ollama": {
                 "all_models": {"input": 0, "output": 0}
             }
@@ -220,6 +225,7 @@ class CostEstimator:
                 "anthropic": "claude-3-5-sonnet",  # Good balance
                 "gemini": "gemini-1.5-flash",      # Most cost-effective Gemini
                 "watsonx": "granite-13b",          # Use existing model name
+                "groq": "llama-3.1-8b-instant",   # Fast and cost-effective
                 "ollama": "llama3"                 # Free local
             }
         
