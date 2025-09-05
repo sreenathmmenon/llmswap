@@ -300,6 +300,8 @@ export GEMINI_API_KEY="..."             # For Google Gemini
 export WATSONX_API_KEY="..."            # For IBM watsonx
 export WATSONX_PROJECT_ID="..."         # watsonx project
 export GROQ_API_KEY="gsk_..."           # For Groq ultra-fast inference
+export COHERE_API_KEY="co_..."            # For Cohere Command models
+export PERPLEXITY_API_KEY="pplx-..."      # For Perplexity web search
 # Or run Ollama locally for 100% free usage
 ```
 
