@@ -1,5 +1,58 @@
 # Changelog
 
+## [4.0.3] - 2025-09-05
+
+### 🚀 **NEW PROVIDER: Groq Integration**
+
+#### **Ultra-Fast Inference**
+- **Groq Provider**: Complete integration with Groq's high-performance LPU inference
+- **Models Supported**: llama-3.1-8b-instant, llama-3.3-70b-versatile, gpt-oss-20b
+- **Speed**: Up to 840+ tokens/second (5-15x faster than other providers)
+- **Cost-Effective**: Starting at $0.05/$0.08 per million tokens
+
+#### **Enhanced Features**
+- **Provider Priority**: Groq added to auto-detection and fallback chain
+- **Cost Analytics**: Groq pricing integrated into cost comparison tools
+- **CLI Support**: Full compatibility with all existing CLI commands
+- **SDK Integration**: Seamless switching with `LLMClient(provider="groq")`
+
+### 🔧 **Improvements**
+- **SEO Optimization**: Enhanced discoverability with strategic keywords
+- **Documentation**: Updated setup instructions and provider examples
+- **Dependency Management**: Added groq>=0.4.0 for reliable API access
+
+---
+
+## [4.0.0] - 2025-09-04
+
+### 🎉 Major Release: Analytics & Cost Optimization Suite
+
+### ✨ **NEW FEATURES**
+
+#### **Cost Analytics & Optimization**
+- **Provider Cost Comparison**: Compare real-time costs across OpenAI, Claude, Gemini, watsonx, and Ollama
+- **Usage Tracking**: Detailed analytics on queries, tokens, costs, and response times
+- **Cost Optimization**: AI-powered recommendations to reduce API spending by 50-90%
+- **Monthly Cost Estimation**: Budget planning with realistic usage patterns
+
+#### **Enhanced CLI Tools**
+- `llmswap compare --input-tokens X --output-tokens Y` - Compare provider costs
+- `llmswap usage --days N` - View usage statistics and trends
+- `llmswap costs` - Get personalized cost optimization insights
+
+#### **Python SDK Analytics**
+- `client.get_usage_stats()` - Comprehensive usage analytics
+- `client.get_cost_breakdown()` - Detailed cost analysis with optimization suggestions
+- `client.get_provider_comparison()` - Real-time provider cost comparison
+- `client.chat()` - Conversation memory for contextual interactions
+
+#### **New Provider Support**
+- **Enhanced watsonx Integration**: Full IBM watsonx.ai support with Granite models
+- **Expanded Ollama Support**: 100+ local models including Llama, Mistral, Phi, Qwen
+- **Groq Integration**: High-performance inference ✅ COMPLETED in v4.0.3
+
+---
+
 ## [3.0.0] - 2024-08-17 - Major Release: Professional CLI Tool
 
 ### 🚀 Added - Revolutionary CLI Interface
