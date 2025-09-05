@@ -107,7 +107,7 @@ class AnthropicProvider(BaseProvider):
 class OpenAIProvider(BaseProvider):
     """Provider for OpenAI GPT models."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-3.5-turbo"):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini"):
         super().__init__(api_key or os.getenv("OPENAI_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("OPENAI_API_KEY not found in environment variables")
@@ -186,7 +186,7 @@ class OpenAIProvider(BaseProvider):
 class GeminiProvider(BaseProvider):
     """Provider for Google Gemini models."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"):
         super().__init__(api_key or os.getenv("GEMINI_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("GEMINI_API_KEY not found in environment variables")
@@ -484,6 +484,167 @@ class GroqProvider(BaseProvider):
             )
         except Exception as e:
             raise ProviderError("groq", str(e))
+
+
+class CoherProvider(BaseProvider):
+    """Provider for Cohere Command models."""
+    
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        super().__init__(api_key or os.getenv("COHERE_API_KEY"), model or "command-r-plus-08-2024")
+        if not self.api_key:
+            raise ConfigurationError("COHERE_API_KEY not found in environment variables")
+        
+        try:
+            import cohere
+            self.client = cohere.ClientV2(api_key=self.api_key)
+        except ImportError:
+            raise ConfigurationError("cohere package not installed. Run: pip install cohere")
+    
+    def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = self.client.chat(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.message.content[0].text
+            
+            return LLMResponse(
+                content=content,
+                provider="cohere",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.billed_units.input_tokens if response.usage else 0,
+                    "output_tokens": response.usage.billed_units.output_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.billed_units.input_tokens if response.usage else 0,
+                    "output_tokens": response.usage.billed_units.output_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("cohere", str(e))
+    
+    def is_available(self) -> bool:
+        return self.api_key is not None
+    
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            response = self.client.chat(
+                model=self.model,
+                messages=messages,
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.message.content[0].text
+            
+            return LLMResponse(
+                content=content,
+                provider="cohere",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.billed_units.input_tokens if response.usage else 0,
+                    "output_tokens": response.usage.billed_units.output_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.billed_units.input_tokens if response.usage else 0,
+                    "output_tokens": response.usage.billed_units.output_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("cohere", str(e))
+
+
+class PerplexityProvider(BaseProvider):
+    """Provider for Perplexity online models."""
+    
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        super().__init__(api_key or os.getenv("PERPLEXITY_API_KEY"), model or "sonar-pro")
+        if not self.api_key:
+            raise ConfigurationError("PERPLEXITY_API_KEY not found in environment variables")
+        
+        try:
+            import openai
+            self.client = openai.OpenAI(
+                api_key=self.api_key,
+                base_url="https://api.perplexity.ai"
+            )
+        except ImportError:
+            raise ConfigurationError("openai package not installed. Run: pip install openai")
+    
+    def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+            
+            return LLMResponse(
+                content=content,
+                provider="perplexity",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("perplexity", str(e))
+    
+    def is_available(self) -> bool:
+        return self.api_key is not None
+    
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+            
+            return LLMResponse(
+                content=content,
+                provider="perplexity",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("perplexity", str(e))
 
 
 class WatsonxProvider(BaseProvider):

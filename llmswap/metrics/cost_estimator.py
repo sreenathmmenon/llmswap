@@ -46,11 +46,17 @@ class CostEstimator:
             "openai": {
                 "gpt-4": {"input": 0.03, "output": 0.06},
                 "gpt-4-turbo": {"input": 0.01, "output": 0.03},
+                "gpt-4o": {"input": 0.0025, "output": 0.01},
+                "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
+                "o1-preview": {"input": 0.015, "output": 0.06},
+                "o1-mini": {"input": 0.003, "output": 0.012},
                 "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015}
             },
             "anthropic": {
                 "claude-3-opus": {"input": 0.015, "output": 0.075},
                 "claude-3-5-sonnet": {"input": 0.003, "output": 0.015},
+                "claude-3-5-sonnet-20241022": {"input": 0.003, "output": 0.015},
+                "claude-3-5-haiku": {"input": 0.001, "output": 0.005},
                 "claude-3-haiku": {"input": 0.00025, "output": 0.00125}
             },
             "gemini": {
@@ -59,6 +65,7 @@ class CostEstimator:
                 "gemini-1.5-pro-token": {"input": 0.00125, "output": 0.005},  # $1.25/$5.00 per million 
                 "gemini-1.5-flash-token": {"input": 0.00015, "output": 0.0006}, # $0.15/$0.60 per million
                 "gemini-2.0-flash": {"input": 0.0001, "output": 0.0004},      # $0.10/$0.40 per million
+                "gemini-2.0-flash-exp": {"input": 0.0001, "output": 0.0004},  # Experimental model
                 "gemini-2.5-pro": {"input": 0.00125, "output": 0.01}          # $1.25/$10.00 per million
             },
             "watsonx": {
@@ -71,6 +78,18 @@ class CostEstimator:
                 "llama-3.1-8b-instant": {"input": 0.00005, "output": 0.00008},    # $0.05/$0.08 per M
                 "llama-3.3-70b-versatile": {"input": 0.00059, "output": 0.00079}, # $0.59/$0.79 per M  
                 "gpt-oss-20b": {"input": 0.0001, "output": 0.0005}               # $0.10/$0.50 per M
+            },
+            "cohere": {
+                "command-r-03-2024": {"input": 0.0005, "output": 0.0015},        # $0.50/$1.50 per million
+                "command-r-plus-04-2024": {"input": 0.003, "output": 0.015},     # $3.00/$15.00 per million
+                "command-r-plus-08-2024": {"input": 0.0025, "output": 0.01},     # $2.50/$10.00 per million
+                "aya-expanse-8b": {"input": 0.0005, "output": 0.0015},           # $0.50/$1.50 per million
+                "aya-expanse-32b": {"input": 0.0005, "output": 0.0015}           # $0.50/$1.50 per million
+            },
+            "perplexity": {
+                "sonar-pro": {"input": 0.001, "output": 0.003},                  # Estimated $1/$3 per million
+                "pplx-7b-online": {"input": 0.0002, "output": 0.0008},           # Estimated low-end pricing
+                "pplx-70b-online": {"input": 0.001, "output": 0.004}             # Estimated mid-range pricing  
             },
             "ollama": {
                 "all_models": {"input": 0, "output": 0}
@@ -221,9 +240,11 @@ class CostEstimator:
         """
         if models is None:
             models = {
-                "openai": "gpt-4-turbo",           # More cost-effective than gpt-4
-                "anthropic": "claude-3-5-sonnet",  # Good balance
-                "gemini": "gemini-1.5-flash",      # Most cost-effective Gemini
+                "openai": "gpt-4o-mini",           # Latest cost-effective model
+                "anthropic": "claude-3-5-sonnet-20241022",  # Latest version
+                "gemini": "gemini-2.0-flash-exp",  # Latest experimental
+                "cohere": "command-r-plus-08-2024", # Latest Command-R+
+                "perplexity": "sonar-pro",         # Main model
                 "watsonx": "granite-13b",          # Use existing model name
                 "groq": "llama-3.1-8b-instant",   # Fast and cost-effective
                 "ollama": "llama3"                 # Free local

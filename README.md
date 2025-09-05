@@ -5,9 +5,9 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**One SDK for All LLMs**: OpenAI GPT-4, Anthropic Claude, Google Gemini, IBM watsonx, Ollama (100+ local models), Groq (ultra-fast inference) - switch with one line.
+**Universal AI SDK for Developers**: Switch between 7 AI providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq) with cost optimization and enterprise analytics. The infrastructure layer for AI-powered applications.
 
-**Save 50-90% on Costs**: Intelligent caching, provider comparison, usage analytics. Simpler than LangChain, more unified than LiteLLM.
+**Save 50-90% on AI Costs**: Intelligent caching, provider comparison, usage analytics. Import into any Python project or use powerful CLI tools.
 
 ```python
 # Before: Provider lock-in, complex setup
@@ -36,19 +36,39 @@ response = client.query("Explain quantum computing in 50 words")
 print(response.content)
 ```
 
-## 🎯 Why llmswap Over Alternatives?
+## 🎯 Why llmswap for AI Development?
 
 | Feature | llmswap | LangChain | LiteLLM | Direct APIs |
 |---------|---------|-----------|---------|-------------|
-| **Setup complexity** | 3 lines | 20+ lines | 10+ lines | 15+ per provider |
-| **Learning curve** | 5 minutes | 2+ hours | 30 minutes | 30 min per API |
-| **Dependencies** | 5 core | 50+ packages | 20+ packages | 1 per provider |
-| **Package size** | <1MB | 10MB+ | 5MB+ | Varies |
-| **Response caching** | Built-in | Plugin required | Not included | Manual setup |
-| **CLI tools** | 5 included | Separate install | Not included | None |
-| **Cost analytics** | Native v4.0 | External tools | Basic tracking | Manual tracking |
-| **IBM watsonx** | Native support | Via plugin | Limited | Direct only |
-| **Local models (Ollama)** | 100+ models | Complex setup | Basic support | N/A |
+| **AI Providers** | 7 providers, 1 line switch | 50+ complex setup | 20+ basic support | 1 per codebase |
+| **Integration** | `pip install llmswap` | Complex framework | Moderate setup | Per-provider SDKs |
+| **Cost Control** | Built-in optimization | Manual configuration | Basic tracking | No tracking |
+| **Enterprise Analytics** | Native cost/usage tracking | External tools required | Limited insights | Manual logging |
+| **CLI Tools** | 5 powerful commands | Separate packages | None included | None |
+| **Caching** | Intelligent built-in | Manual implementation | Basic support | DIY solution |
+| **Learning Curve** | 5 minutes | Hours of documentation | 30 minutes | Per-API learning |
+| **Self-Hosted** | Full control | Complex deployment | Basic options | Manual setup |
+
+## 🚀 Three Ways to Use llmswap:
+
+**📚 1. Python Library/SDK**
+```python
+from llmswap import LLMClient
+client = LLMClient()  # Import into any codebase
+response = client.query("Analyze this data")
+```
+
+**⚡ 2. CLI Tools**  
+```bash
+llmswap ask "Debug this error"    # Terminal AI assistant
+llmswap costs                     # Cost optimization insights
+```
+
+**📊 3. Enterprise Analytics**
+```python
+stats = client.get_usage_stats()         # Track AI spend
+comparison = client.get_provider_comparison()  # Compare costs
+```
 
 ## 🚀 Complete Feature Set
 
@@ -66,6 +86,8 @@ client = LLMClient(provider="gemini")     # Google Gemini Pro/Flash
 client = LLMClient(provider="watsonx")    # IBM watsonx.ai Granite
 client = LLMClient(provider="ollama")     # Llama, Mistral, Phi, 100+ local
 client = LLMClient(provider="groq")       # Groq ultra-fast inference
+client = LLMClient(provider="cohere")     # Cohere Command models for RAG
+client = LLMClient(provider="perplexity") # Perplexity web-connected AI
 
 # Automatic failover
 client = LLMClient(fallback=True)

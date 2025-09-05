@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "4.0.3"
-description = "Universal LLM SDK: OpenAI GPT-4, Claude, Gemini, Ollama, IBM watsonx. 5 CLI tools. 50-90% cost savings. Simpler than LangChain."
+version = "4.0.4"
+description = "Universal AI SDK for Developers: 7 providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity), cost optimization, enterprise analytics. The infrastructure layer for AI-powered applications."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -25,6 +25,16 @@ keywords = [
     "groq",
     "groq-inference",
     "fast-inference",
+    "github-copilot-alternative",
+    "open-source-copilot",
+    "copilot-alternative",
+    "copilot-replacement",
+    "ai-code-assistant",
+    "developer-ai-tools",
+    "self-hosted-ai",
+    "code-completion-api",
+    "ai-pair-programming",
+    "multi-llm-copilot",
     "gpt-4",
     "granite",
     "llama",
@@ -91,6 +101,7 @@ dependencies = [
     "aiohttp>=3.8.0",
     "aiofiles>=23.0.0",
     "groq>=0.4.0",
+    "cohere>=5.16.0",
 ]
 
 [project.optional-dependencies]

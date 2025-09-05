@@ -1,5 +1,37 @@
 # Changelog
 
+## [4.0.4] - 2025-09-05
+
+### 🚀 **NEW PROVIDERS: Enterprise AI Expansion**
+
+#### **Cohere Integration** 
+- **Enterprise RAG Models**: command-r-03-2024, command-r-plus-08-2024, aya-expanse-8b/32b
+- **Pricing**: Starting at $0.50/$1.50 per million tokens
+- **Use Cases**: Enterprise retrieval-augmented generation, multilingual AI
+
+#### **Perplexity Integration**
+- **Web-Connected AI**: sonar-pro, pplx-7b-online, pplx-70b-online  
+- **Real-time Data**: Up-to-date information with web search capabilities
+- **Pricing**: Estimated $0.2-$4 per million tokens
+
+#### **Enhanced Model Support**
+- **OpenAI**: Added gpt-4o, gpt-4o-mini, o1-preview, o1-mini (reasoning models)
+- **Anthropic**: Updated to claude-3-5-sonnet-20241022, added claude-3-5-haiku
+- **Google**: Added gemini-2.0-flash-exp (experimental cutting-edge)
+
+### 🎯 **Strategic Positioning Update**
+- **Universal AI SDK**: Repositioned as infrastructure layer for AI applications
+- **Enterprise Focus**: 7 providers, cost optimization, usage analytics
+- **Developer Integration**: Library/SDK + CLI tools + enterprise metrics
+
+### 🔧 **Improvements**
+- **Cost Analytics**: Updated pricing for all 7 providers with 20+ models
+- **Provider Defaults**: Optimized to latest cost-effective models
+- **SEO Enhancement**: Strategic keywords for developer discovery
+- **Documentation**: Clear 3-way usage patterns (Library, CLI, Analytics)
+
+---
+
 ## [4.0.3] - 2025-09-05
 
 ### 🚀 **NEW PROVIDER: Groq Integration**
