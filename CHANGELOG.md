@@ -1,5 +1,29 @@
 # Changelog
 
+## [4.0.5] - 2025-01-09
+
+### 🐛 **Critical Fix: Complete Async Support**
+
+#### **Missing Async Provider Implementations Added**
+- **AsyncCoherProvider**: Complete async implementation for Cohere Command models
+- **AsyncPerplexityProvider**: Async web-connected AI with real-time search
+- **AsyncGroqProvider**: Async ultra-fast inference for high-throughput applications
+
+#### **Usage Tracking Consistency**  
+- **Fixed**: All async providers now properly track token usage (`input_tokens`, `output_tokens`)
+- **Standardized**: Both `usage` and `metadata` fields populated consistently across sync/async
+- **Analytics Ready**: Full cost tracking and optimization support in async mode
+
+#### **Provider Integration**
+- **AsyncLLMClient**: Updated with all 7 providers (Anthropic, OpenAI, Gemini, Cohere, Perplexity, watsonx, Groq, Ollama)
+- **Auto-detection**: Async fallback and provider switching now supports all providers
+- **Streaming**: Complete async streaming support for compatible providers
+
+### 📊 **Impact**
+- **Developer Experience**: Full feature parity between sync and async clients
+- **Enterprise Ready**: Complete async support for high-performance applications
+- **Cost Analytics**: Async usage tracking enables complete cost optimization
+
 ## [4.0.4] - 2025-09-05
 
 ### 🚀 **NEW PROVIDERS: Enterprise AI Expansion**

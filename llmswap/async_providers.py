@@ -304,6 +304,174 @@ class AsyncOllamaProvider(AsyncBaseProvider):
             return False
 
 
+class AsyncCoherProvider(AsyncBaseProvider):
+    """Async provider for Cohere Command models."""
+    
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = "command-r-plus-08-2024"
+        
+        if not api_key:
+            api_key = os.getenv("COHERE_API_KEY")
+        
+        if not api_key:
+            raise ConfigurationError("Cohere API key required. Set COHERE_API_KEY environment variable.")
+        
+        super().__init__(api_key, model)
+        
+        try:
+            import cohere
+            self.client = cohere.AsyncClientV2(api_key=self.api_key)
+        except ImportError:
+            raise ConfigurationError("cohere package not installed. Run: pip install cohere")
+    
+    async def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = await self.client.chat(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.message.content[0].text
+            
+            return LLMResponse(
+                content=content,
+                provider="cohere",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.billed_units.input_tokens if response.usage else 0,
+                    "output_tokens": response.usage.billed_units.output_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.billed_units.input_tokens if response.usage else 0,
+                    "output_tokens": response.usage.billed_units.output_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            latency = time.time() - start_time
+            raise ProviderError("cohere", str(e))
+    
+    def is_available(self) -> bool:
+        return self.api_key is not None
+
+
+class AsyncGroqProvider(AsyncBaseProvider):
+    """Async provider for Groq high-performance inference models."""
+    
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = "llama-3.1-8b-instant"
+        
+        if not api_key:
+            api_key = os.getenv("GROQ_API_KEY")
+        
+        if not api_key:
+            raise ConfigurationError("Groq API key required. Set GROQ_API_KEY environment variable.")
+        
+        super().__init__(api_key, model)
+        
+        try:
+            from groq import AsyncGroq
+            self.client = AsyncGroq(api_key=self.api_key)
+        except ImportError:
+            raise ConfigurationError("groq package not installed. Run: pip install groq")
+    
+    async def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+            
+            return LLMResponse(
+                content=content,
+                provider="groq",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            latency = time.time() - start_time
+            raise ProviderError("groq", str(e))
+    
+    def is_available(self) -> bool:
+        return self.api_key is not None
+
+
+class AsyncPerplexityProvider(AsyncBaseProvider):
+    """Async provider for Perplexity online models."""
+    
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = "sonar-pro"
+        
+        if not api_key:
+            api_key = os.getenv("PERPLEXITY_API_KEY")
+        
+        if not api_key:
+            raise ConfigurationError("Perplexity API key required. Set PERPLEXITY_API_KEY environment variable.")
+        
+        super().__init__(api_key, model)
+        
+        try:
+            from openai import AsyncOpenAI
+            self.client = AsyncOpenAI(
+                api_key=self.api_key,
+                base_url="https://api.perplexity.ai"
+            )
+        except ImportError:
+            raise ConfigurationError("openai package not installed. Run: pip install openai")
+    
+    async def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                temperature=0.7
+            )
+            
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+            
+            return LLMResponse(
+                content=content,
+                provider="perplexity",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            latency = time.time() - start_time
+            raise ProviderError("perplexity", str(e))
+    
+    def is_available(self) -> bool:
+        return self.api_key is not None
+
+
 class AsyncWatsonxProvider(AsyncBaseProvider):
     """Async provider for IBM watsonx models."""
     

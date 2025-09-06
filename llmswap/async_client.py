@@ -5,7 +5,7 @@ from typing import Optional, List, AsyncIterator, Dict, Any
 
 from .async_providers import (
     AsyncAnthropicProvider, AsyncOpenAIProvider, AsyncGeminiProvider, 
-    AsyncOllamaProvider, AsyncWatsonxProvider
+    AsyncOllamaProvider, AsyncWatsonxProvider, AsyncGroqProvider, AsyncCoherProvider, AsyncPerplexityProvider
 )
 from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
@@ -29,7 +29,7 @@ class AsyncLLMClient:
         """Initialize async LLM client.
         
         Args:
-            provider: Provider name ("auto", "anthropic", "openai", "gemini", "watsonx", "ollama")
+            provider: Provider name ("auto", "anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama")
             model: Model name (optional, uses provider defaults)
             api_key: API key (optional, uses environment variables)
             fallback: Enable fallback to other providers if primary fails
@@ -49,7 +49,7 @@ class AsyncLLMClient:
         self._cache = InMemoryCache(cache_max_size_mb, cache_ttl) if cache_enabled else None
         
         # Provider priority order for auto-detection and fallback
-        self.provider_order = ["anthropic", "openai", "gemini", "watsonx", "ollama"]
+        self.provider_order = ["anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama"]
         
         if provider == "auto":
             self.current_provider = self._detect_available_provider()
@@ -71,7 +71,10 @@ class AsyncLLMClient:
             "- ANTHROPIC_API_KEY\\n"
             "- OPENAI_API_KEY\\n"
             "- GEMINI_API_KEY\\n"
+            "- COHERE_API_KEY\\n"
+            "- PERPLEXITY_API_KEY\\n"
             "- WATSONX_API_KEY and WATSONX_PROJECT_ID\\n"
+            "- GROQ_API_KEY\\n"
             "Or run Ollama locally"
         )
     
@@ -83,6 +86,12 @@ class AsyncLLMClient:
             return AsyncOpenAIProvider(api_key, model)
         elif provider_name == "gemini":
             return AsyncGeminiProvider(api_key, model)
+        elif provider_name == "cohere":
+            return AsyncCoherProvider(api_key, model)
+        elif provider_name == "perplexity":
+            return AsyncPerplexityProvider(api_key, model)
+        elif provider_name == "groq":
+            return AsyncGroqProvider(api_key, model)
         elif provider_name == "ollama":
             return AsyncOllamaProvider(model or "llama3")
         elif provider_name == "watsonx":

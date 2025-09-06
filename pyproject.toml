@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "4.0.4"
+version = "4.0.5"
 description = "Universal AI SDK for Developers: 7 providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity), cost optimization, enterprise analytics. The infrastructure layer for AI-powered applications."
 readme = "README.md"
 requires-python = ">=3.8"
