@@ -5,6 +5,8 @@ llmswap CLI - Command-line interface for llmswap
 Usage:
     llmswap ask "What is Python?"
     llmswap chat
+    llmswap generate "sort files by size in reverse order"
+    llmswap generate "Python function to read JSON file" --language python
     llmswap logs --analyze /var/log/app.log --since "2h ago"
     llmswap review myfile.py --focus security  
     llmswap debug --error "IndexError: list index out of range"
@@ -547,6 +549,97 @@ def cmd_usage(args):
         print(f"Error: {e}")
         return 1
 
+def cmd_generate(args):
+    """Handle 'llmswap generate' command"""
+    if not args.description:
+        print("Error: Description is required")
+        return 1
+    
+    # Detect project context
+    cwd = Path.cwd()
+    project_context = ""
+    
+    if (cwd / 'package.json').exists():
+        project_context = "Node.js project"
+    elif (cwd / 'requirements.txt').exists() or (cwd / 'setup.py').exists():
+        project_context = "Python project"
+    elif (cwd / 'Cargo.toml').exists():
+        project_context = "Rust project"
+    elif (cwd / 'pom.xml').exists():
+        project_context = "Java project"
+    
+    # Build prompt
+    prompt = f"""Generate a {args.language} command/code for: {args.description}
+    
+    Context: {project_context if project_context else "Generic command line"}
+    
+    Requirements:
+    - Provide ONLY the command/code, no extra explanation
+    - Make it safe and practical
+    - Consider the project context if relevant
+    - If it's a bash command, make sure it's executable
+    """
+    
+    if args.explain:
+        prompt += "\n- After the code, add a brief explanation"
+    
+    try:
+        client = LLMClient(
+            provider=args.provider or "auto",
+            cache_enabled=not args.no_cache
+        )
+        response = client.query(prompt)
+        
+        # Extract code from response (remove markdown if present)
+        content = response.content.strip()
+        
+        # Clean up markdown code blocks
+        import re
+        code_match = re.search(r'```(?:\w+)?\n(.*?)\n```', content, re.DOTALL)
+        if code_match:
+            generated_code = code_match.group(1).strip()
+        else:
+            generated_code = content
+        
+        # Display the generated command/code
+        print(generated_code)
+        
+        # Execute option for bash commands
+        if args.execute and args.language == 'bash':
+            try:
+                confirm = input(f"\nExecute this command? [y/N]: ").lower().strip()
+                if confirm == 'y' or confirm == 'yes':
+                    import subprocess
+                    result = subprocess.run(generated_code, shell=True, capture_output=True, text=True)
+                    if result.stdout:
+                        print("Output:")
+                        print(result.stdout)
+                    if result.stderr:
+                        print("Errors:")
+                        print(result.stderr)
+                    print(f"Exit code: {result.returncode}")
+            except KeyboardInterrupt:
+                print("\nCommand execution cancelled.")
+        
+        # Save option
+        if args.save:
+            save_path = Path(args.save)
+            save_path.write_text(generated_code)
+            print(f"Saved to: {save_path}")
+            
+            # Make executable if it's a bash script
+            if args.language == 'bash' and save_path.suffix == '.sh':
+                import stat
+                save_path.chmod(save_path.stat().st_mode | stat.S_IEXEC)
+                print("Made executable")
+        
+    except LLMSwapError as e:
+        print(f"Error: {e}")
+        return 1
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return 1
+
 def cmd_costs(args):
     """Handle 'llmswap costs' command - Cost analysis and optimization"""
     try:
@@ -698,6 +791,18 @@ Examples:
     usage_parser.add_argument('--days', type=int, default=30,
                              help='Number of days to analyze (default: 30)')
     
+    # generate command - Generate commands/code from description
+    generate_parser = subparsers.add_parser('generate', help='Generate commands or code from natural language')
+    generate_parser.add_argument('description', help='Natural language description of what you want to generate')
+    generate_parser.add_argument('--language', '-l', default='bash', 
+                                help='Target language/type (bash, python, javascript, etc.)')
+    generate_parser.add_argument('--execute', '-x', action='store_true',
+                                help='Ask to execute the generated command (bash only)')
+    generate_parser.add_argument('--explain', action='store_true',
+                                help='Include explanation with the generated code')
+    generate_parser.add_argument('--save', '-s',
+                                help='Save generated code to file')
+    
     # costs command - Cost analysis and optimization
     costs_parser = subparsers.add_parser('costs', help='Analyze costs and get optimization suggestions')  
     costs_parser.add_argument('--format', choices=['table', 'json'],
@@ -718,6 +823,7 @@ Examples:
         'logs': cmd_logs,
         'compare': cmd_compare,
         'usage': cmd_usage,
+        'generate': cmd_generate,
         'costs': cmd_costs,
     }
     
