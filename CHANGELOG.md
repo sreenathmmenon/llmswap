@@ -1,5 +1,32 @@
 # Changelog
 
+## [4.1.0] - 2025-01-09
+
+### 🚀 **New Feature: Natural Language Code Generation**
+
+#### **Generate Command**
+- **llmswap generate**: Transform natural language into executable commands and code
+- **Multi-language support**: bash, python, javascript, and more
+- **Project awareness**: Auto-detects Node.js, Python, Rust, Java project contexts
+- **Safe execution**: Optional command execution with user confirmation
+- **File output**: Save generated code with proper permissions
+
+#### **Usage Examples**
+```bash
+llmswap generate "sort files by size in reverse order"
+# Output: du -sh * | sort -hr
+
+llmswap generate "Python function to read JSON file" --language python
+llmswap generate "find large files" --execute  # Asks before running
+llmswap generate "backup script" --save backup.sh  # Auto-executable
+```
+
+#### **Developer Impact** 
+- **GitHub Copilot CLI alternative**: Works with any AI provider (OpenAI, Claude, Gemini, etc.)
+- **Cross-platform**: Single tool for command generation across all operating systems
+- **No vendor lock-in**: Switch between AI providers instantly
+- **Cost optimization**: Use cheapest provider for code generation
+
 ## [4.0.5] - 2025-01-09
 
 ### 🐛 **Critical Fix: Complete Async Support**
