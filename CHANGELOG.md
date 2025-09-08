@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.1.1] - 2025-01-09
+
+### 📚 **Documentation & SEO Updates**
+
+#### **Enhanced README**
+- **Prominent generate command**: Featured as primary CLI tool and GitHub Copilot alternative
+- **Updated examples**: Show natural language to code generation capabilities
+- **Improved positioning**: "Universal AI SDK + Code Generation CLI" title
+
+#### **SEO Optimization**
+- **Enhanced keywords**: Added code-generation, natural-language-to-code, copilot-cli-alternative
+- **Better discoverability**: Improved search targeting for GitHub Copilot alternatives
+- **IBM Watson keywords**: Added ibm-watson and watson-ai for enterprise search
+
 ## [4.1.0] - 2025-01-09
 
 ### 🚀 **New Feature: Natural Language Code Generation**

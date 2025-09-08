@@ -1,13 +1,22 @@
-# llmswap - Universal LLM Interface: OpenAI, Claude, Gemini, Ollama, IBM watsonx
+# llmswap - Universal AI SDK + Code Generation CLI
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Universal AI SDK for Developers**: Switch between 7 AI providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq) with cost optimization and enterprise analytics. The infrastructure layer for AI-powered applications.
+**Universal AI SDK for Developers**: Switch between 7 AI providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq) with natural language code generation, cost optimization and enterprise analytics.
 
-**Save 50-90% on AI Costs**: Intelligent caching, provider comparison, usage analytics. Import into any Python project or use powerful CLI tools.
+**🆕 GitHub Copilot CLI Alternative**: Generate commands and code from natural language using any AI provider. **Save 50-90% on AI Costs**: Intelligent caching, provider comparison, usage analytics.
+
+```bash
+# 🆕 NEW: GitHub Copilot CLI Alternative
+llmswap generate "sort files by size in reverse order"
+# Output: du -sh * | sort -hr
+
+llmswap generate "Python function to read JSON with error handling" --language python
+# Output: Complete Python function with try/catch blocks
+```
 
 ```python
 # Before: Provider lock-in, complex setup
@@ -60,8 +69,10 @@ response = client.query("Analyze this data")
 
 **⚡ 2. CLI Tools**  
 ```bash
-llmswap ask "Debug this error"    # Terminal AI assistant
-llmswap costs                     # Cost optimization insights
+llmswap generate "sort files by size"           # GitHub Copilot alternative
+llmswap generate "Python function to read JSON" # Multi-language code generation
+llmswap ask "Debug this error"                  # Terminal AI assistant
+llmswap costs                                    # Cost optimization insights
 ```
 
 **📊 3. Enterprise Analytics**
@@ -99,8 +110,13 @@ response1 = client.query("Expensive question")  # $$$ API call
 response2 = client.query("Expensive question")  # FREE from cache
 ```
 
-### 2️⃣ **CLI Suite** - 5 Powerful Terminal Tools
+### 2️⃣ **CLI Suite** - 6 Powerful Terminal Tools
 ```bash
+# 🆕 Generate code from natural language (GitHub Copilot alternative)
+llmswap generate "sort files by size in reverse order"
+llmswap generate "Python function to read JSON file" --language python
+llmswap generate "find large files over 100MB" --execute
+
 # Ask one-line questions
 llmswap ask "How to optimize PostgreSQL queries?"
 

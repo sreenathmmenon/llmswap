@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "4.1.0"
-description = "Universal AI SDK for Developers: 7 providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity), cost optimization, enterprise analytics. The infrastructure layer for AI-powered applications."
+version = "4.1.1"
+description = "Universal AI SDK + Code Generation CLI: GitHub Copilot alternative with 7 providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM Watson, Groq), natural language to code, cost optimization, enterprise analytics."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -21,14 +21,25 @@ keywords = [
     "gemini",
     "watsonx",
     "ibm-watsonx",
+    "ibm-watson",
+    "watson-ai",
     "ollama",
     "groq",
     "groq-inference",
     "fast-inference",
     "github-copilot-alternative",
+    "copilot-cli",
+    "copilot-cli-alternative",
     "open-source-copilot",
     "copilot-alternative",
     "copilot-replacement",
+    "code-generation",
+    "natural-language-to-code",
+    "command-generation",
+    "ai-code-generation",
+    "text-to-code",
+    "bash-generator",
+    "python-generator",
     "ai-code-assistant",
     "developer-ai-tools",
     "self-hosted-ai",
