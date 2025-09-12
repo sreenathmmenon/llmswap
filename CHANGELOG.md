@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.1.2] - 2025-09-12
+
+### 📚 **Enhanced Developer Examples**
+
+#### **New Use Case Examples**
+- **DevOps Engineers**: Added Kubernetes deployment, Docker multi-stage builds, Terraform infrastructure examples
+- **Data Scientists**: Added Pandas data cleaning, Matplotlib visualization, scikit-learn ML pipeline examples
+- **Infrastructure as Code**: Complete workflows for container orchestration and cloud infrastructure
+
+#### **Developer Impact**
+- **Broader appeal**: Examples now cover DevOps, data science, and infrastructure automation
+- **Real-world scenarios**: Practical examples developers can immediately use
+- **Enhanced discoverability**: More comprehensive use cases improve PyPI search visibility
+
 ## [4.1.1] - 2025-01-09
 
 ### 📚 **Documentation & SEO Updates**

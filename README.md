@@ -303,6 +303,45 @@ llmswap chat
 > Add code examples
 ```
 
+### 🔧 **DevOps Engineers: Infrastructure as Code**
+**Kubernetes and Docker automation:**
+```bash
+# Generate Kubernetes deployment
+llmswap generate "Kubernetes deployment for React app with 3 replicas" --save k8s-deploy.yaml
+
+# Docker multi-stage build
+llmswap generate "Docker multi-stage build for Node.js app with Alpine" --language dockerfile
+
+# Terraform AWS infrastructure
+llmswap generate "Terraform script for AWS VPC with public/private subnets" --save main.tf
+```
+
+### 🎯 **Data Scientists: Analysis Workflows**
+**Pandas, visualization, and ML pipeline generation:**
+```bash
+# Data analysis scripts
+llmswap generate "Pandas script to clean CSV and handle missing values" --language python
+
+# Visualization code
+llmswap generate "Matplotlib script for correlation heatmap" --save plot.py
+
+# ML pipeline
+llmswap generate "scikit-learn pipeline for text classification with TF-IDF" --language python
+```
+
+### 💬 **App Developers: Full Applications**
+**Complete app generation with modern frameworks:**
+```bash
+# Streamlit chatbot
+llmswap generate "Streamlit chatbot app with session state and file upload" --save chatbot.py
+
+# FastAPI REST API
+llmswap generate "FastAPI app with CRUD operations for user management" --save api.py
+
+# React component
+llmswap generate "React component for data table with sorting and filtering" --language javascript --save DataTable.jsx
+```
+
 ## 🛠️ Installation & Setup
 
 ```bash
