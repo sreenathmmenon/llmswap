@@ -342,6 +342,54 @@ llmswap generate "FastAPI app with CRUD operations for user management" --save a
 llmswap generate "React component for data table with sorting and filtering" --language javascript --save DataTable.jsx
 ```
 
+### 🤖 **AI/ML Engineers: Model Deployment**
+**Production-ready ML workflows and deployments:**
+```bash
+# LangChain RAG pipeline
+llmswap generate "LangChain RAG system with ChromaDB and OpenAI embeddings" --language python --save rag_pipeline.py
+
+# Hugging Face model fine-tuning
+llmswap generate "Script to fine-tune BERT for sentiment analysis with Hugging Face" --save finetune.py
+
+# Gradio ML demo app
+llmswap generate "Gradio app for image classification with drag and drop" --save demo.py
+
+# Vector database setup
+llmswap generate "Pinecone vector database setup for semantic search" --language python
+```
+
+### 🔒 **Security Engineers: Vulnerability Scanning**  
+**Security automation and compliance scripts:**
+```bash
+# Security audit script
+llmswap generate "Python script to scan for exposed API keys in codebase" --save security_scan.py
+
+# OAuth2 implementation
+llmswap generate "FastAPI OAuth2 with JWT tokens implementation" --language python
+
+# Rate limiting middleware
+llmswap generate "Redis-based rate limiting for Express.js" --language javascript
+```
+
+### 🛠️ **AI Agent Development: Tool Creation**
+**Build tools and functions for AI agents (inspired by Anthropic's writing tools):**
+```bash
+# Create tool functions for agents
+llmswap generate "Python function for web scraping with BeautifulSoup error handling" --save tools/scraper.py
+
+# Database interaction tools
+llmswap generate "SQLAlchemy functions for CRUD operations with type hints" --save tools/database.py
+
+# File manipulation utilities
+llmswap generate "Python class for safe file operations with context managers" --save tools/file_ops.py
+
+# API integration tools
+llmswap generate "Async Python functions for parallel API calls with rate limiting" --save tools/api_client.py
+
+# Agent orchestration
+llmswap generate "LangChain agent with custom tools for research tasks" --language python
+```
+
 ## 🛠️ Installation & Setup
 
 ```bash

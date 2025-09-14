@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.1.3] - 2025-09-14
+
+### 📚 **Trending Use Cases Added**
+
+#### **New Examples for Hot Topics**
+- **AI/ML Engineers**: LangChain RAG, Hugging Face fine-tuning, Gradio apps, vector databases
+- **Security Engineers**: API key scanning, OAuth2 implementation, rate limiting
+- **AI Agent Development**: Tool creation for agents, database utilities, API clients, orchestration
+
+#### **Impact**
+- **Trending topics**: Covers RAG, agent tools, security automation
+- **PyPI visibility**: Fresh examples for updated packages list
+- **Developer reach**: Appeals to AI/ML and security engineers
+
 ## [4.1.2] - 2025-09-12
 
 ### 📚 **Enhanced Developer Examples**
