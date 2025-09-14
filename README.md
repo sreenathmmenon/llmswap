@@ -16,6 +16,10 @@ llmswap generate "sort files by size in reverse order"
 
 llmswap generate "Python function to read JSON with error handling" --language python
 # Output: Complete Python function with try/catch blocks
+
+# Vim Integration - Direct code insertion into your editor!
+:r !llmswap generate "Express.js REST API with CRUD operations"
+# Inserts complete code directly into your vim buffer
 ```
 
 ```python
@@ -388,6 +392,16 @@ llmswap generate "Async Python functions for parallel API calls with rate limiti
 
 # Agent orchestration
 llmswap generate "LangChain agent with custom tools for research tasks" --language python
+```
+
+### 🏆 **Hackathon Power Kit: Win Your Next Hackathon**
+**Build complete MVPs in minutes, not hours:**
+```bash
+# RAG Chatbot for Document Q&A (Most requested hackathon project)
+llmswap generate "Complete RAG chatbot with OpenAI embeddings, Pinecone vector store, and Streamlit UI for PDF document Q&A" --save rag_chatbot.py
+
+# Full-Stack SaaS Starter (0 to production in 5 minutes)
+llmswap generate "Next.js 14 app with Clerk auth, Stripe payments, Prisma ORM, and PostgreSQL schema for SaaS platform" --save saas_mvp.js
 ```
 
 ## 🛠️ Installation & Setup

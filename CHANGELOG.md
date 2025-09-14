@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.1.4] - 2025-09-14
+
+### 🏆 **Hackathon Power Kit Added**
+
+#### **New Features**
+- **Hackathon Section**: RAG chatbot and SaaS starter templates for winning hackathons
+- **Vim Integration**: Highlighted vim editor integration in README (was undocumented!)
+- **Enhanced Keywords**: Added terminal, vim, editor integration, RAG, and framework keywords
+
+#### **Hackathon Examples**
+- **RAG Document Q&A**: Complete chatbot with OpenAI embeddings and Pinecone
+- **SaaS MVP Starter**: Full-stack with auth, payments, and database
+
+#### **SEO Improvements**
+- Added 14 new keywords: vim-integration, terminal-assistant, RAG, vector-database, etc.
+- Better discoverability for hackathon participants and vim users
+
 ## [4.1.3] - 2025-09-14
 
 ### 📚 **Trending Use Cases Added**
