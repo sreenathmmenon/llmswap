@@ -107,7 +107,6 @@ class AsyncAnthropicProvider(AsyncBaseProvider):
     """Async provider for Anthropic Claude models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "claude-3-5-sonnet-20241022"
         
         # Use provided key or get from environment
         if not api_key:
@@ -173,7 +172,6 @@ class AsyncGeminiProvider(AsyncBaseProvider):
     """Async provider for Google Gemini models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "gemini-1.5-flash"
         
         if not api_key:
             api_key = os.getenv("GEMINI_API_KEY")
@@ -220,10 +218,9 @@ class AsyncGeminiProvider(AsyncBaseProvider):
 class AsyncOllamaProvider(AsyncBaseProvider):
     """Async provider for local Ollama models."""
     
-    def __init__(self, model: str = "llama3", url: str = "http://localhost:11434"):
+    def __init__(self, model: Optional[str] = None, url: str = "http://localhost:11434"):
         super().__init__(None, model)
         self.url = url
-        self.default_model = "llama3"
         
         try:
             import httpx
@@ -308,7 +305,6 @@ class AsyncCoherProvider(AsyncBaseProvider):
     """Async provider for Cohere Command models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "command-r-plus-08-2024"
         
         if not api_key:
             api_key = os.getenv("COHERE_API_KEY")
@@ -475,12 +471,11 @@ class AsyncPerplexityProvider(AsyncBaseProvider):
 class AsyncWatsonxProvider(AsyncBaseProvider):
     """Async provider for IBM watsonx models."""
     
-    def __init__(self, api_key: str, model: str = "ibm/granite-3-8b-instruct", 
+    def __init__(self, api_key: str, model: Optional[str] = None, 
                  project_id: str = None, url: str = "https://eu-de.ml.cloud.ibm.com"):
         super().__init__(api_key, model)
         self.project_id = project_id
         self.url = url
-        self.default_model = "ibm/granite-3-8b-instruct"
         
         # Note: watsonx SDK doesn't have async support yet
         # Execute watsonx sync call in thread executor

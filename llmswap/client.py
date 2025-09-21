@@ -94,7 +94,20 @@ class LLMClient:
         )
     
     def _initialize_provider(self, provider_name: str, model: Optional[str] = None, api_key: Optional[str] = None):
-        """Initialize specific provider."""
+        """Initialize specific provider with config-based model defaults."""
+        
+        # Load model from config if not specified
+        if not model:
+            try:
+                from .config import get_config
+                config = get_config()
+                model = config.get(f'provider.models.{provider_name}')
+                
+                if not model:
+                    raise ConfigurationError(f"No default model configured for {provider_name}. Check your config file or run: llmswap config set provider.models.{provider_name} <model>")
+            except ImportError:
+                raise ConfigurationError(f"Configuration system not available. Cannot determine default model for {provider_name}.")
+        
         if provider_name == "anthropic":
             return AnthropicProvider(api_key, model)
         elif provider_name == "openai":
@@ -102,12 +115,19 @@ class LLMClient:
         elif provider_name == "gemini":
             return GeminiProvider(api_key, model)
         elif provider_name == "ollama":
-            return OllamaProvider(model or "llama3")
+            return OllamaProvider(model=model)
         elif provider_name == "watsonx":
+            # Get required environment variables
+            api_key = api_key or os.getenv("WATSONX_API_KEY")
             project_id = os.getenv("WATSONX_PROJECT_ID")
+            url = os.getenv("WATSONX_URL", "https://eu-de.ml.cloud.ibm.com")
+            
+            if not api_key:
+                raise ConfigurationError("WATSONX_API_KEY environment variable required")
             if not project_id:
                 raise ConfigurationError("WATSONX_PROJECT_ID environment variable required")
-            return WatsonxProvider(api_key, model, project_id)
+            
+            return WatsonxProvider(api_key=api_key, model=model, project_id=project_id, url=url)
         elif provider_name == "groq":
             return GroqProvider(api_key, model)
         elif provider_name == "cohere":
@@ -334,7 +354,7 @@ class LLMClient:
     def is_provider_available(self, provider: str) -> bool:
         """Check if a provider is available and configured."""
         try:
-            test_provider = self._initialize_provider(provider)
+            test_provider = self._initialize_provider(provider, None, None)
             return test_provider.is_available()
         except:
             return False
@@ -499,11 +519,12 @@ class LLMClient:
             # Step 6: Update analytics with new provider info
             new_model = self.get_current_model()
             new_pricing = None
-            if self._analytics_enabled and self._cost_estimator:
-                from .analytics.pricing import PROVIDER_PRICING
-                provider_key = new_provider.lower()
-                if provider_key in PROVIDER_PRICING and new_model in PROVIDER_PRICING[provider_key]:
-                    new_pricing = PROVIDER_PRICING[provider_key][new_model]
+            # TODO: Re-enable pricing info when analytics module is ready
+            # if self._analytics_enabled and self._cost_estimator:
+            #     from .analytics.price_manager import PROVIDER_PRICING
+            #     provider_key = new_provider.lower()
+            #     if provider_key in PROVIDER_PRICING and new_model in PROVIDER_PRICING[provider_key]:
+            #         new_pricing = PROVIDER_PRICING[provider_key][new_model]
             
             return {
                 'success': True,
@@ -519,7 +540,7 @@ class LLMClient:
             }
     
     def chat(self, 
-             message: str,
+             message,  # Can be str or list of messages
              cache_context: Optional[Dict[str, Any]] = None,
              cache_ttl: Optional[int] = None,
              cache_bypass: bool = False) -> LLMResponse:
@@ -529,7 +550,7 @@ class LLMClient:
         No local storage - completely privacy-first approach.
         
         Args:
-            message: User message to send
+            message: User message string OR list of conversation messages
             cache_context: Optional context dict for cache key
             cache_ttl: Override default cache TTL in seconds
             cache_bypass: Skip cache lookup and force fresh response
@@ -537,16 +558,28 @@ class LLMClient:
         Returns:
             LLMResponse with content, metadata, and usage info
         """
-        # Provider-native conversation handling
-        if self._chat_session_active and hasattr(self.current_provider, 'chat_continue'):
-            # Use provider's native conversation continuation
-            response = self.current_provider.chat_continue(message)
-        elif hasattr(self.current_provider, 'chat'):
-            # Standard chat method - provider manages context internally
-            response = self.current_provider.chat([{"role": "user", "content": message}])
+        # Handle both string messages and conversation history
+        if isinstance(message, str):
+            # Single message - convert to conversation format
+            messages = [{"role": "user", "content": message}]
+        elif isinstance(message, list):
+            # Full conversation history provided
+            messages = message
+        else:
+            raise ValueError("message must be either a string or list of messages")
+        
+        # Always use standard chat method with full conversation history
+        if hasattr(self.current_provider, 'chat'):
+            # Standard chat method - send full conversation history
+            response = self.current_provider.chat(messages)
         else:
             # Fallback: single query (no conversation context)
-            response = self.current_provider.query(message)
+            if isinstance(message, str):
+                response = self.current_provider.query(message)
+            else:
+                # Extract last user message for query fallback
+                last_user_msg = next((msg['content'] for msg in reversed(messages) if msg['role'] == 'user'), "")
+                response = self.current_provider.query(last_user_msg)
         
         # Update session-specific analytics
         if self._chat_session_active and hasattr(response, 'usage') and response.usage:

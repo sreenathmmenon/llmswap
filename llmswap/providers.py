@@ -31,7 +31,7 @@ class AnthropicProvider(BaseProvider):
     """Provider for Anthropic Claude models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        super().__init__(api_key or os.getenv("ANTHROPIC_API_KEY"), model or "claude-3-5-sonnet-20241022")
+        super().__init__(api_key or os.getenv("ANTHROPIC_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("ANTHROPIC_API_KEY not found in environment variables")
         
@@ -107,7 +107,7 @@ class AnthropicProvider(BaseProvider):
 class OpenAIProvider(BaseProvider):
     """Provider for OpenAI GPT models."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini"):
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("OPENAI_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("OPENAI_API_KEY not found in environment variables")
@@ -186,7 +186,7 @@ class OpenAIProvider(BaseProvider):
 class GeminiProvider(BaseProvider):
     """Provider for Google Gemini models."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"):
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("GEMINI_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("GEMINI_API_KEY not found in environment variables")
@@ -291,7 +291,7 @@ class GeminiProvider(BaseProvider):
 class OllamaProvider(BaseProvider):
     """Provider for local Ollama models."""
     
-    def __init__(self, model: str = "llama3", url: str = "http://localhost:11434"):
+    def __init__(self, model: Optional[str] = None, url: str = "http://localhost:11434"):
         super().__init__(None, model)
         self.url = url
         
@@ -411,7 +411,7 @@ class GroqProvider(BaseProvider):
     """Provider for Groq high-performance inference models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        super().__init__(api_key or os.getenv("GROQ_API_KEY"), model or "llama-3.1-8b-instant")
+        super().__init__(api_key or os.getenv("GROQ_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("GROQ_API_KEY not found in environment variables")
         
@@ -490,7 +490,7 @@ class CoherProvider(BaseProvider):
     """Provider for Cohere Command models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        super().__init__(api_key or os.getenv("COHERE_API_KEY"), model or "command-r-plus-08-2024")
+        super().__init__(api_key or os.getenv("COHERE_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("COHERE_API_KEY not found in environment variables")
         
@@ -569,7 +569,7 @@ class PerplexityProvider(BaseProvider):
     """Provider for Perplexity online models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        super().__init__(api_key or os.getenv("PERPLEXITY_API_KEY"), model or "sonar-pro")
+        super().__init__(api_key or os.getenv("PERPLEXITY_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("PERPLEXITY_API_KEY not found in environment variables")
         
@@ -650,20 +650,19 @@ class PerplexityProvider(BaseProvider):
 class WatsonxProvider(BaseProvider):
     """Provider for IBM watsonx models."""
     
-    def __init__(self, api_key: str, model: str = "ibm/granite-3-8b-instruct", 
+    def __init__(self, api_key: str, model: Optional[str] = None, 
                  project_id: str = None, url: str = "https://eu-de.ml.cloud.ibm.com"):
         super().__init__(api_key, model)
         self.project_id = project_id
         self.url = url
-        self.default_model = "ibm/granite-3-8b-instruct"
         
         try:
             from ibm_watsonx_ai.foundation_models import ModelInference
             from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
-            from ibm_watsonx_ai import Credentials
-            self.ModelInference = ModelInference
+            from ibm_watsonx_ai import APIClient
+            self.Model = ModelInference
             self.GenParams = GenParams
-            self.Credentials = Credentials
+            self.APIClient = APIClient
         except ImportError:
             raise ConfigurationError("ibm-watsonx-ai package not installed. Run: pip install ibm-watsonx-ai")
     
@@ -671,10 +670,10 @@ class WatsonxProvider(BaseProvider):
         start_time = time.time()
         try:
             # Set up credentials
-            credentials = self.Credentials(
-                url=self.url,
-                api_key=self.api_key
-            )
+            credentials = {
+                "url": self.url,
+                "apikey": self.api_key
+            }
             
             # Configure generation parameters
             parameters = {
@@ -687,10 +686,10 @@ class WatsonxProvider(BaseProvider):
             }
             
             # Initialize model
-            model = self.ModelInference(
+            model = self.Model(
                 model_id=self.model,
-                params=parameters,
                 credentials=credentials,
+                params=parameters,
                 project_id=self.project_id
             )
             
@@ -701,13 +700,7 @@ class WatsonxProvider(BaseProvider):
             
             # Extract usage data if available (watsonx provides token counts)
             usage_data = {}
-            if hasattr(results, 'results') and results.results:
-                result_data = results.results[0]
-                if hasattr(result_data, 'input_token_count') or hasattr(result_data, 'generated_token_count'):
-                    usage_data = {
-                        "input_tokens": getattr(result_data, 'input_token_count', None),
-                        "output_tokens": getattr(result_data, 'generated_token_count', None),
-                    }
+            # Note: generate_text() returns just the text, not detailed usage info
 
             return LLMResponse(
                 content=response_text,
@@ -735,10 +728,10 @@ class WatsonxProvider(BaseProvider):
                 conversation_prompt += f"{role}: {msg['content']}\n\n"
             
             # Set up credentials
-            credentials = self.Credentials(
-                url=self.url,
-                api_key=self.api_key
-            )
+            credentials = {
+                "url": self.url,
+                "apikey": self.api_key
+            }
             
             # Configure generation parameters
             parameters = {
@@ -751,10 +744,10 @@ class WatsonxProvider(BaseProvider):
             }
             
             # Initialize model
-            model = self.ModelInference(
+            model = self.Model(
                 model_id=self.model,
-                params=parameters,
                 credentials=credentials,
+                params=parameters,
                 project_id=self.project_id
             )
             
@@ -765,13 +758,7 @@ class WatsonxProvider(BaseProvider):
             
             # Extract usage data if available (watsonx provides token counts)
             usage_data = {}
-            if hasattr(results, 'results') and results.results:
-                result_data = results.results[0]
-                if hasattr(result_data, 'input_token_count') or hasattr(result_data, 'generated_token_count'):
-                    usage_data = {
-                        "input_tokens": getattr(result_data, 'input_token_count', None),
-                        "output_tokens": getattr(result_data, 'generated_token_count', None),
-                    }
+            # Note: generate_text() returns just the text, not detailed usage info
 
             return LLMResponse(
                 content=response_text,
@@ -789,12 +776,4 @@ class WatsonxProvider(BaseProvider):
             raise ProviderError("watsonx", str(e))
     
     def is_available(self) -> bool:
-        try:
-            # Simple check if credentials can be created
-            credentials = self.Credentials(
-                url=self.url,
-                api_key=self.api_key
-            )
-            return True
-        except:
-            return False
+        return self.api_key is not None and self.project_id is not None

@@ -53,8 +53,8 @@ class LLMSwapConfig:
                     'anthropic': 'claude-3-5-sonnet-20241022',
                     'openai': 'gpt-4o',
                     'gemini': 'gemini-1.5-pro',
-                    'groq': 'llama-3.1-70b-versatile',
-                    'cohere': 'command-r-plus',
+                    'groq': 'llama-3.3-70b-versatile',
+                    'cohere': 'command-r-plus-08-2024',
                     'perplexity': 'sonar-pro',
                     'watsonx': 'granite-13b-chat',
                     'ollama': 'llama3.1'
@@ -125,17 +125,21 @@ class LLMSwapConfig:
         }
     
     def _load_config(self):
-        """Load configuration from file."""
+        """Load configuration from file, creating with defaults if not exists."""
         try:
             if os.path.exists(self.config_path):
                 with open(self.config_path, 'r') as f:
                     self._config_data = yaml.safe_load(f) or {}
             else:
-                self._config_data = {}
+                # First run - create config file with defaults
+                print(f"🔧 Creating config file at {self.config_path}")
+                self._config_data = self._get_default_config()
+                self._save_config()
+                print("✅ Default configuration created")
         except Exception as e:
             raise ConfigurationError(f"Failed to load config: {e}")
         
-        # Merge with defaults
+        # Always merge with defaults to handle new settings
         self._config_data = self._merge_with_defaults(self._config_data)
     
     def _merge_with_defaults(self, user_config: Dict[str, Any]) -> Dict[str, Any]:

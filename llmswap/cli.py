@@ -108,6 +108,22 @@ Provide a detailed, educational response that helps the student understand both 
         print(f"Error: {e}")
         return 1
 
+def _build_context_instruction(chat_context):
+    """Build system instruction for age/audience context without breaking conversation flow"""
+    if chat_context.age:
+        return f"Respond as if explaining to a {chat_context.age}-year-old. Use appropriate vocabulary and examples for that age group."
+    elif chat_context.audience or chat_context.explain_to:
+        target = chat_context.audience or chat_context.explain_to
+        return f"Respond as if explaining to {target}. Consider their background and interests."
+    elif chat_context.level:
+        level_instructions = {
+            'beginner': "Assume no prior knowledge. Start with basics and define technical terms.",
+            'intermediate': "Assume some background knowledge. Focus on practical applications.", 
+            'advanced': "Assume strong foundation. Focus on depth, nuances, and complex aspects."
+        }
+        return level_instructions.get(chat_context.level, level_instructions['intermediate'])
+    return ""
+
 def cmd_chat(args):
     """Handle 'llmswap chat' command - Enhanced conversational interface"""
     try:
@@ -141,10 +157,9 @@ def cmd_chat(args):
         
         # Display welcome message
         current_provider = client.get_current_provider()
-        print(f"🤖 llmswap Interactive Chat v5.0.0")
+        print(f"🤖 llmswap Interactive Chat v5.0.3")
         print(f"📡 Provider: {current_provider}")
         print(f"💬 Conversational mode: ON (context maintained)")
-        print(f"💾 Cache: {'ON' if not args.no_cache else 'OFF'}")
         
         if chat_context and chat_context.has_context():
             print(f"🎯 Context: {chat_context.get_context_display()}")
@@ -155,6 +170,7 @@ def cmd_chat(args):
         print("─" * 50)
         
         message_count = 0
+        conversation_history = []  # In-memory conversation history for this session
         
         while True:
             try:
@@ -236,6 +252,7 @@ def cmd_chat(args):
                                             pricing = result['new_pricing']
                                             print(f"   Pricing: ${pricing.get('input', 0):.6f}/1K input, ${pricing.get('output', 0):.6f}/1K output")
                                         print(f"💬 Starting fresh conversation with {new_provider}")
+                                        conversation_history.clear()  # Clear conversation history for new provider
                                         message_count = 0  # Reset message counter
                                     else:
                                         print(f"❌ Failed to switch: {result.get('error', 'Unknown error')}")
@@ -251,6 +268,7 @@ def cmd_chat(args):
                         # End current session and start new one (provider-native reset)
                         client.end_chat_session()
                         client.start_chat_session()
+                        conversation_history.clear()  # Clear our conversation history
                         message_count = 0
                         print("🧹 Chat session reset (starting fresh conversation)")
                         continue
@@ -272,15 +290,16 @@ def cmd_chat(args):
                             print(f"  Duration: {mins}m {secs}s")
                         
                         # Show pricing for current provider
-                        if client._analytics_enabled and client._cost_estimator:
-                            from llmswap.analytics.pricing import PROVIDER_PRICING
-                            provider_key = session_info['provider'].lower()
-                            model = client.get_current_model()
-                            if provider_key in PROVIDER_PRICING and model in PROVIDER_PRICING[provider_key]:
-                                pricing = PROVIDER_PRICING[provider_key][model]
-                                print(f"\n💰 Current Pricing:")
-                                print(f"  Input: ${pricing.get('input', 0):.6f}/1K tokens")
-                                print(f"  Output: ${pricing.get('output', 0):.6f}/1K tokens")
+                        # TODO: Re-enable pricing info when analytics module is ready
+                        # if client._analytics_enabled and client._cost_estimator:
+                        #     from llmswap.analytics.price_manager import PROVIDER_PRICING
+                        #     provider_key = session_info['provider'].lower()
+                        #     model = client.get_current_model()
+                        #     if provider_key in PROVIDER_PRICING and model in PROVIDER_PRICING[provider_key]:
+                        #         pricing = PROVIDER_PRICING[provider_key][model]
+                        #         print(f"\n💰 Current Pricing:")
+                        #         print(f"  Input: ${pricing.get('input', 0):.6f}/1K tokens")
+                        #         print(f"  Output: ${pricing.get('output', 0):.6f}/1K tokens")
                         continue
                         
                     # Age/Audience context commands
@@ -340,13 +359,22 @@ def cmd_chat(args):
                         print("Type /help for available commands")
                         continue
                 
-                # Regular chat message with context enhancement
+                # Handle age/audience context ONLY when explicitly enabled
                 if hasattr(client, '_chat_context') and client._chat_context.has_context():
+                    # Apply age/audience enhancement to this specific message
                     enhanced_input = client._chat_context.enhance_question(user_input)
-                    response = client.chat(enhanced_input)
+                    conversation_history.append({"role": "user", "content": enhanced_input})
                 else:
-                    response = client.chat(user_input)
+                    # Default: Pure conversation like Claude CLI
+                    conversation_history.append({"role": "user", "content": user_input})
+                
+                # Send conversation history to maintain context 
+                # Always bypass cache for conversations (each conversation is unique)
+                response = client.chat(conversation_history, cache_bypass=True)
                 message_count += 1
+                
+                # Add assistant response to conversation history
+                conversation_history.append({"role": "assistant", "content": response.content})
                 
                 # Display response with provider info
                 provider_info = f"[{client.get_current_provider()}]"
@@ -962,6 +990,143 @@ def cmd_costs(args):
         print(f"Error: {e}")
         return 1
 
+def cmd_providers(args):
+    """Handle 'llmswap providers' command"""
+    import os
+    
+    try:
+        # Initialize client to get provider order
+        config = get_config()
+        provider_order = config.get('provider.fallback_order', [])
+        provider_models = config.get('provider.models', {})
+        
+        # Check each provider status
+        providers_data = []
+        available_count = 0
+        
+        for provider in provider_order:
+            # Check if provider has required credentials
+            status = "❌ NOT CONFIGURED"
+            status_detail = ""
+            
+            if provider == "anthropic":
+                if os.getenv("ANTHROPIC_API_KEY"):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    status_detail = "ANTHROPIC_API_KEY missing"
+                    
+            elif provider == "openai":
+                if os.getenv("OPENAI_API_KEY"):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    status_detail = "OPENAI_API_KEY missing"
+                    
+            elif provider == "gemini":
+                if os.getenv("GEMINI_API_KEY"):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    status_detail = "GEMINI_API_KEY missing"
+                    
+            elif provider == "cohere":
+                if os.getenv("COHERE_API_KEY"):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    status_detail = "COHERE_API_KEY missing"
+                    
+            elif provider == "perplexity":
+                if os.getenv("PERPLEXITY_API_KEY"):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    status_detail = "PERPLEXITY_API_KEY missing"
+                    
+            elif provider == "watsonx":
+                if os.getenv("WATSONX_API_KEY") and os.getenv("WATSONX_PROJECT_ID"):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    missing = []
+                    if not os.getenv("WATSONX_API_KEY"):
+                        missing.append("WATSONX_API_KEY")
+                    if not os.getenv("WATSONX_PROJECT_ID"):
+                        missing.append("WATSONX_PROJECT_ID")
+                    status_detail = f"{', '.join(missing)} missing"
+                    
+            elif provider == "groq":
+                if os.getenv("GROQ_API_KEY"):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    status_detail = "GROQ_API_KEY missing"
+                    
+            elif provider == "ollama":
+                # Check if Ollama is running
+                try:
+                    import requests
+                    response = requests.get("http://localhost:11434/api/tags", timeout=2)
+                    if response.status_code == 200:
+                        status = "✅ AVAILABLE"
+                        available_count += 1
+                    else:
+                        status = "⚠️ NOT RUNNING"
+                        status_detail = "Local server not responding"
+                except:
+                    status = "⚠️ NOT RUNNING"
+                    status_detail = "Local server not running"
+            
+            # Get default model
+            default_model = provider_models.get(provider, "NOT CONFIGURED")
+            
+            providers_data.append([
+                provider.upper(),
+                default_model,
+                status,
+                status_detail
+            ])
+        
+        if args.format == 'json':
+            import json
+            result = {
+                "providers": providers_data,
+                "summary": {
+                    "total": len(provider_order),
+                    "available": available_count,
+                    "configured": available_count
+                }
+            }
+            print(json.dumps(result, indent=2))
+        else:
+            try:
+                from tabulate import tabulate
+                print(f"🤖 llmswap Provider Status Report")
+                print(f"{'='*60}")
+                
+                headers = ["Provider", "Default Model", "Status", "Issue"]
+                table = tabulate(providers_data, headers=headers, tablefmt="grid")
+                print(table)
+            except ImportError:
+                # Fallback to simple formatting if tabulate not available
+                print(f"🤖 llmswap Provider Status Report")
+                print(f"{'='*60}")
+                print(f"{'Provider':<12} {'Default Model':<25} {'Status':<15} {'Issue'}")
+                print("-" * 60)
+                for row in providers_data:
+                    print(f"{row[0]:<12} {row[1]:<25} {row[2]:<15} {row[3]}")
+            
+            print(f"\n📊 Summary: {available_count}/{len(provider_order)} providers available")
+            print(f"💡 Use: llmswap config set provider.models.<provider> <model> to change defaults")
+            print(f"💡 Use: export <PROVIDER>_API_KEY=<key> to configure providers")
+            
+        return 0
+        
+    except Exception as e:
+        print(f"❌ Error checking providers: {e}")
+        return 1
+
 def cmd_config(args):
     """Handle 'llmswap config' command - Configuration management"""
     try:
@@ -1088,6 +1253,8 @@ def main():
 Examples:
   llmswap ask "What is Python?"
   llmswap chat
+  llmswap providers                                           # View all providers status
+  llmswap config set provider.models.cohere command-r-plus-08-2024
   llmswap review app.py --focus security
   llmswap debug --error "IndexError: list index out of range"
   llmswap logs --analyze /var/log/app.log --since "2h ago"
@@ -1105,7 +1272,7 @@ Examples:
     
     # Global options
     parser.add_argument('--provider', '-p',
-                       choices=['anthropic', 'openai', 'gemini', 'ollama'],
+                       choices=['anthropic', 'openai', 'gemini', 'cohere', 'perplexity', 'watsonx', 'groq', 'ollama'],
                        help='LLM provider to use')
     parser.add_argument('--no-cache', action='store_true',
                        help='Disable response caching')
@@ -1243,6 +1410,11 @@ Examples:
                                       'export', 'import', 'validate', 'doctor'],
                               help='Configuration action to perform')
     config_parser.add_argument('key', nargs='?', help='Configuration key (e.g., provider.default)')
+    
+    # providers command - Show provider status table
+    providers_parser = subparsers.add_parser('providers', help='Show all providers and their status')
+    providers_parser.add_argument('--format', choices=['table', 'json'], 
+                                 default='table', help='Output format')
     config_parser.add_argument('value', nargs='?', help='Configuration value for set action')
     config_parser.add_argument('--file', '-f', help='File path for import/export operations')
     config_parser.add_argument('--merge', action='store_true', 
@@ -1268,6 +1440,7 @@ Examples:
         'generate': cmd_generate,
         'costs': cmd_costs,
         'config': cmd_config,
+        'providers': cmd_providers,
     }
     
     return commands[args.command](args)

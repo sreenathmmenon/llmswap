@@ -28,10 +28,11 @@ llmswap chat --age 25 --mentor tutor
 # In chat: /provider         # See current provider
 # Commands: /help, /switch, /clear, /stats, /quit
 
-# 🆕 NEW v5.0: Git-like Configuration System
+# 🆕 NEW v5.0: Provider Management & Configuration
+llmswap providers                    # View all providers and their status
+llmswap config set provider.models.cohere command-r-plus-08-2024
 llmswap config set provider.default anthropic
 llmswap config show
-llmswap config export --file team-settings.yaml
 
 # Code Generation (GitHub Copilot CLI Alternative)
 llmswap generate "sort files by size in reverse order"
@@ -95,11 +96,38 @@ pip install llmswap
 
 **Why Homebrew?** No virtualenv needed, global access, automatic dependency management, and easier updates.
 
+## 📋 Quick Reference - New v5.0.3 Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `llmswap providers` | View all providers and their status | Shows configured/missing API keys |
+| `llmswap config set provider.models.<provider> <model>` | Update default model for any provider | `llmswap config set provider.models.cohere command-r-plus-08-2024` |
+| `llmswap config list` | View current configuration | Shows all settings and models |
+| `/switch` (in chat) | Switch providers mid-conversation | Privacy-compliant provider switching |
+| `/provider` (in chat) | Show current provider and available options | Quick status check |
+
+### 🔧 First-Time Setup (v5.0.3 NEW!)
+```bash
+# First run automatically creates ~/.llmswap/config.yaml with defaults
+llmswap ask "Hello world"
+# Output: 🔧 Creating config file at ~/.llmswap/config.yaml
+#         ✅ Default configuration created
+
+# View all providers and their configuration status
+llmswap providers
+
+# Set up your API keys and start using
+export ANTHROPIC_API_KEY="your-key-here"
+llmswap ask "Explain Docker in simple terms"
+```
+
+**💡 Smart Defaults:** llmswap comes pre-configured with sensible model defaults for all 8 providers. No configuration needed to get started!
+
 ```python
 from llmswap import LLMClient
 
-# Works with any provider you have
-client = LLMClient()  # Auto-detects from environment
+# Works with any provider you have configured
+client = LLMClient()  # Auto-detects from environment/config
 response = client.query("Explain quantum computing in 50 words")
 print(response.content)
 ```
@@ -227,7 +255,93 @@ llmswap debug --error "ConnectionTimeout at line 42"
 llmswap logs --analyze app.log --since "2h ago"
 ```
 
-### 3️⃣ **Analytics & Cost Optimization** (v4.0 NEW!)
+### 3️⃣ **Provider Management & Model Configuration** (v5.0.3 NEW!)
+
+**🎯 View All Providers and Models:**
+```bash
+# Beautiful table showing all providers, their status, and default models
+llmswap providers
+```
+
+**Output Example:**
+```
+🤖 llmswap Provider Status Report
+============================================================
+| Provider   | Default Model              | Status            | Issue                    |
+|============|============================|===================|==========================| 
+| ANTHROPIC  | claude-3-5-sonnet-20241022 | ✅ CONFIGURED     |                          |
+| OPENAI     | gpt-4o                     | ❌ NOT CONFIGURED | OPENAI_API_KEY missing   |
+| GEMINI     | gemini-1.5-pro             | ✅ CONFIGURED     |                          |
+| COHERE     | command-r-plus-08-2024     | ❌ NOT CONFIGURED | COHERE_API_KEY missing   |
+| PERPLEXITY | sonar-pro                  | ✅ CONFIGURED     |                          |
+| WATSONX    | granite-13b-chat           | ✅ CONFIGURED     |                          |
+| GROQ       | llama-3.3-70b-versatile    | ✅ CONFIGURED     |                          |
+| OLLAMA     | llama3.1                   | ⚠️ NOT RUNNING   | Local server not running |
+
+📊 Summary: 5/8 providers available
+```
+
+**🔧 Model Configuration:**
+```bash
+# Update any provider's default model
+llmswap config set provider.models.openai gpt-4o-mini
+llmswap config set provider.models.cohere command-r-plus-08-2024
+llmswap config set provider.models.anthropic claude-3-5-haiku-20241022
+
+# Set default provider
+llmswap config set provider.default anthropic
+
+# View current configuration
+llmswap config list
+
+# Export/import team configurations
+llmswap config export team-config.yaml
+llmswap config import team-config.yaml --merge
+```
+
+**🚀 Handle Model Deprecations:**
+When providers deprecate models (like Cohere's `command-r-plus` → `command-r-plus-08-2024`):
+```bash
+# Simply update your config - no code changes needed!
+llmswap config set provider.models.cohere command-r-plus-08-2024
+llmswap providers  # Verify the change
+```
+
+**⚙️ Configuration File Location:**
+- **User config:** `~/.llmswap/config.yaml` (created automatically on first run)
+- **Custom location:** Set `LLMSWAP_CONFIG_HOME` environment variable
+- **Team sharing:** Export/import YAML configs for team standardization
+
+**💬 Interactive Chat Commands:**
+```bash
+llmswap chat  # Start interactive conversation
+
+# Available commands in chat:
+/help      # Show all commands
+/provider  # Show current provider and available providers
+/switch    # Switch to different provider (privacy-compliant)
+/clear     # Clear conversation history
+/stats     # Show session statistics
+/quit      # Exit chat
+
+# Example session:
+[0] > Hello, I'm working on a Python project
+[anthropic] Hi! I'd be happy to help with your Python project...
+
+[1] > /switch
+📋 Available providers: anthropic, gemini, perplexity, watsonx, groq
+Enter provider name: gemini
+
+🔒 PRIVACY NOTICE: Switching to gemini
+   ✅ NO conversation history will be shared with the new provider
+   ✅ This protects your privacy and complies with provider Terms of Service
+Continue? (y/n): y
+
+✅ Switched to gemini
+💬 Starting fresh conversation with gemini
+```
+
+### 4️⃣ **Analytics & Cost Optimization** (v4.0 NEW!)
 ```bash
 # Compare provider costs before choosing
 llmswap compare --input-tokens 1000 --output-tokens 500
