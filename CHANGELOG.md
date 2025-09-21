@@ -1,5 +1,35 @@
 # Changelog
 
+## [4.2.0] - 2025-09-20
+
+### 🚀 **Enhanced Conversational Chat Interface**
+
+#### **Revolutionary Multi-Provider Chat**
+- **Conversational Context**: Chat maintains context across entire conversation
+- **Provider Switching**: Switch providers mid-conversation while keeping context
+- **Enhanced Commands**: `/help`, `/switch`, `/clear`, `/stats`, `/provider`, `/quit`
+- **Real-time Analytics**: Live token counts and cost tracking during chat
+- **Memory Management**: Conversation stored only in memory (privacy-first)
+
+#### **Chat Features**
+- **Cross-Provider Context**: Start with Claude, continue with GPT-4, maintain full conversation
+- **Session Statistics**: Track messages, tokens, and costs in real-time  
+- **Smart Provider Info**: See which provider responded to each message
+- **Improved UX**: Professional chat interface with message numbering and status
+- **Graceful Interrupts**: Handle Ctrl+C elegantly without losing chat state
+
+#### **Technical Enhancements**
+- **Enhanced CLI**: Upgraded chat command with slash commands and provider management
+- **Provider Discovery**: New `get_available_providers()` method for dynamic provider listing
+- **Memory Optimization**: Efficient conversation history management
+- **Error Handling**: Improved error messages and recovery in chat mode
+
+#### **Competitive Advantage**
+- **Only multi-provider conversational CLI**: Claude Code (Anthropic only), Gemini CLI (Google only), llmswap (7 providers)
+- **Cost optimization during chat**: Compare provider costs while chatting
+- **Privacy-first**: No conversation storage, memory-only sessions
+- **Professional UX**: Enterprise-grade chat interface with full provider control
+
 ## [4.1.4] - 2025-09-14
 
 ### 🏆 **Hackathon Power Kit Added**

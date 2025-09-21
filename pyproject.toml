@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "4.1.4"
+version = "5.0.0"
 description = "Universal AI SDK + Code Generation CLI: GitHub Copilot alternative with 7 providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM Watson, Groq), natural language to code, cost optimization, enterprise analytics."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -94,7 +94,25 @@ keywords = [
     "pinecone",
     "chromadb",
     "llm-gateway",
-    "enterprise-ai"
+    "enterprise-ai",
+    "conversational-ai",
+    "ai-teaching",
+    "age-appropriate-ai",
+    "personalized-ai",
+    "ai-mentor",
+    "multi-provider-chat",
+    "provider-switching",
+    "educational-ai",
+    "ai-tutor",
+    "teaching-assistant",
+    "adaptive-learning",
+    "conversational-cli",
+    "multi-modal-ai",
+    "ai-personas",
+    "custom-ai-personas",
+    "contextual-ai",
+    "session-management",
+    "ai-context-switching"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

@@ -19,9 +19,11 @@ import sys
 import argparse
 import subprocess
 import json
+import yaml
 from pathlib import Path
 from .client import LLMClient
 from .exceptions import LLMSwapError
+from .config import LLMSwapConfig, get_config
 
 def cmd_ask(args):
     """Handle 'llmswap ask' command"""
@@ -34,57 +36,332 @@ def cmd_ask(args):
             provider=args.provider or "auto",
             cache_enabled=not args.no_cache
         )
-        response = client.query(args.question)
+        
+        # Check if age/audience targeting is requested
+        has_age_targeting = args.age or args.audience or args.level or args.explain_to
+        
+        # Check if teaching mode is enabled
+        teaching_mode = args.teach or args.explain
+        
+        if has_age_targeting or teaching_mode:
+            try:
+                # Import age adapter
+                from .eklavya.age_adapter import AgeAdapter
+                
+                # Build appropriate prompt
+                if has_age_targeting:
+                    # Age-appropriate explanation
+                    context_info = AgeAdapter.get_context_info(
+                        age=args.age,
+                        audience=args.audience, 
+                        level=args.level,
+                        explain_to=args.explain_to
+                    )
+                    print(f"🎯 Targeting: {context_info}")
+                    
+                    enhanced_question = AgeAdapter.build_targeted_prompt(
+                        args.question,
+                        age=args.age,
+                        audience=args.audience,
+                        level=args.level,
+                        explain_to=args.explain_to
+                    )
+                    
+                elif teaching_mode:
+                    # Teaching mode with persona
+                    from .eklavya.practical_personas import get_practical_persona_prompt
+                    
+                    persona = args.mentor or 'teacher'
+                    alias = args.alias or persona.title()
+                    
+                    print(f"📚 Teaching Mode | {alias} ({persona})")
+                    
+                    persona_prompt = get_practical_persona_prompt(persona, alias)
+                    enhanced_question = f"""
+{persona_prompt}
+
+Student's Question: {args.question}
+
+Provide a detailed, educational response that helps the student understand both the answer and the underlying concepts. Include examples and practical applications where helpful.
+"""
+                
+                response = client.query(enhanced_question)
+                
+            except ImportError:
+                print("⚠️ Enhanced explanation mode not available - using standard mode")
+                response = client.query(args.question)
+        else:
+            # Auto-detect if question seems like it wants explanation
+            learning_keywords = ['how does', 'why', 'explain', 'understand', 'difference between', 'what is the']
+            if any(keyword in args.question.lower() for keyword in learning_keywords):
+                print("💡 Detected learning question. Try --teach or --age for tailored explanation")
+            
+            response = client.query(args.question)
+        
         print(response.content)
+        
+        # Suggest teaching mode for quick answers that could benefit from explanation
+        if not teaching_mode and len(response.content) < 200:
+            print("\n💡 Want more detail? Try adding --teach")
             
     except LLMSwapError as e:
         print(f"Error: {e}")
         return 1
 
 def cmd_chat(args):
-    """Handle 'llmswap chat' command"""
+    """Handle 'llmswap chat' command - Enhanced conversational interface"""
     try:
         client = LLMClient(
             provider=args.provider or "auto",
-            cache_enabled=not args.no_cache
+            cache_enabled=not args.no_cache,
+            analytics_enabled=True
         )
         
-        print("llmswap Interactive Chat")
-        print(f"Provider: {client.get_current_provider()}")
-        print("Type 'quit' to exit, 'help' for commands\n")
+        # Start provider-native chat session
+        client.start_chat_session()
+        
+        # Set up age/audience context if provided
+        chat_context = None
+        if args.age or args.audience or args.level:
+            try:
+                from .eklavya.age_adapter import ChatContextManager
+                chat_context = ChatContextManager()
+                
+                if args.age:
+                    chat_context.set_age(args.age)
+                elif args.audience:
+                    chat_context.set_audience(args.audience)
+                elif args.level:
+                    chat_context.set_level(args.level)
+                
+                # Store context manager in client for access during chat
+                client._chat_context = chat_context
+            except ImportError:
+                pass
+        
+        # Display welcome message
+        current_provider = client.get_current_provider()
+        print(f"🤖 llmswap Interactive Chat v5.0.0")
+        print(f"📡 Provider: {current_provider}")
+        print(f"💬 Conversational mode: ON (context maintained)")
+        print(f"💾 Cache: {'ON' if not args.no_cache else 'OFF'}")
+        
+        if chat_context and chat_context.has_context():
+            print(f"🎯 Context: {chat_context.get_context_display()}")
+        
+        print("\nCommands: /help, /provider, /switch, /clear, /stats, /quit")
+        if chat_context:
+            print("          /age <number>, /audience <type>, /level <level>, /reset-context")
+        print("─" * 50)
+        
+        message_count = 0
         
         while True:
             try:
-                user_input = input("> ").strip()
+                user_input = input(f"\n[{message_count}] > ").strip()
                 
                 if not user_input:
                     continue
-                    
-                if user_input.lower() in ['quit', 'exit', 'q']:
-                    print("Goodbye!")
-                    break
-                    
-                elif user_input.lower() == 'help':
-                    print("\nCommands:")
-                    print("  help - Show this help")
-                    print("  quit - Exit chat")
-                    print("  provider - Show current provider")
-                    continue
-                    
-                elif user_input.lower() == 'provider':
-                    print(f"Current provider: {client.get_current_provider()}")
-                    continue
                 
-                # Get response with conversation context
-                response = client.chat(user_input)
-                print(f"\n{response.content}\n")
+                # Handle commands
+                if user_input.startswith('/'):
+                    command = user_input[1:].lower()
+                    
+                    if command in ['quit', 'exit', 'q']:
+                        # End provider-native chat session
+                        client.end_chat_session()
+                        stats = client.get_usage_stats()
+                        if stats:
+                            total_cost = stats.get('totals', {}).get('cost', 0)
+                            print(f"\n💰 Session cost: ~${total_cost:.4f} (estimated)")
+                        print("👋 Chat session ended.")
+                        break
+                        
+                    elif command == 'help':
+                        print("\n🔧 Chat Commands:")
+                        print("  /help     - Show this help")
+                        print("  /provider - Show current provider") 
+                        print("  /switch   - Switch to different provider")
+                        print("  /clear    - Clear conversation history")
+                        print("  /stats    - Show session statistics")
+                        print("  /quit     - Exit chat")
+                        print("\n🎯 Age/Audience Commands:")
+                        print("  /age <number>      - Set age context (e.g., /age 12)")
+                        print("  /audience <type>   - Set audience (e.g., /audience student)")
+                        print("  /level <level>     - Set level (beginner/intermediate/advanced)")
+                        print("  /reset-context     - Clear age/audience context")
+                        print("\n💡 Tips:")
+                        print("  • Conversation context is maintained automatically")
+                        print("  • Switch providers mid-conversation to compare responses")
+                        print("  • Use age/audience commands for tailored explanations")
+                        continue
+                        
+                    elif command == 'provider':
+                        current = client.get_current_provider()
+                        available = client.get_available_providers()
+                        print(f"\n📡 Current: {current}")
+                        print(f"📋 Available: {', '.join(available)}")
+                        continue
+                        
+                    elif command == 'switch':
+                        available = client.get_available_providers()
+                        print(f"\n📋 Available providers: {', '.join(available)}")
+                        new_provider = input("Enter provider name: ").strip()
+                        if new_provider in available:
+                            try:
+                                # LEGAL COMPLIANCE: No context transfer between providers
+                                print(f"\n⚠️  Switching providers will start a fresh conversation")
+                                print("   (Context cannot be transferred between providers for legal/ToS compliance)")
+                                confirm = input("Continue? (y/n): ").strip().lower()
+                                if confirm in ['y', 'yes']:
+                                    # Use safe provider switching method
+                                    result = client.switch_provider_safe(new_provider)
+                                    if result['success']:
+                                        # Show previous session stats if available
+                                        if result.get('previous_session'):
+                                            prev = result['previous_session']
+                                            if prev['session_cost'] > 0 or prev['session_tokens'] > 0:
+                                                print(f"\n📊 Previous session ({prev['provider']}):")
+                                                print(f"   Model: {prev['model']}")
+                                                print(f"   Tokens: {prev['session_tokens']}")
+                                                print(f"   Cost: ~${prev['session_cost']:.4f} (est.)")
+                                        
+                                        # Show new provider info
+                                        print(f"\n✅ Switched to {result['new_provider']}")
+                                        print(f"   Model: {result['new_model']}")
+                                        if result.get('new_pricing'):
+                                            pricing = result['new_pricing']
+                                            print(f"   Pricing: ${pricing.get('input', 0):.6f}/1K input, ${pricing.get('output', 0):.6f}/1K output")
+                                        print(f"💬 Starting fresh conversation with {new_provider}")
+                                        message_count = 0  # Reset message counter
+                                    else:
+                                        print(f"❌ Failed to switch: {result.get('error', 'Unknown error')}")
+                                else:
+                                    print("❌ Switch cancelled")
+                            except Exception as e:
+                                print(f"❌ Failed to switch: {e}")
+                        else:
+                            print(f"❌ Invalid provider. Choose from: {', '.join(available)}")
+                        continue
+                        
+                    elif command == 'clear':
+                        # End current session and start new one (provider-native reset)
+                        client.end_chat_session()
+                        client.start_chat_session()
+                        message_count = 0
+                        print("🧹 Chat session reset (starting fresh conversation)")
+                        continue
+                        
+                    elif command == 'stats':
+                        session_info = client.get_chat_session_info()
+                        print(f"\n📊 Current Session Statistics:")
+                        print(f"  Provider: {session_info['provider']}")
+                        print(f"  Model: {client.get_current_model()}")
+                        print(f"  Messages: {message_count} exchanges")
+                        print(f"  Session Tokens: {session_info['session_tokens']}")
+                        print(f"  Session Cost: ~${session_info['session_cost']:.6f} (estimated)")
+                        
+                        # Show duration
+                        duration = session_info['duration_seconds']
+                        if duration > 0:
+                            mins = duration // 60
+                            secs = duration % 60
+                            print(f"  Duration: {mins}m {secs}s")
+                        
+                        # Show pricing for current provider
+                        if client._analytics_enabled and client._cost_estimator:
+                            from llmswap.analytics.pricing import PROVIDER_PRICING
+                            provider_key = session_info['provider'].lower()
+                            model = client.get_current_model()
+                            if provider_key in PROVIDER_PRICING and model in PROVIDER_PRICING[provider_key]:
+                                pricing = PROVIDER_PRICING[provider_key][model]
+                                print(f"\n💰 Current Pricing:")
+                                print(f"  Input: ${pricing.get('input', 0):.6f}/1K tokens")
+                                print(f"  Output: ${pricing.get('output', 0):.6f}/1K tokens")
+                        continue
+                        
+                    # Age/Audience context commands
+                    elif command.startswith('age '):
+                        try:
+                            age = int(command.split()[1])
+                            if not hasattr(client, '_chat_context'):
+                                from .eklavya.age_adapter import ChatContextManager
+                                client._chat_context = ChatContextManager()
+                            
+                            client._chat_context.set_age(age)
+                            print(f"🎯 Age context set to: {age} years old")
+                        except (ValueError, IndexError):
+                            print("❌ Usage: /age <number> (e.g., /age 12)")
+                        continue
+                        
+                    elif command.startswith('audience '):
+                        try:
+                            audience = ' '.join(command.split()[1:])
+                            if not hasattr(client, '_chat_context'):
+                                from .eklavya.age_adapter import ChatContextManager
+                                client._chat_context = ChatContextManager()
+                            
+                            client._chat_context.set_audience(audience)
+                            print(f"🎯 Audience context set to: {audience}")
+                        except IndexError:
+                            print("❌ Usage: /audience <type> (e.g., /audience student)")
+                        continue
+                        
+                    elif command.startswith('level '):
+                        try:
+                            level = command.split()[1]
+                            if level not in ['beginner', 'intermediate', 'advanced']:
+                                print("❌ Level must be: beginner, intermediate, or advanced")
+                                continue
+                                
+                            if not hasattr(client, '_chat_context'):
+                                from .eklavya.age_adapter import ChatContextManager
+                                client._chat_context = ChatContextManager()
+                            
+                            client._chat_context.set_level(level)
+                            print(f"🎯 Knowledge level set to: {level}")
+                        except IndexError:
+                            print("❌ Usage: /level <level> (beginner/intermediate/advanced)")
+                        continue
+                        
+                    elif command == 'reset-context':
+                        if hasattr(client, '_chat_context'):
+                            client._chat_context.clear_all()
+                            print("🧹 Age/audience context cleared")
+                        else:
+                            print("ℹ️ No context was set")
+                        continue
+                        
+                    else:
+                        print(f"❌ Unknown command: /{command}")
+                        print("Type /help for available commands")
+                        continue
+                
+                # Regular chat message with context enhancement
+                if hasattr(client, '_chat_context') and client._chat_context.has_context():
+                    enhanced_input = client._chat_context.enhance_question(user_input)
+                    response = client.chat(enhanced_input)
+                else:
+                    response = client.chat(user_input)
+                message_count += 1
+                
+                # Display response with provider info
+                provider_info = f"[{client.get_current_provider()}]"
+                print(f"\n{provider_info} {response.content}")
+                
+                # Show token usage if available
+                if hasattr(response, 'usage') and response.usage:
+                    tokens = response.usage.get('total_tokens', 0)
+                    if tokens > 0:
+                        print(f"📊 {tokens} tokens")
                 
             except KeyboardInterrupt:
-                print("\nGoodbye!")
-                break
+                print("\n\n👋 Chat interrupted. Use /quit to exit properly.")
+                continue
                 
     except LLMSwapError as e:
-        print(f"Error: {e}")
+        if not args.quiet:
+            print(f"❌ Error: {e}")
         return 1
 
 def apply_log_filters(content, args):
@@ -473,7 +750,7 @@ def cmd_compare(args):
             for provider, data in comparison['comparison'].items():
                 print(f"{provider},{data.get('model','')},{data['total_cost']},{data.get('input_cost',0)},{data.get('output_cost',0)},{data.get('confidence','')}")
         else:  # table format (default)
-            print(f"💰 Provider Cost Comparison ({args.input_tokens} input + {args.output_tokens} output tokens)")
+            print(f"💰 Provider Cost Comparison ({args.input_tokens} input + {args.output_tokens} output tokens)\n⚠️  Estimates only - actual billing may vary")
             print("=" * 80)
             print(f"{'Provider':<12} {'Model':<20} {'Total Cost':<12} {'Savings':<12} {'Confidence'}")
             print("-" * 80)
@@ -491,8 +768,8 @@ def cmd_compare(args):
                 print(f"{provider:<12} {data.get('model','')[:19]:<20} {cost_str:<12} {savings_str:<12} {data.get('confidence','')}")
             
             print("-" * 80)
-            print(f"🏆 Cheapest: {comparison['cheapest']} (${comparison['cheapest_cost']:.6f})")
-            print(f"💸 Most Expensive: {comparison['most_expensive']} (${comparison['most_expensive_cost']:.6f})")
+            print(f"🏆 Cheapest: {comparison['cheapest']} (~${comparison['cheapest_cost']:.6f})")
+            print(f"💸 Most Expensive: {comparison['most_expensive']} (~${comparison['most_expensive_cost']:.6f})")
             print(f"💡 Max Savings: {comparison['max_savings_percentage']:.1f}%")
             
     except ImportError:
@@ -530,8 +807,8 @@ def cmd_usage(args):
             print("📈 Summary:")
             print(f"  Total Queries: {totals['queries']}")
             print(f"  Total Tokens:  {totals['tokens']:,}")
-            print(f"  Total Cost:    ${totals['cost']:.4f}")
-            print(f"  Avg per Query: ${totals['avg_cost_per_query']:.4f}")
+            print(f"  Total Cost:    ~${totals['cost']:.4f} (estimated)")
+            print(f"  Avg per Query: ~${totals['avg_cost_per_query']:.4f} (estimated)")
             print()
             
             # Provider breakdown
@@ -682,6 +959,122 @@ def cmd_costs(args):
         print(f"Error: {e}")
         return 1
 
+def cmd_config(args):
+    """Handle 'llmswap config' command - Configuration management"""
+    try:
+        config = get_config()
+        
+        if args.config_action == 'set':
+            if not args.key or args.value is None:
+                print("Error: Both key and value required for 'set'")
+                return 1
+            
+            # Handle different value types
+            value = args.value
+            if value.lower() in ['true', 'false']:
+                value = value.lower() == 'true'
+            elif value.isdigit():
+                value = int(value)
+            elif value.replace('.', '').isdigit():
+                value = float(value)
+            
+            config.set(args.key, value)
+            print(f"✅ Set {args.key} = {value}")
+            
+        elif args.config_action == 'get':
+            if args.key:
+                value = config.get(args.key)
+                if value is not None:
+                    print(value)
+                else:
+                    print(f"Key '{args.key}' not found")
+                    return 1
+            else:
+                print("Error: Key required for 'get'")
+                return 1
+                
+        elif args.config_action == 'unset':
+            if not args.key:
+                print("Error: Key required for 'unset'")
+                return 1
+            config.unset(args.key)
+            print(f"✅ Unset {args.key}")
+            
+        elif args.config_action == 'show' or args.config_action == 'list':
+            if args.key:
+                # Show specific section
+                section = config.get_section(args.key)
+                if section:
+                    print(yaml.dump({args.key: section}, default_flow_style=False))
+                else:
+                    print(f"Section '{args.key}' not found")
+                    return 1
+            else:
+                # Show all config
+                all_config = config.list_all()
+                print(yaml.dump(all_config, default_flow_style=False))
+                
+        elif args.config_action == 'reset':
+            if args.key:
+                config.reset(args.key)
+                print(f"✅ Reset section '{args.key}' to defaults")
+            else:
+                if not args.confirm:
+                    confirm = input("Reset all configuration to defaults? (y/N): ")
+                    if confirm.lower() not in ['y', 'yes']:
+                        print("Reset cancelled")
+                        return 0
+                config.reset()
+                print("✅ Reset all configuration to defaults")
+                
+        elif args.config_action == 'export':
+            file_path = args.file or 'llmswap-config.yaml'
+            config.export_config(file_path)
+            print(f"✅ Exported configuration to {file_path}")
+            
+        elif args.config_action == 'import':
+            if not args.file:
+                print("Error: File path required for 'import'")
+                return 1
+            config.import_config(args.file, merge=args.merge)
+            action = "Merged" if args.merge else "Imported"
+            print(f"✅ {action} configuration from {args.file}")
+            
+        elif args.config_action == 'validate':
+            issues = config.validate()
+            if issues:
+                print("❌ Configuration issues found:")
+                for issue in issues:
+                    print(f"  • {issue}")
+                return 1
+            else:
+                print("✅ Configuration is valid")
+                
+        elif args.config_action == 'doctor':
+            diagnosis = config.doctor()
+            print("🔍 Configuration Health Check")
+            print("=" * 40)
+            print(f"Config file: {diagnosis['config_path']}")
+            print(f"Config exists: {'✅' if diagnosis['config_exists'] else '❌'}")
+            print()
+            
+            if diagnosis['issues']:
+                print("❌ Issues found:")
+                for issue in diagnosis['issues']:
+                    print(f"  • {issue}")
+                print()
+            
+            if diagnosis['suggestions']:
+                print("💡 Suggestions:")
+                for suggestion in diagnosis['suggestions']:
+                    print(f"  • {suggestion}")
+            else:
+                print("✅ No issues found")
+                
+    except Exception as e:
+        print(f"Config error: {e}")
+        return 1
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
@@ -724,9 +1117,41 @@ Examples:
     # ask command
     ask_parser = subparsers.add_parser('ask', help='Ask a quick question')
     ask_parser.add_argument('question', help='Question to ask')
+    ask_parser.add_argument('--teach', action='store_true',
+                           help='Enable teaching mode for detailed explanations')
+    ask_parser.add_argument('--explain', action='store_true', 
+                           help='Provide detailed explanation (alias for --teach)')
+    ask_parser.add_argument('--mentor', choices=['teacher', 'mentor', 'tutor', 'developer', 'professor', 'buddy'],
+                           help='Choose teaching style')
+    ask_parser.add_argument('--alias', type=str,
+                           help='Custom name for your mentor')
+    
+    # Age-appropriate explanations
+    ask_parser.add_argument('--age', type=int, 
+                           help='Target age for explanation (e.g., 10, 25, 50)')
+    ask_parser.add_argument('--audience', type=str,
+                           help='Target audience (e.g., "business owner", "student", "child")')
+    ask_parser.add_argument('--level', choices=['beginner', 'intermediate', 'advanced'],
+                           help='Knowledge level for explanation')
+    ask_parser.add_argument('--explain-to', type=str, dest='explain_to',
+                           help='Custom audience description')
     
     # chat command  
     chat_parser = subparsers.add_parser('chat', help='Start interactive chat')
+    chat_parser.add_argument('--teach', action='store_true',
+                            help='Start in teaching mode')
+    chat_parser.add_argument('--mentor', choices=['teacher', 'mentor', 'tutor', 'developer', 'professor', 'buddy'],
+                            help='Choose teaching style')
+    chat_parser.add_argument('--alias', type=str,
+                            help='Custom name for your mentor')
+    
+    # Age-appropriate explanations for chat
+    chat_parser.add_argument('--age', type=int,
+                            help='Set default age context for explanations')
+    chat_parser.add_argument('--audience', type=str,
+                            help='Set default audience context')
+    chat_parser.add_argument('--level', choices=['beginner', 'intermediate', 'advanced'],
+                            help='Set default knowledge level')
     
     # review command
     review_parser = subparsers.add_parser('review', help='Review code with AI')
@@ -808,6 +1233,20 @@ Examples:
     costs_parser.add_argument('--format', choices=['table', 'json'],
                              default='table', help='Output format')
     
+    # config command - Configuration management
+    config_parser = subparsers.add_parser('config', help='Manage llmswap configuration')
+    config_parser.add_argument('config_action', 
+                              choices=['set', 'get', 'unset', 'show', 'list', 'reset', 
+                                      'export', 'import', 'validate', 'doctor'],
+                              help='Configuration action to perform')
+    config_parser.add_argument('key', nargs='?', help='Configuration key (e.g., provider.default)')
+    config_parser.add_argument('value', nargs='?', help='Configuration value for set action')
+    config_parser.add_argument('--file', '-f', help='File path for import/export operations')
+    config_parser.add_argument('--merge', action='store_true', 
+                              help='Merge imported config instead of replacing')
+    config_parser.add_argument('--confirm', action='store_true',
+                              help='Skip confirmation prompts')
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -825,6 +1264,7 @@ Examples:
         'usage': cmd_usage,
         'generate': cmd_generate,
         'costs': cmd_costs,
+        'config': cmd_config,
     }
     
     return commands[args.command](args)

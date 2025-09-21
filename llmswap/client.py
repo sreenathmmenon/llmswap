@@ -59,9 +59,15 @@ class LLMClient:
                 # Analytics modules not available - continue without them
                 self._analytics_enabled = False
         
-        # Conversation history for chat mode
-        self._conversation_history = []
-        self._max_history_length = 50  # Limit conversation length
+        # Provider-native conversation management (v5.0.0)
+        # No local conversation storage - providers handle context natively
+        self._chat_session_active = False
+        self._current_chat_provider = None
+        
+        # Session-specific analytics (reset on provider switch)
+        self._session_tokens = 0
+        self._session_cost = 0.0
+        self._session_start_time = None
         
         if provider == "auto":
             self.current_provider = self._detect_available_provider()
@@ -333,6 +339,14 @@ class LLMClient:
         except:
             return False
     
+    def get_available_providers(self) -> List[str]:
+        """Get list of available and configured providers."""
+        available = []
+        for provider_name in self.provider_order:
+            if self.is_provider_available(provider_name):
+                available.append(provider_name)
+        return available
+    
     def list_available_providers(self) -> List[str]:
         """List all available and configured providers."""
         available = []
@@ -374,37 +388,145 @@ class LLMClient:
             return None
         return self._cache.get_stats()
     
-    def start_conversation(self):
-        """Start a new conversation by clearing history."""
-        self._conversation_history = []
-    
-    def add_to_conversation(self, user_message: str, assistant_response: str):
-        """Add message pair to conversation history."""
-        self._conversation_history.append({"role": "user", "content": user_message})
-        self._conversation_history.append({"role": "assistant", "content": assistant_response})
+    def start_chat_session(self):
+        """Start a provider-native chat session.
         
-        # Trim conversation if too long
-        if len(self._conversation_history) > self._max_history_length:
-            # Remove oldest pair (user + assistant)
-            self._conversation_history = self._conversation_history[2:]
+        No local conversation storage - provider handles all context.
+        Session state only tracked for CLI UX purposes.
+        """
+        import time
+        self._chat_session_active = True
+        self._session_tokens = 0
+        self._session_cost = 0.0
+        self._session_start_time = time.time()
+        
+        # Get current provider safely
+        try:
+            self._current_chat_provider = self.get_current_provider()
+        except:
+            self._current_chat_provider = "none"
+        
+        # Initialize provider chat session if supported
+        if hasattr(self, 'current_provider') and self.current_provider and hasattr(self.current_provider, 'start_chat_session'):
+            self.current_provider.start_chat_session()
     
-    def get_conversation_length(self) -> int:
-        """Get number of messages in conversation."""
-        return len(self._conversation_history)
+    def end_chat_session(self):
+        """End llmswap chat session.
+        
+        Note: Conversation may continue to exist at provider level.
+        """
+        self._chat_session_active = False
+        
+        # End provider chat session if supported
+        if hasattr(self, 'current_provider') and self.current_provider and hasattr(self.current_provider, 'end_chat_session'):
+            self.current_provider.end_chat_session()
+        
+        self._current_chat_provider = None
     
-    def clear_conversation(self):
-        """Clear conversation history."""
-        self._conversation_history = []
+    def is_chat_session_active(self) -> bool:
+        """Check if chat session is active."""
+        return self._chat_session_active
+    
+    def get_chat_session_info(self) -> Dict[str, Any]:
+        """Get chat session information for CLI display."""
+        import time
+        session_id = None
+        if hasattr(self, 'current_provider') and self.current_provider:
+            session_id = id(self.current_provider)
+        
+        duration = 0
+        if self._session_start_time:
+            duration = int(time.time() - self._session_start_time)
+            
+        return {
+            "active": self._chat_session_active,
+            "provider": self._current_chat_provider,
+            "session_id": session_id,
+            "session_tokens": self._session_tokens,
+            "session_cost": self._session_cost,
+            "duration_seconds": duration
+        }
+    
+    def get_session_cost(self) -> float:
+        """Get cost for current chat session only."""
+        return self._session_cost
+    
+    def get_session_tokens(self) -> int:
+        """Get token count for current chat session only."""
+        return self._session_tokens
+    
+    def switch_provider_safe(self, new_provider: str) -> Dict[str, Any]:
+        """Safely switch providers without context transfer.
+        
+        LEGAL COMPLIANCE: This method ensures no conversation context
+        is transferred between providers to comply with Terms of Service
+        and avoid copyright/legal issues.
+        
+        Args:
+            new_provider: Name of the new provider to switch to
+            
+        Returns:
+            Dict with switch status and session info
+        """
+        try:
+            # Step 1: Capture final stats from current provider session
+            final_stats = None
+            if self._chat_session_active and self._analytics_enabled:
+                final_stats = {
+                    'provider': self._current_chat_provider,
+                    'model': self.get_current_model(),
+                    'session_cost': self.get_session_cost() if hasattr(self, 'get_session_cost') else 0,
+                    'session_tokens': self.get_session_tokens() if hasattr(self, 'get_session_tokens') else 0
+                }
+            
+            # Step 2: End current chat session cleanly
+            if self._chat_session_active:
+                self.end_chat_session()
+            
+            # Step 3: Reset session-specific analytics
+            if hasattr(self, '_session_tokens'):
+                self._session_tokens = 0
+            if hasattr(self, '_session_cost'):
+                self._session_cost = 0
+            
+            # Step 4: Switch to new provider
+            self.set_provider(new_provider)
+            
+            # Step 5: Start fresh chat session with new provider
+            # NO context is transferred - completely fresh start
+            self.start_chat_session()
+            
+            # Step 6: Update analytics with new provider info
+            new_model = self.get_current_model()
+            new_pricing = None
+            if self._analytics_enabled and self._cost_estimator:
+                from .analytics.pricing import PROVIDER_PRICING
+                provider_key = new_provider.lower()
+                if provider_key in PROVIDER_PRICING and new_model in PROVIDER_PRICING[provider_key]:
+                    new_pricing = PROVIDER_PRICING[provider_key][new_model]
+            
+            return {
+                'success': True,
+                'previous_session': final_stats,
+                'new_provider': new_provider,
+                'new_model': new_model,
+                'new_pricing': new_pricing
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
     
     def chat(self, 
              message: str,
              cache_context: Optional[Dict[str, Any]] = None,
              cache_ttl: Optional[int] = None,
              cache_bypass: bool = False) -> LLMResponse:
-        """Send message with conversation context.
+        """Send message with provider-native conversation context.
         
-        This method maintains conversation history for chat-like interactions.
-        Use this for conversational AI where context matters.
+        Provider handles all conversation context and history.
+        No local storage - completely privacy-first approach.
         
         Args:
             message: User message to send
@@ -415,21 +537,38 @@ class LLMClient:
         Returns:
             LLMResponse with content, metadata, and usage info
         """
-        # Build messages with conversation history
-        messages = list(self._conversation_history)
-        messages.append({"role": "user", "content": message})
-        
-        # Use the provider's new chat method if available, fallback to query
-        response = None
-        if hasattr(self.current_provider, 'chat'):
-            response = self.current_provider.chat(messages)
+        # Provider-native conversation handling
+        if self._chat_session_active and hasattr(self.current_provider, 'chat_continue'):
+            # Use provider's native conversation continuation
+            response = self.current_provider.chat_continue(message)
+        elif hasattr(self.current_provider, 'chat'):
+            # Standard chat method - provider manages context internally
+            response = self.current_provider.chat([{"role": "user", "content": message}])
         else:
-            # Fallback: send just the message (backward compatibility)
+            # Fallback: single query (no conversation context)
             response = self.current_provider.query(message)
         
-        # Add to conversation history
-        self.add_to_conversation(message, response.content)
+        # Update session-specific analytics
+        if self._chat_session_active and hasattr(response, 'usage') and response.usage:
+            # Track tokens for this session
+            tokens = response.usage.get('total_tokens', 0)
+            self._session_tokens += tokens
+            
+            # Calculate and track cost for this session
+            if self._analytics_enabled and self._cost_estimator:
+                provider = self.get_current_provider()
+                model = self.get_current_model()
+                input_tokens = response.usage.get('prompt_tokens', 0)
+                output_tokens = response.usage.get('completion_tokens', 0)
+                
+                if input_tokens and output_tokens:
+                    cost_info = self._cost_estimator.estimate_cost(
+                        provider, model, input_tokens, output_tokens
+                    )
+                    if cost_info and 'total' in cost_info:
+                        self._session_cost += cost_info['total']
         
+        # No local conversation storage - provider handles everything
         return response
     
     def get_usage_stats(self) -> Optional[Dict[str, Any]]:

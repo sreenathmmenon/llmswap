@@ -152,3 +152,18 @@ Desktop.ini
 # Temporary files
 *.tmp
 *.temp
+
+# Personal project files
+.backup/
+research_notes.md
+
+# Exclude all new documentation except already committed files
+*.md
+!README.md
+!CONTRIBUTORS.md
+!CHANGELOG.md
+
+# Exclude any new documentation folders
+docs/
+documentation/
+notes/

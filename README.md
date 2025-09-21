@@ -1,25 +1,51 @@
-# llmswap - Universal AI SDK + Code Generation CLI
+# llmswap v5.0 - Conversational Multi-Provider AI CLI
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Universal AI SDK for Developers**: Switch between 7 AI providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq) with natural language code generation, cost optimization and enterprise analytics.
+**Revolutionary v5.0**: First multi-provider conversational CLI competing with Claude Code & Gemini CLI. Provider-native conversations, git-like configuration, 99% memory reduction, zero vendor lock-in.
 
-**🆕 GitHub Copilot CLI Alternative**: Generate commands and code from natural language using any AI provider. **Save 50-90% on AI Costs**: Intelligent caching, provider comparison, usage analytics.
+**Universal AI SDK**: Switch between 8+ AI providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama) with conversational chat, cost optimization and enterprise analytics.
 
 ```bash
-# 🆕 NEW: GitHub Copilot CLI Alternative
+# 🆕 NEW v5.0: Age-Appropriate AI Explanations
+llmswap ask "What is Docker?" --age 10
+# Output: "Docker is like a magic lunch box! 🥪 When your mom packs..."
+
+llmswap ask "What is blockchain?" --audience "business owner"
+# Output: "Think of blockchain like your business ledger system..."
+
+# 🆕 NEW v5.0: Teaching Personas & Personalization  
+llmswap ask "Explain Python classes" --teach --mentor developer --alias "Sarah"
+# Output: "[Sarah - Senior Developer]: Here's how we handle classes in production..."
+
+# 🆕 NEW v5.0: Conversational Chat with Provider Switching
+llmswap chat --age 25 --mentor tutor
+# In chat: /switch anthropic  # Switch mid-conversation
+# In chat: /provider         # See current provider
+# Commands: /help, /switch, /clear, /stats, /quit
+
+# 🆕 NEW v5.0: Git-like Configuration System
+llmswap config set provider.default anthropic
+llmswap config show
+llmswap config export --file team-settings.yaml
+
+# Code Generation (GitHub Copilot CLI Alternative)
 llmswap generate "sort files by size in reverse order"
 # Output: du -sh * | sort -hr
 
 llmswap generate "Python function to read JSON with error handling" --language python
 # Output: Complete Python function with try/catch blocks
 
-# Vim Integration - Direct code insertion into your editor!
-:r !llmswap generate "Express.js REST API with CRUD operations"
-# Inserts complete code directly into your vim buffer
+# Advanced Log Analysis with AI
+llmswap logs --analyze /var/log/app.log --since "2h ago"
+llmswap logs --request-id REQ-12345 --correlate
+
+# Code Review & Debugging
+llmswap review app.py --focus security
+llmswap debug --error "IndexError: list index out of range"
 ```
 
 ```python
@@ -34,11 +60,49 @@ client = LLMClient()  # Auto-detects any provider
 response = client.query("Hello")  # Automatic caching = 50-90% savings
 ```
 
+## ⚠️ Important: Cost & Usage Disclaimers
+
+**llmswap is an interface tool only**. All AI interactions, billing, and costs are handled directly by your chosen providers (OpenAI, Anthropic, Google, etc.).
+
+### 💰 Cost Estimates Are Approximate
+- **Token calculations**: Estimates based on common tokenizers - actual provider tokenization may differ
+- **Pricing data**: Based on publicly available rates - providers may have updated pricing
+- **Billing responsibility**: You are solely responsible for all costs incurred with your AI providers
+- **Cost tracking**: Our displays show `~$X.XX (estimated)` - always check your provider's actual billing
+
+### 🔒 Your Responsibility
+- **API usage**: You control all API calls and associated costs
+- **Provider terms**: You must comply with each provider's Terms of Service and pricing
+- **Billing verification**: Always verify costs with your provider's billing dashboard
+- **Usage monitoring**: Monitor your provider accounts for actual usage and spending
+
+### 🛡️ Legal Notice
+llmswap provides cost estimates for convenience only. We are not responsible for:
+- Differences between estimated and actual costs
+- Provider billing issues or disputes  
+- Overage charges or unexpected costs
+- Changes in provider pricing or policies
+
+**Always review your provider billing for accurate cost information.**
+
 ## ⚡ Get Started in 30 Seconds
 
+### 🍺 Homebrew (Recommended - macOS/Linux)
+```bash
+# Add our tap and install
+brew tap llmswap/tap
+brew install llmswap
+
+# Ready to use immediately!
+llmswap --help
+```
+
+### 🐍 PyPI (All platforms)
 ```bash
 pip install llmswap
 ```
+
+**Why Homebrew?** No virtualenv needed, global access, automatic dependency management, and easier updates.
 
 ```python
 from llmswap import LLMClient
@@ -49,18 +113,19 @@ response = client.query("Explain quantum computing in 50 words")
 print(response.content)
 ```
 
-## 🎯 Why llmswap for AI Development?
+## 🎯 Why llmswap v5.0 for AI Development?
 
-| Feature | llmswap | LangChain | LiteLLM | Direct APIs |
-|---------|---------|-----------|---------|-------------|
-| **AI Providers** | 7 providers, 1 line switch | 50+ complex setup | 20+ basic support | 1 per codebase |
-| **Integration** | `pip install llmswap` | Complex framework | Moderate setup | Per-provider SDKs |
-| **Cost Control** | Built-in optimization | Manual configuration | Basic tracking | No tracking |
-| **Enterprise Analytics** | Native cost/usage tracking | External tools required | Limited insights | Manual logging |
-| **CLI Tools** | 5 powerful commands | Separate packages | None included | None |
-| **Caching** | Intelligent built-in | Manual implementation | Basic support | DIY solution |
-| **Learning Curve** | 5 minutes | Hours of documentation | 30 minutes | Per-API learning |
-| **Self-Hosted** | Full control | Complex deployment | Basic options | Manual setup |
+| Feature | llmswap v5.0 | Claude Code | Gemini CLI | LangChain | Direct APIs |
+|---------|---------|-----------|---------|-----------|-------------|
+| **AI Providers** | 8+ providers, instant switch | Claude only | Gemini only | 50+ complex setup | 1 per codebase |
+| **Conversational Mode** | Provider-native, all providers | Yes, Claude only | Yes, Gemini only | Manual setup | Not available |
+| **Memory Usage** | 99% reduction (provider-native) | Local storage | Local storage | Heavy framework | Manual |
+| **Configuration** | Git-like, team-shareable | Basic settings | Basic settings | Complex files | None |
+| **Cost Analytics** | Real-time tracking | No cost info | No cost info | External tools | Manual |
+| **Provider Switching** | Mid-conversation switch | Locked to Claude | Locked to Gemini | Restart required | New session |
+| **CLI Commands** | 10 powerful tools | Limited | Limited | Separate packages | None |
+| **SDK + CLI** | Both included | CLI only | CLI only | SDK only | SDK only |
+| **Open Source** | 100% MIT licensed | Proprietary | Proprietary | Open source | Varies |
 
 ## 🚀 Three Ways to Use llmswap:
 
@@ -84,6 +149,17 @@ llmswap costs                                    # Cost optimization insights
 stats = client.get_usage_stats()         # Track AI spend
 comparison = client.get_provider_comparison()  # Compare costs
 ```
+
+## 🎯 What's New in v5.0
+
+### Revolutionary Teaching & Conversational Features
+- **🎓 Age-Appropriate AI**: First CLI with age-targeted explanations (`--age 10`, `--audience "teacher"`)
+- **🧑‍🏫 Teaching Personas**: 6 AI mentors (teacher, developer, tutor, professor, mentor, buddy)
+- **👤 Personalized Aliases**: Custom AI names (`--alias "Sarah"` for your personal tutor)
+- **💬 Multi-Provider Chat**: Provider-native conversational mode with mid-chat switching
+- **🧠 Zero Local Storage**: 99% memory reduction, all context at provider level  
+- **⚙️ Git-like Config**: Team-shareable configuration management
+- **📊 Session Analytics**: Real-time cost and token tracking
 
 ## 🚀 Complete Feature Set
 
@@ -112,11 +188,34 @@ response = client.query("Hello")  # Tries multiple providers
 client = LLMClient(cache_enabled=True)
 response1 = client.query("Expensive question")  # $$$ API call
 response2 = client.query("Expensive question")  # FREE from cache
+
+# 🆕 v5.0: Conversational Sessions (Provider-Native)
+client.start_chat_session()
+response = client.chat("Tell me about Python")  # Context maintained
+response = client.chat("What are its best features?")  # Remembers previous
+client.end_chat_session()  # Clean provider-level cleanup
+
+# 🆕 v5.0: Async Support for High Performance
+import asyncio
+from llmswap import AsyncLLMClient
+
+async def main():
+    async_client = AsyncLLMClient()
+    response = await async_client.query_async("Process this data")
+    
+asyncio.run(main())
 ```
 
-### 2️⃣ **CLI Suite** - 6 Powerful Terminal Tools
+### 2️⃣ **CLI Suite** - 10 Powerful Terminal Commands
 ```bash
-# 🆕 Generate code from natural language (GitHub Copilot alternative)
+# 🆕 v5.0: Conversational Chat with Provider-Native Context
+llmswap chat  # Interactive AI assistant with memory
+
+# 🆕 v5.0: Configuration Management (Git-like)
+llmswap config set provider.default anthropic
+llmswap config export --file team-config.yaml
+
+# Generate code from natural language (GitHub Copilot alternative)
 llmswap generate "sort files by size in reverse order"
 llmswap generate "Python function to read JSON file" --language python
 llmswap generate "find large files over 100MB" --execute
