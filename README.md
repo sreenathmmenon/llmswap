@@ -1,4 +1,4 @@
-# llmswap v5.0 - Conversational Multi-Provider AI CLI
+# llmswap v5.0 - Universal AI CLI & Python SDK
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -6,9 +6,9 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Revolutionary v5.0**: First multi-provider conversational CLI competing with Claude Code & Gemini CLI. Provider-native conversations, git-like configuration, 99% memory reduction, zero vendor lock-in.
+**Universal AI CLI & Python SDK**: One interface for 8+ providers (OpenAI GPT-4o/o1 | Claude 3.5 | Gemini Pro | Cohere | Perplexity | IBM watsonx | Groq | Together AI). Features: Multi-provider chat (Claude Code/Gemini CLI alternative), code generation (GitHub Copilot alternative), Python SDK integration, single-line CLI queries, cost optimization, age-appropriate AI. Switch providers instantly.
 
-**Universal AI SDK**: Switch between 8+ AI providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama) with conversational chat, cost optimization and enterprise analytics.
+**Revolutionary v5.0**: First multi-provider conversational CLI with provider-native conversations, git-like configuration, zero vendor lock-in, and breakthrough age-appropriate AI explanations.
 
 ```bash
 # 🆕 NEW v5.0: Age-Appropriate AI Explanations
@@ -61,30 +61,20 @@ client = LLMClient()  # Auto-detects any provider
 response = client.query("Hello")  # Automatic caching = 50-90% savings
 ```
 
-## ⚠️ Important: Cost & Usage Disclaimers
+## ⚠️ Privacy & Usage Disclaimers
 
-**llmswap is an interface tool only**. All AI interactions, billing, and costs are handled directly by your chosen providers (OpenAI, Anthropic, Google, etc.).
+**llmswap is an interface tool only** - all AI interactions and billing are handled directly by your chosen providers.
 
-### 💰 Cost Estimates Are Approximate
-- **Token calculations**: Estimates based on common tokenizers - actual provider tokenization may differ
-- **Pricing data**: Based on publicly available rates - providers may have updated pricing
-- **Billing responsibility**: You are solely responsible for all costs incurred with your AI providers
-- **Cost tracking**: Our displays show `~$X.XX (estimated)` - always check your provider's actual billing
+### 🔒 Context Privacy & Provider Switching
+- **No context sharing**: When switching providers mid-conversation, NO conversation history is transferred between providers
+- **Fresh start**: Each provider switch starts a completely new conversation thread
+- **Legal compliance**: This protects your privacy and complies with provider Terms of Service
+- **Your control**: You decide what each provider sees in their separate conversations
 
-### 🔒 Your Responsibility
-- **API usage**: You control all API calls and associated costs
-- **Provider terms**: You must comply with each provider's Terms of Service and pricing
-- **Billing verification**: Always verify costs with your provider's billing dashboard
-- **Usage monitoring**: Monitor your provider accounts for actual usage and spending
+### 💰 Cost Information
+**Cost estimates** (`~$X.XX estimated`) are approximate based on public pricing and common tokenizers. Actual costs may differ. **You are responsible for all provider costs and billing.**
 
-### 🛡️ Legal Notice
-llmswap provides cost estimates for convenience only. We are not responsible for:
-- Differences between estimated and actual costs
-- Provider billing issues or disputes  
-- Overage charges or unexpected costs
-- Changes in provider pricing or policies
-
-**Always review your provider billing for accurate cost information.**
+**Legal Notice**: llmswap provides estimates and interface functionality for convenience only. We are not responsible for billing differences, provider charges, pricing changes, or data handling by individual providers. Always verify costs with your provider's billing dashboard.
 
 ## ⚡ Get Started in 30 Seconds
 

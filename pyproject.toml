@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.0.0"
-description = "Universal AI SDK + Code Generation CLI: GitHub Copilot alternative with 7 providers (OpenAI GPT-4o/o1, Claude, Gemini, Cohere, Perplexity, IBM Watson, Groq), natural language to code, cost optimization, enterprise analytics."
+version = "5.0.1"
+description = "Universal AI CLI & Python SDK: One interface for 8+ providers (OpenAI GPT-4o/o1 | Claude 3.5 | Gemini Pro | Cohere | Perplexity | IBM watsonx | Groq | Together AI). Features: Multi-provider chat (Claude Code/Gemini CLI alternative), code generation (GitHub Copilot alternative), Python SDK integration, single-line CLI queries, cost optimization, age-appropriate AI. Switch providers instantly."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -86,6 +86,19 @@ keywords = [
     "vector-database",
     "embeddings",
     "chatgpt-alternative",
+    "claude-code-alternative",
+    "gemini-cli-alternative", 
+    "openai-cli-alternative",
+    "multi-provider-cli",
+    "universal-ai-cli",
+    "ai-provider-switcher",
+    "provider-agnostic-cli",
+    "llm-cli-interface",
+    "ai-chat-cli",
+    "terminal-ai-chat",
+    "cli-ai-assistant",
+    "multi-llm-cli",
+    "cross-provider-cli",
     "perplexity",
     "cohere",
     "streamlit",

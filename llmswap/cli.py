@@ -193,6 +193,7 @@ def cmd_chat(args):
                         print("\n💡 Tips:")
                         print("  • Conversation context is maintained automatically")
                         print("  • Switch providers mid-conversation to compare responses")
+                        print("  • Provider switching starts fresh conversations (privacy protection)")
                         print("  • Use age/audience commands for tailored explanations")
                         continue
                         
@@ -210,8 +211,10 @@ def cmd_chat(args):
                         if new_provider in available:
                             try:
                                 # LEGAL COMPLIANCE: No context transfer between providers
-                                print(f"\n⚠️  Switching providers will start a fresh conversation")
-                                print("   (Context cannot be transferred between providers for legal/ToS compliance)")
+                                print(f"\n🔒 PRIVACY NOTICE: Switching to {new_provider}")
+                                print("   ✅ NO conversation history will be shared with the new provider")
+                                print("   ✅ This protects your privacy and complies with provider Terms of Service")
+                                print("   ⚠️  You'll start a completely fresh conversation")
                                 confirm = input("Continue? (y/n): ").strip().lower()
                                 if confirm in ['y', 'yes']:
                                     # Use safe provider switching method

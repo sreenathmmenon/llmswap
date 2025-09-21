@@ -1,0 +1,51 @@
+name: Test Homebrew Formula
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Test weekly to catch dependency issues
+    - cron: '0 0 * * 0'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+      
+    - name: Test formula syntax
+      run: brew audit --formula Formula/llmswap.rb
+      
+    - name: Test formula installation
+      run: brew install --build-from-source Formula/llmswap.rb
+      
+    - name: Test basic functionality
+      run: |
+        # Test version
+        llmswap --version
+        
+        # Test help
+        llmswap --help
+        
+        # Test config (should work without API keys)
+        llmswap config show
+        
+        # Test cost comparison (should work without API keys)
+        llmswap costs --input-tokens 100 --output-tokens 50
+        
+    - name: Run formula tests
+      run: brew test llmswap
+      
+    - name: Test uninstall
+      run: brew uninstall llmswap
