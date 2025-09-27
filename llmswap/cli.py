@@ -157,7 +157,7 @@ def cmd_chat(args):
         
         # Display welcome message
         current_provider = client.get_current_provider()
-        print(f"🤖 llmswap Interactive Chat v5.0.4")
+        print(f"🤖 llmswap Interactive Chat v5.0.5")
         print(f"📡 Provider: {current_provider}")
         print(f"💬 Conversational mode: ON (context maintained)")
         

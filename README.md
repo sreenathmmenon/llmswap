@@ -8,9 +8,19 @@
 
 **📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html)
 
-**Universal AI CLI & Python SDK**: One interface for 8+ providers (OpenAI GPT-4o/o1 | Claude 3.5 | Gemini Pro | Cohere | Perplexity | IBM watsonx | Groq | Together AI). Features: Multi-provider chat (Claude Code/Gemini CLI alternative), code generation (GitHub Copilot alternative), Python SDK integration, single-line CLI queries, cost optimization, age-appropriate AI. Switch providers instantly.
+**Python SDK + CLI for Any AI Provider** - Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Together AI (8+ providers).
 
-**Revolutionary v5.0**: First multi-provider conversational CLI with provider-native conversations, git-like configuration, zero vendor lock-in, and breakthrough age-appropriate AI explanations.
+**Two tools in one:**
+- 🐍 **Python SDK** - Build apps without vendor lock-in (started here!)
+- ⚡ **CLI tool** - Terminal interface that works with any subscription (bonus!)
+
+**Why llmswap?**
+- 🔓 **No vendor lock-in** - Switch providers with 1 line of code (SDK) or 1 command (CLI)
+- 🎓 **Teaching-first AI** - Eklavya mentorship system (guru, coach, socrates personas)
+- 💰 **Cost optimizer** - Automatic caching saves 50-90% on API calls
+- 🔧 **For apps AND terminal** - One tool, two ways to use it
+
+**v5.0**: First universal AI tool with both SDK and CLI, teaching personas, age-appropriate explanations, and zero vendor lock-in.
 
 ## 🎯 Transform AI Into Your Personal Mentor
 
@@ -42,6 +52,33 @@ llmswap ask "Explain REST APIs" --mentor socrates
 - 💰 **Cost Optimized** - Use cheaper providers for learning, premium for complex problems
 
 Traditional AI tools give you answers. llmswap gives you a **personalized learning journey**.
+
+## 🆚 llmswap vs Single-Provider Tools
+
+### For Python Developers Building Apps:
+
+| Your Need | Single-Provider SDKs | llmswap SDK |
+|-----------|---------------------|-------------|
+| Build chatbot/app | Import `openai` library (locked in) | Import `llmswap` (works with any provider) |
+| Switch providers | Rewrite all API calls | Change 1 line: `provider="anthropic"` |
+| Try different models | Sign up, new SDK, refactor code | Just change config, same code |
+| Cost optimization | Manual implementation | Built-in caching (50-90% savings) |
+| Use multiple providers | Maintain separate codebases | One codebase, switch dynamically |
+
+### For Developers Using Terminal:
+
+| Your Need | Vendor CLIs | llmswap CLI |
+|-----------|-------------|-------------|
+| Have Claude subscription | Install Claude Code (Claude only) | Use llmswap (works with Claude) |
+| Have OpenAI subscription | Build your own scripts | Use llmswap (works with OpenAI) |
+| Have multiple subscriptions | Install 3+ different CLIs | One CLI for all subscriptions |
+| Want AI to teach you | Not available | Built-in Eklavya mentorship |
+| Switch providers mid-chat | Can't - locked in | `/switch anthropic` command |
+
+**The Bottom Line:**
+- **Building an app?** Use llmswap SDK - no vendor lock-in
+- **Using terminal?** Use llmswap CLI - works with your existing subscriptions
+- **Both?** Perfect - it's the same tool!
 
 ```bash
 # 🆕 NEW v5.0: Age-Appropriate AI Explanations
@@ -84,15 +121,32 @@ llmswap debug --error "IndexError: list index out of range"
 ```
 
 ```python
-# Before: Provider lock-in, complex setup
-import openai  # Locked to OpenAI
-client = openai.Client(api_key="...")
-response = client.chat.completions.create(...)  # $$$ every API call
+# ❌ Problem: Vendor Lock-in
+import openai  # Locked to OpenAI forever
+client = openai.Client(api_key="sk-...")
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": "Hello"}]
+)
+# To switch to Claude? Rewrite everything.
 
-# After: Freedom + savings with llmswap
+# ✅ Solution: llmswap SDK - Universal Interface
 from llmswap import LLMClient
-client = LLMClient()  # Auto-detects any provider
-response = client.query("Hello")  # Automatic caching = 50-90% savings
+
+# Works with any provider you're subscribed to
+client = LLMClient()  # Auto-detects from env vars
+response = client.query("Hello")
+
+# Want Claude instead? Just change provider:
+client = LLMClient(provider="anthropic")  # That's it!
+
+# Want to try Gemini? 
+client = LLMClient(provider="gemini")  # Same code, different provider
+
+# Built-in cost optimization:
+# - Automatic response caching (50-90% savings)
+# - Provider cost comparison
+# - Smart provider selection based on query type
 ```
 
 ## 💡 Real-World Use Cases

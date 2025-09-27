@@ -1,5 +1,28 @@
 # Changelog
 
+## [5.0.5] - 2025-09-27
+
+### 📝 **Documentation & Messaging Update**
+
+#### **SDK-First Positioning**
+- **Enhanced README**: Updated to emphasize Python SDK as the primary feature with CLI as a bonus
+- **Comparison Tables**: Added SDK vs single-provider tools and CLI vs vendor CLIs comparisons
+- **Better Code Examples**: Enhanced SDK examples showing easy provider switching
+- **Updated Description**: Clarified "build apps without vendor lock-in" positioning
+- **SDK Keywords**: Added 21 new SDK-focused keywords for better discoverability
+
+#### **Fixes**
+- **Corrected Author Email**: Fixed author email from `zreenathmenon@gmail.com` to `sreenathmmmenon@gmail.com`
+- **Consistent Naming**: Updated author name to "Sreenath M Menon" across all files
+
+#### **Key Messages**
+- llmswap started as a **Python SDK** to solve vendor lock-in for app developers
+- CLI tool is a useful **bonus** built on top of the SDK
+- One tool, two ways to use: SDK for apps, CLI for terminal
+- Works with existing subscriptions (Claude, OpenAI, Gemini, etc.)
+
+**No code changes** - This is purely a documentation and messaging update.
+
 ## [5.0.4] - 2025-09-24
 
 ### 🔧 **Critical Model Update**

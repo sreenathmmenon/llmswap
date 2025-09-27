@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.0.4"
-description = "Universal AI CLI & Python SDK: One interface for 8+ providers (OpenAI GPT-4o/o1 | Claude 3.5 | Gemini Pro | Cohere | Perplexity | IBM watsonx | Groq | Together AI). Features: Multi-provider chat (Claude Code/Gemini CLI alternative), code generation (GitHub Copilot alternative), Python SDK integration, single-line CLI queries, cost optimization, age-appropriate AI. Switch providers instantly."
+version = "5.0.5"
+description = "Python SDK + CLI for any AI provider. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with existing subscriptions: OpenAI, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Together AI. Features: Teaching-first AI (Eklavya mentorship), automatic cost optimization (50-90% savings), age-appropriate explanations, provider switching. One tool, two ways: from llmswap import LLMClient (SDK) or llmswap chat (CLI). Alternative to Claude Code, Gemini CLI, GitHub Copilot."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Sreenath Menon", email = "zreenathmenon@gmail.com"},
+    {name = "Sreenath M Menon", email = "sreenathmmmenon@gmail.com"},
 ]
 keywords = [
     "llm",
@@ -133,7 +133,27 @@ keywords = [
     "custom-ai-personas",
     "contextual-ai",
     "session-management",
-    "ai-context-switching"
+    "ai-context-switching",
+    "python-sdk",
+    "sdk",
+    "api-client",
+    "llm-sdk",
+    "ai-sdk",
+    "multi-provider-sdk",
+    "provider-agnostic-sdk",
+    "universal-ai-sdk",
+    "openai-alternative-sdk",
+    "anthropic-sdk-alternative",
+    "gemini-sdk-alternative",
+    "no-vendor-lock-in",
+    "vendor-agnostic",
+    "provider-switching",
+    "dynamic-provider-switching",
+    "llm-abstraction",
+    "ai-abstraction-layer",
+    "sdk-and-cli",
+    "python-sdk-cli",
+    "library-and-cli"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
