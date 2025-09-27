@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.0.3"
+version = "5.0.4"
 description = "Universal AI CLI & Python SDK: One interface for 8+ providers (OpenAI GPT-4o/o1 | Claude 3.5 | Gemini Pro | Cohere | Perplexity | IBM watsonx | Groq | Together AI). Features: Multi-provider chat (Claude Code/Gemini CLI alternative), code generation (GitHub Copilot alternative), Python SDK integration, single-line CLI queries, cost optimization, age-appropriate AI. Switch providers instantly."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -87,6 +87,14 @@ keywords = [
     "embeddings",
     "chatgpt-alternative",
     "claude-code-alternative",
+    "ai-mentor",
+    "ai-teaching",
+    "personalized-ai",
+    "ai-persona",
+    "eklavya",
+    "ai-learning",
+    "coding-mentor",
+    "ai-tutor",
     "gemini-cli-alternative", 
     "openai-cli-alternative",
     "multi-provider-cli",

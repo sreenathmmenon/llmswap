@@ -55,7 +55,8 @@ class CostEstimator:
             "anthropic": {
                 "claude-3-opus": {"input": 0.015, "output": 0.075},
                 "claude-3-5-sonnet": {"input": 0.003, "output": 0.015},
-                "claude-3-5-sonnet-20241022": {"input": 0.003, "output": 0.015},
+                "claude-3-5-sonnet-20241220": {"input": 0.003, "output": 0.015},
+                "claude-3-5-sonnet-20241022": {"input": 0.003, "output": 0.015},  # Deprecated Oct 22, 2025
                 "claude-3-5-haiku": {"input": 0.001, "output": 0.005},
                 "claude-3-haiku": {"input": 0.00025, "output": 0.00125}
             },
@@ -241,7 +242,7 @@ class CostEstimator:
         if models is None:
             models = {
                 "openai": "gpt-4o-mini",           # Latest cost-effective model
-                "anthropic": "claude-3-5-sonnet-20241022",  # Latest version
+                "anthropic": "claude-3-5-sonnet-20241220",  # Latest version
                 "gemini": "gemini-2.0-flash-exp",  # Latest experimental
                 "cohere": "command-r-plus-08-2024", # Latest Command-R+
                 "perplexity": "sonar-pro",         # Main model

@@ -6,9 +6,42 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html)
+
 **Universal AI CLI & Python SDK**: One interface for 8+ providers (OpenAI GPT-4o/o1 | Claude 3.5 | Gemini Pro | Cohere | Perplexity | IBM watsonx | Groq | Together AI). Features: Multi-provider chat (Claude Code/Gemini CLI alternative), code generation (GitHub Copilot alternative), Python SDK integration, single-line CLI queries, cost optimization, age-appropriate AI. Switch providers instantly.
 
 **Revolutionary v5.0**: First multi-provider conversational CLI with provider-native conversations, git-like configuration, zero vendor lock-in, and breakthrough age-appropriate AI explanations.
+
+## 🎯 Transform AI Into Your Personal Mentor
+
+**Inspired by Eklavya** - the legendary self-taught archer who learned from dedication and the right guidance - llmswap transforms any AI provider into a personalized mentor that adapts to your learning style.
+
+**The Challenge:** Developers struggle to learn effectively from AI because responses are generic, lack personality, and don't adapt to individual needs.
+
+**Our Solution:** Choose your mentorship style, and ANY AI provider becomes your personalized guide:
+
+```bash
+# Get wisdom and deep insights from a patient teacher
+llmswap chat --mentor guru --alias "Guruji"
+
+# High-energy motivation when you're stuck
+llmswap ask "How do I debug this?" --mentor coach
+
+# Collaborative peer learning for exploring ideas
+llmswap chat --mentor friend --alias "CodeBuddy"
+
+# Question-based learning for critical thinking
+llmswap ask "Explain REST APIs" --mentor socrates
+```
+
+**What Makes This Different:**
+- 🧠 **Works with ANY provider** - Transform Claude, GPT-4, or Gemini into your mentor
+- 🎭 **6 Teaching Personas** - Guru, Coach, Friend, Socrates, Professor, Tutor
+- 📊 **Progress Tracking** - Remember what you've learned across sessions
+- 🎓 **Age-Appropriate** - Explanations tailored to your level (--age 10, --age 25, etc.)
+- 💰 **Cost Optimized** - Use cheaper providers for learning, premium for complex problems
+
+Traditional AI tools give you answers. llmswap gives you a **personalized learning journey**.
 
 ```bash
 # 🆕 NEW v5.0: Age-Appropriate AI Explanations
@@ -62,6 +95,134 @@ client = LLMClient()  # Auto-detects any provider
 response = client.query("Hello")  # Automatic caching = 50-90% savings
 ```
 
+## 💡 Real-World Use Cases
+
+### 📚 **Learning & Skill Development**
+```bash
+# Junior developer learning system design
+llmswap chat --mentor professor --alias "Dr. Smith"
+"Explain microservices architecture"
+# Response adapts to teaching style with examples and deep explanations
+
+# Career switcher exploring new domains
+llmswap ask "What is Kubernetes?" --age 25 --audience "beginner"
+# Age-appropriate explanation without assuming prior DevOps knowledge
+```
+
+### 🚀 **Professional Development**
+```bash
+# Get different perspectives on technical decisions
+llmswap ask "Should I use MongoDB or PostgreSQL?" --mentor guru
+# Wisdom-based response considering trade-offs and bigger picture
+
+llmswap ask "Should I use MongoDB or PostgreSQL?" --mentor developer
+# Practical engineering perspective with production experience
+```
+
+### 💼 **Team Collaboration**
+```bash
+# Explain technical concepts to non-technical stakeholders
+llmswap ask "Explain our API architecture" --audience "business owner"
+# Business-friendly explanation without jargon
+
+# Onboard new team members
+llmswap chat --mentor friend --alias "TeamBuddy"
+# Collaborative, approachable learning environment
+```
+
+### 🎭 **Same Question, Different Perspectives**
+
+Watch how the SAME question gets tailored responses based on your role:
+
+```bash
+# As a Developer: Implementation focus
+llmswap ask "Explain Model Context Protocol (MCP)" --audience developer
+
+Response: "MCP is a standardized protocol for connecting AI models to external 
+data sources and tools. Unlike traditional chatbots that bundle everything into 
+one monolithic system, MCP uses a client-server architecture:
+
+- Server: Exposes tools, resources, and prompts via standard interface
+- Client: Your AI application that consumes these capabilities
+- Transport: JSON-RPC over stdio/HTTP
+
+Key difference from older chatbots:
+OLD: Hardcoded integrations, tight coupling, monolithic deployment
+NEW: Pluggable architecture, loose coupling, independent tool servers
+
+Code example:
+from mcp import Server
+server = Server("my-tools")
+@server.tool()
+def get_weather(city: str): ..."
+
+---
+
+# As an Architect: System design focus  
+llmswap ask "Explain Model Context Protocol (MCP)" --audience architect
+
+Response: "MCP introduces a service-oriented architecture for AI systems, 
+addressing key architectural concerns:
+
+**System Architecture:**
+┌─────────────┐      ┌──────────────┐      ┌─────────────┐
+│ AI Client   │◄────►│ MCP Protocol │◄────►│ Tool Server │
+│ (Claude App)│      │  (JSON-RPC)  │      │ (Resources) │
+└─────────────┘      └──────────────┘      └─────────────┘
+
+**Design Patterns:**
+- Service Discovery: Dynamic capability negotiation
+- Loose Coupling: Clients/servers evolve independently  
+- Extensibility: Add new tools without modifying core
+- Standardization: Uniform interface across tools
+
+**vs Traditional Chatbots:**
+- Monolithic → Microservices for AI tools
+- Static → Dynamic capability loading
+- Vendor lock-in → Provider-agnostic standard
+
+**Scalability:** Deploy tool servers independently, horizontal scaling per service"
+
+---
+
+# As a Business Leader: ROI and strategy focus
+llmswap ask "Explain Model Context Protocol (MCP)" --audience "business leader"
+
+Response: "Model Context Protocol (MCP) is like moving from custom-built 
+integrations to standardized APIs - but for AI systems.
+
+**Business Impact:**
+
+1. **Reduced Integration Costs**
+   - OLD: $50K-$100K per custom AI integration
+   - NEW: Plug-and-play tools, 80% cost reduction
+   - Time to market: Weeks instead of months
+
+2. **Vendor Independence**  
+   - Not locked to one AI provider
+   - Switch between Claude, GPT-4, Gemini seamlessly
+   - Negotiating power with vendors
+
+3. **Reusable Components**
+   - Build once, use across multiple AI applications
+   - Internal tools become valuable assets
+   - Ecosystem of third-party MCP tools
+
+4. **Competitive Advantage**
+   - Deploy AI features 10x faster than competitors
+   - Respond quickly to market changes
+   - Lower total cost of ownership
+
+**vs Traditional Chatbots:** Traditional bots were closed systems requiring 
+custom development for each feature. MCP creates an open ecosystem where your 
+team (or partners) can extend capabilities without vendor dependencies.
+
+**ROI Example:** A company saved $200K in integration costs and reduced 
+deployment time from 6 months to 3 weeks using MCP architecture."
+```
+
+**The Power:** Same command, same AI provider, completely different responses tailored to what each role needs to know.
+
 ## ⚠️ Privacy & Usage Disclaimers
 
 **llmswap is an interface tool only** - all AI interactions and billing are handled directly by your chosen providers.
@@ -96,7 +257,7 @@ pip install llmswap
 
 **Why Homebrew?** No virtualenv needed, global access, automatic dependency management, and easier updates.
 
-## 📋 Quick Reference - New v5.0.3 Commands
+## 📋 Quick Reference - New v5.0.4 Commands
 
 | Command | Description | Example |
 |---------|-------------|---------|
@@ -106,7 +267,7 @@ pip install llmswap
 | `/switch` (in chat) | Switch providers mid-conversation | Privacy-compliant provider switching |
 | `/provider` (in chat) | Show current provider and available options | Quick status check |
 
-### 🔧 First-Time Setup (v5.0.3 NEW!)
+### 🔧 First-Time Setup (v5.0.4 NEW!)
 ```bash
 # First run automatically creates ~/.llmswap/config.yaml with defaults
 llmswap ask "Hello world"
@@ -255,7 +416,7 @@ llmswap debug --error "ConnectionTimeout at line 42"
 llmswap logs --analyze app.log --since "2h ago"
 ```
 
-### 3️⃣ **Provider Management & Model Configuration** (v5.0.3 NEW!)
+### 3️⃣ **Provider Management & Model Configuration** (v5.0.4 NEW!)
 
 **🎯 View All Providers and Models:**
 ```bash

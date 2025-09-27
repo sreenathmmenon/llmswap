@@ -1,5 +1,25 @@
 # Changelog
 
+## [5.0.4] - 2025-09-24
+
+### 🔧 **Critical Model Update**
+
+#### **Anthropic Claude Model Update**
+- **Updated Default Model**: Changed from deprecated `claude-3-5-sonnet-20241022` to latest `claude-3-5-sonnet-20241220`
+- **Backward Compatibility**: Kept deprecated model in pricing table with deprecation notice
+- **Cost Estimator Fix**: Updated default model selection for Anthropic provider
+- **User Impact**: Prevents errors from using retired model (retiring October 22, 2025)
+
+#### **Documentation & Discovery**
+- **Website Launch**: Added llmswap.org documentation links to README
+- **SEO Enhancement**: Added Eklavya/mentorship keywords for better discoverability
+- **New Keywords**: ai-mentor, ai-teaching, personalized-ai, ai-persona, eklavya, ai-learning, coding-mentor, ai-tutor
+
+#### **Links Added**
+- Documentation: https://llmswap.org
+- CLI Reference: https://llmswap.org/docs/cli.html  
+- SDK Guide: https://llmswap.org/docs/sdk.html
+
 ## [4.2.0] - 2025-09-20
 
 ### 🚀 **Enhanced Conversational Chat Interface**
