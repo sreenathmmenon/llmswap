@@ -157,7 +157,7 @@ def cmd_chat(args):
         
         # Display welcome message
         current_provider = client.get_current_provider()
-        print(f"🤖 llmswap Interactive Chat v5.0.5")
+        print(f"🤖 llmswap Interactive Chat v5.1.0")
         print(f"📡 Provider: {current_provider}")
         print(f"💬 Conversational mode: ON (context maintained)")
         
@@ -167,6 +167,34 @@ def cmd_chat(args):
         print("\nCommands: /help, /provider, /switch, /clear, /stats, /quit")
         if chat_context:
             print("          /age <number>, /audience <type>, /level <level>, /reset-context")
+        
+        try:
+            from llmswap.workspace.detector import WorkspaceDetector
+            from llmswap.workspace.manager import WorkspaceManager
+            from llmswap.workspace.registry import WorkspaceRegistry
+            from pathlib import Path
+            
+            workspace_dir = WorkspaceDetector.detect()
+            
+            if workspace_dir:
+                workspace_id = workspace_dir.name
+                registry = WorkspaceRegistry()
+                all_workspaces = registry.list_workspaces()
+                
+                for ws in all_workspaces:
+                    if ws["workspace_id"] == workspace_id:
+                        project_path = Path(ws["project_path"])
+                        manager = WorkspaceManager(project_path)
+                        data = manager.load_workspace()
+                        
+                        print(f"\n📁 Workspace: {data['project_name']}")
+                        print(f"📊 Learnings: {data['statistics']['learnings_count']} tracked")
+                        break
+            else:
+                print("\n💡 Tip: Run 'llmswap workspace init' to enable project memory")
+        except Exception:
+            pass
+        
         print("─" * 50)
         
         message_count = 0
@@ -1243,6 +1271,147 @@ def cmd_config(args):
         print(f"Config error: {e}")
         return 1
 
+def cmd_workspace(args):
+    from llmswap.workspace.manager import WorkspaceManager
+    from llmswap.workspace.detector import WorkspaceDetector
+    from llmswap.workspace.registry import WorkspaceRegistry
+    from tabulate import tabulate
+    
+    if args.workspace_action == 'init':
+        project_path = Path.cwd()
+        manager = WorkspaceManager(project_path)
+        
+        try:
+            workspace_data = manager.init_workspace(project_name=args.name)
+            
+            print(f"✅ Workspace initialized: {workspace_data['project_name']}")
+            print(f"📁 Workspace ID: {workspace_data['workspace_id']}")
+            print(f"💾 Location: ~/.llmswap/workspaces/{workspace_data['workspace_id']}/")
+            print(f"\nCreated files:")
+            print(f"  - workspace.json (metadata)")
+            print(f"  - context.md (project description)")
+            print(f"  - learnings.md (learning journal)")
+            print(f"  - decisions.md (architecture decisions)")
+            print(f"\n💡 Tip: Your project directory stays clean!")
+            print(f"   All workspace data is in ~/.llmswap/workspaces/")
+            
+        except FileExistsError:
+            print("❌ Workspace already exists for this project")
+            print(f"   Workspace ID: {manager.workspace_id}")
+            return 1
+    
+    elif args.workspace_action == 'info':
+        workspace_dir = WorkspaceDetector.detect()
+        
+        if not workspace_dir:
+            print("❌ No workspace found in current directory or parents")
+            print("   Run 'llmswap workspace init' to create one")
+            return 1
+        
+        workspace_id = workspace_dir.name
+        registry = WorkspaceRegistry()
+        all_workspaces = registry.list_workspaces()
+        
+        project_path = None
+        for ws in all_workspaces:
+            if ws["workspace_id"] == workspace_id:
+                project_path = Path(ws["project_path"])
+                break
+        
+        if not project_path:
+            print("❌ Workspace found but not in registry")
+            return 1
+        
+        manager = WorkspaceManager(project_path)
+        
+        try:
+            data = manager.load_workspace()
+            
+            print(f"📊 Workspace: {data['project_name']}")
+            print(f"📁 Project Path: {project_path}")
+            print(f"💾 Workspace Location: ~/.llmswap/workspaces/{workspace_id}/")
+            print(f"🆔 Workspace ID: {data['workspace_id']}")
+            print(f"\n📈 Statistics:")
+            print(f"  Total queries: {data['statistics']['total_queries']}")
+            print(f"  Learnings tracked: {data['statistics']['learnings_count']}")
+            print(f"  Decisions recorded: {data['statistics']['decisions_count']}")
+            print(f"\n⚙️  Settings:")
+            print(f"  Default mentor: {data.get('default_mentor', 'guru')}")
+            if data.get('mentor_alias'):
+                print(f"  Mentor alias: {data['mentor_alias']}")
+            if data.get('tags'):
+                print(f"  Tags: {', '.join(data['tags'])}")
+            
+        except Exception as e:
+            print(f"❌ Error loading workspace: {e}")
+            return 1
+    
+    elif args.workspace_action == 'list':
+        registry = WorkspaceRegistry()
+        workspaces = registry.list_workspaces()
+        
+        if not workspaces:
+            print("No workspaces found.")
+            print("Run 'llmswap workspace init' in a project directory to create one.")
+            return
+        
+        table_data = []
+        for ws in workspaces:
+            table_data.append([
+                ws['project_name'],
+                ws['project_path'],
+                ws['last_accessed'][:10]
+            ])
+        
+        headers = ["Project", "Path", "Last Used"]
+        print(tabulate(table_data, headers=headers, tablefmt="grid"))
+    
+    elif args.workspace_action == 'journal':
+        workspace_dir = WorkspaceDetector.detect()
+        
+        if not workspace_dir:
+            print("❌ No workspace found")
+            return 1
+        
+        learnings_file = workspace_dir / "learnings.md"
+        
+        if not learnings_file.exists():
+            print("No learnings recorded yet.")
+            return
+        
+        content = learnings_file.read_text()
+        print(content)
+    
+    elif args.workspace_action == 'decisions':
+        workspace_dir = WorkspaceDetector.detect()
+        
+        if not workspace_dir:
+            print("❌ No workspace found")
+            return 1
+        
+        decisions_file = workspace_dir / "decisions.md"
+        
+        if not decisions_file.exists():
+            print("No decisions recorded yet.")
+            return
+        
+        content = decisions_file.read_text()
+        print(content)
+    
+    elif args.workspace_action == 'context':
+        workspace_dir = WorkspaceDetector.detect()
+        
+        if not workspace_dir:
+            print("❌ No workspace found")
+            return 1
+        
+        context_file = workspace_dir / "context.md"
+        
+        import subprocess
+        import os
+        editor = os.environ.get('EDITOR', 'nano')
+        subprocess.call([editor, str(context_file)])
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
@@ -1416,6 +1585,13 @@ Examples:
     providers_parser.add_argument('--format', choices=['table', 'json'], 
                                  default='table', help='Output format')
     config_parser.add_argument('value', nargs='?', help='Configuration value for set action')
+    
+    # workspace command - Manage project workspaces
+    workspace_parser = subparsers.add_parser('workspace', help='Manage project workspaces')
+    workspace_parser.add_argument('workspace_action',
+                                 choices=['init', 'info', 'list', 'journal', 'decisions', 'context'],
+                                 help='Workspace action to perform')
+    workspace_parser.add_argument('--name', '-n', help='Project name for init')
     config_parser.add_argument('--file', '-f', help='File path for import/export operations')
     config_parser.add_argument('--merge', action='store_true', 
                               help='Merge imported config instead of replacing')
@@ -1441,6 +1617,7 @@ Examples:
         'costs': cmd_costs,
         'config': cmd_config,
         'providers': cmd_providers,
+        'workspace': cmd_workspace,
     }
     
     return commands[args.command](args)

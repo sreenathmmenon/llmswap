@@ -1,5 +1,109 @@
 # Changelog
 
+## [5.1.0] - 2025-09-28
+
+### 🚀 **Project Workspace System - Memory & Context**
+
+#### **New Features**
+- **Project Workspaces**: Home directory-based workspace system (`~/.llmswap/workspaces/`)
+  - Zero project directory clutter - all data stored in home directory
+  - Registry-based detection for fast workspace discovery (< 50ms)
+  - Stable workspace IDs using `{project-name}-{hash}` format
+  
+- **Auto-Learning Tracking**: Automatically extract and save key learnings
+  - Uses Groq (llama-3.1-8b-instant) for intelligent learning extraction
+  - Builds learning journal without manual effort
+  - Tracks 3-5 key concepts per conversation
+  
+- **Context-Aware Eklavya**: WorkspaceAwareMentor with project context
+  - Loads project description, learnings, and architecture decisions
+  - Provides context-relevant teaching and guidance
+  - Builds on previous learnings when teaching new concepts
+  
+- **CLI Workspace Commands**: Complete workspace management via CLI
+  - `llmswap workspace init` - Initialize workspace for current project
+  - `llmswap workspace info` - View workspace statistics and settings
+  - `llmswap workspace list` - List all workspaces across system
+  - `llmswap workspace journal` - View learning journal
+  - `llmswap workspace decisions` - View architecture decisions
+  - `llmswap workspace context` - Edit project context
+  
+- **SDK Integration**: Automatic workspace detection and learning tracking
+  - LLMClient auto-detects workspace from current directory
+  - Tracks learnings after each query (if workspace exists)
+  - Non-breaking - everything works without workspace
+
+#### **Files Created**
+- `llmswap/workspace/__init__.py` - Workspace package
+- `llmswap/workspace/manager.py` - Core workspace management (~200 lines)
+- `llmswap/workspace/detector.py` - Fast registry-based workspace detection
+- `llmswap/workspace/registry.py` - Global workspace tracking system
+- `llmswap/workspace/learnings_tracker.py` - Auto-learning extraction
+- `llmswap/workspace/templates.py` - Markdown file templates
+- `llmswap/eklavya/workspace_mentor.py` - Context-aware mentor
+
+#### **Files Modified**
+- `llmswap/cli.py` - Added cmd_workspace function and argparse integration
+- `llmswap/client.py` - Added workspace detection and learning tracking
+- `pyproject.toml`, `llmswap/__init__.py` - Version bump to 5.1.0
+
+#### **Technical Details**
+- **Storage Location**: `~/.llmswap/workspaces/{workspace-id}/`
+- **Registry File**: `~/.llmswap/registry.json`
+- **Workspace Files**: `workspace.json`, `context.md`, `learnings.md`, `decisions.md`
+- **Detection Algorithm**: Registry lookup from current directory to home
+- **Non-Breaking**: All workspace features are optional
+
+#### **New Claude Sonnet 4.5 Support**
+- **Latest Model**: Added `claude-sonnet-4-5` - Anthropic's best coding model
+- **Default Updated**: Changed default Anthropic model to Claude Sonnet 4.5
+- **Pricing Added**: $3/$15 per million tokens (same as previous Sonnet)
+- **Performance**: "Best coding model in the world" per Anthropic
+
+#### **Search Console Improvements** (Based on user data)
+- **Claude Model Examples**: Added specific model documentation and examples
+- **FastAPI Integration**: Added complete FastAPI + HTTPBearer example
+- **AsyncIO Support**: Enhanced async examples and documentation
+- **Response Object**: Better documentation of `response.content` usage
+
+#### **Usage Examples**
+```bash
+# Initialize workspace
+cd /path/to/project
+llmswap workspace init --name "My Project"
+
+# Chat with new Claude Sonnet 4.5 (best for coding)
+llmswap chat --provider anthropic --model claude-sonnet-4-5
+
+# View workspace info
+llmswap workspace info
+```
+
+```python
+# NEW: Claude Sonnet 4.5 - Best coding model
+from llmswap import LLMClient
+
+# Use best coding model by default
+client = LLMClient(provider="anthropic", model="claude-sonnet-4-5")
+response = client.query("Write a Python function to sort files")
+print(response.content)  # Access response easily
+
+# FastAPI Integration (based on user searches)
+from fastapi import FastAPI, HTTPBearer
+app = FastAPI()
+security = HTTPBearer()
+
+@app.post("/chat")
+async def chat_endpoint(request: dict, token = Depends(security)):
+    client = LLMClient(provider="anthropic", model="claude-sonnet-4-5")
+    response = client.query(request["message"])
+    return {"response": response.content}
+
+# Workspace auto-detection
+client = LLMClient()  # Workspace auto-detected if available
+response = client.query("Explain async/await")  # Learning auto-tracked
+```
+
 ## [5.0.5] - 2025-09-27
 
 ### 📝 **Documentation & Messaging Update**

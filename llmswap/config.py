@@ -50,7 +50,7 @@ class LLMSwapConfig:
                 'fallback_order': ['anthropic', 'openai', 'gemini', 'cohere', 
                                  'perplexity', 'watsonx', 'groq', 'ollama'],
                 'models': {
-                    'anthropic': 'claude-3-5-sonnet-20241022',
+                    'anthropic': 'claude-sonnet-4-5',
                     'openai': 'gpt-4o',
                     'gemini': 'gemini-1.5-pro',
                     'groq': 'llama-3.3-70b-versatile',

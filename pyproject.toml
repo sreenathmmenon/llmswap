@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.0.5"
-description = "Python SDK + CLI for any AI provider. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with existing subscriptions: OpenAI, Claude, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Together AI. Features: Teaching-first AI (Eklavya mentorship), automatic cost optimization (50-90% savings), age-appropriate explanations, provider switching. One tool, two ways: from llmswap import LLMClient (SDK) or llmswap chat (CLI). Alternative to Claude Code, Gemini CLI, GitHub Copilot."
+version = "5.1.0"
+description = "cURL for LLMs - Universal AI SDK + CLI with multiple second brains. Works with ANY provider: Anthropic Claude (Sonnet 4.5, Opus, Haiku), OpenAI (GPT-4, GPT-3.5, o1), Google Gemini (Pro, Flash, Ultra), Cohere (Command), xAI Grok, Perplexity, IBM watsonx, Groq (Llama, Mixtral), Together AI, Ollama (local). Features: Per-project workspace memory, auto-learning journals, teaching-first mentorship (Eklavya), persona rotation, architecture decision logs, cost optimization (50-90% savings), zero vendor lock-in. One tool, two ways: Python SDK or CLI. Alternative to Claude Code, Cursor, Continue.dev, GitHub Copilot."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -153,7 +153,22 @@ keywords = [
     "ai-abstraction-layer",
     "sdk-and-cli",
     "python-sdk-cli",
-    "library-and-cli"
+    "library-and-cli",
+    "workspace-system",
+    "project-memory",
+    "learning-journal",
+    "context-aware-ai",
+    "persistent-context",
+    "architecture-decisions",
+    "claude-sonnet-4-5",
+    "claude-4-5",
+    "cursor-alternative",
+    "continue-dev-alternative",
+    "second-brain",
+    "multiple-contexts",
+    "persona-rotation",
+    "ai-straying-prevention",
+    "project-knowledge-base"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

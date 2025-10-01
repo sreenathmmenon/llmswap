@@ -69,6 +69,34 @@ class LLMClient:
         self._session_cost = 0.0
         self._session_start_time = None
         
+        # Workspace detection and learning tracking (v5.1.0)
+        self.workspace_dir = None
+        self.workspace_manager = None
+        self.learnings_tracker = None
+        
+        try:
+            from .workspace.detector import WorkspaceDetector
+            from .workspace.manager import WorkspaceManager
+            from .workspace.learnings_tracker import LearningsTracker
+            from .workspace.registry import WorkspaceRegistry
+            from pathlib import Path
+            
+            self.workspace_dir = WorkspaceDetector.detect()
+            
+            if self.workspace_dir:
+                workspace_id = self.workspace_dir.name
+                registry = WorkspaceRegistry()
+                all_workspaces = registry.list_workspaces()
+                
+                for ws in all_workspaces:
+                    if ws["workspace_id"] == workspace_id:
+                        project_path = Path(ws["project_path"])
+                        self.workspace_manager = WorkspaceManager(project_path)
+                        self.learnings_tracker = LearningsTracker(self.workspace_manager)
+                        break
+        except Exception:
+            pass
+        
         if provider == "auto":
             self.current_provider = self._detect_available_provider()
         else:
@@ -212,6 +240,15 @@ class LLMClient:
                 response, start_time, cache_hit, fallback_used, 
                 retry_count, success=True
             )
+            
+            # Track learnings if workspace exists (v5.1.0)
+            if self.learnings_tracker and not cache_hit:
+                try:
+                    self.learnings_tracker.extract_and_save(prompt, response.content)
+                    if self.workspace_manager:
+                        self.workspace_manager.increment_query_count()
+                except Exception:
+                    pass
             
             return response
             
