@@ -1,5 +1,24 @@
 # Changelog
 
+## [5.1.3] - 2025-10-03
+
+### Zero-Wait Model Support (Pass-Through Architecture)
+
+Documented how llmswap already supports any model from your provider - even ones that don't exist yet. When GPT-5 or Gemini 2.5 Pro launches, you can use it immediately without waiting for us to update anything.
+
+**What changed:**
+- Added section explaining pass-through architecture
+- Users now know they can use GPT-5, Claude Opus 4, Gemini 2.5 Pro right when they launch
+- Added CLI and Python SDK examples for using unreleased models
+- Updated comparison tables to show this advantage over other tools
+- New "Provider & Model Flexibility" features section
+- Mentioned xAI (Grok) provider coming soon
+
+**Why this matters:**
+You're not stuck waiting for llmswap updates when your provider releases new models. Just pass the model name and it works.
+
+---
+
 ## [5.1.2] - 2025-10-01
 
 ### Documentation Cleanup

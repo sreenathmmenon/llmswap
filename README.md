@@ -1,4 +1,4 @@
-# llmswap v5.1.2 - Multiple AI Second Brains with Memory & Mentorship
+# llmswap v5.1.3 - Multiple AI Second Brains with Memory & Mentorship
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -26,9 +26,9 @@ llmswap chat "Help me with Flask routing"
 # AI has full project context + all past learnings!
 ```
 
-> **🆕 Now with Claude Sonnet 4.5!** llmswap supports Anthropic's latest and most advanced coding model. Use `--model claude-sonnet-4-5` or set as default in config. The best AI coding assistant just got better!
+> **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. llmswap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports 8 providers (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama). xAI (Grok) coming soon.
 
-**The First AI Tool with Project Memory & Learning Journals** - v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama (8+ providers).
+**The First AI Tool with Project Memory & Learning Journals** - v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama (8 providers). **Use any model from your provider** - even ones released tomorrow. Pass-through architecture means GPT-5, Gemini 2.5 Pro, Claude Opus 4? They work the day they launch. xAI (Grok) support coming soon.
 
 **🎯 Solve These Common Problems:**
 - ❌ "I need multiple second brains for different aspects of my life" 🆕
@@ -180,6 +180,50 @@ llmswap chat --mentor coach "What's the fastest path to v1?"
 
 **Traditional AI tools give you answers. llmswap v5.1.0 gives you a personalized learning journey that REMEMBERS.**
 
+## 🔓 Use Any Model Your Provider Supports (Zero-Wait Model Support)
+
+Here's something cool: llmswap doesn't restrict which models you can use. When GPT-5 or Gemini 2.5 Pro drops tomorrow, you can start using it immediately. No waiting for us to update anything.
+
+**How?** We use pass-through architecture. Whatever model name you pass goes directly to your provider's API. We don't gatekeep.
+
+### CLI Examples:
+
+```bash
+# Use any OpenAI model (even ones that don't exist yet)
+llmswap chat --provider openai --model gpt-5
+llmswap chat --provider openai --model o3-mini
+
+# Use any Anthropic model
+llmswap chat --provider anthropic --model claude-opus-4
+llmswap chat --provider anthropic --model claude-sonnet-4-5
+
+# Use any Gemini model
+llmswap chat --provider gemini --model gemini-2-5-pro
+llmswap chat --provider gemini --model gemini-ultra-2
+
+# Set as default so you don't have to type it every time
+llmswap config set provider.models.openai gpt-5
+llmswap config set provider.models.anthropic claude-opus-4
+```
+
+### Python SDK:
+
+```python
+from llmswap import LLMClient
+
+# Use whatever model your provider offers
+client = LLMClient(provider="openai", model="gpt-5")
+client = LLMClient(provider="anthropic", model="claude-opus-4")
+client = LLMClient(provider="gemini", model="gemini-2-5-pro")
+
+# Model just released? Use it right now
+client = LLMClient(provider="openai", model="gpt-6")  # works!
+```
+
+**The point:** You're not limited to what we've documented. If your provider supports it, llmswap supports it.
+
+**Coming soon:** xAI (Grok) provider support. Until then, you have 8 providers to choose from.
+
 ## 🆚 llmswap vs Single-Provider Tools
 
 ### For Python Developers Building Apps:
@@ -189,6 +233,7 @@ llmswap chat --mentor coach "What's the fastest path to v1?"
 | Build chatbot/app | Import `openai` library (locked in) | Import `llmswap` (works with any provider) |
 | Switch providers | Rewrite all API calls | Change 1 line: `provider="anthropic"` |
 | Try different models | Sign up, new SDK, refactor code | Just change config, same code |
+| Use new models | Wait for SDK update | Works immediately (pass-through) |
 | Cost optimization | Manual implementation | Built-in caching (50-90% savings) |
 | Use multiple providers | Maintain separate codebases | One codebase, switch dynamically |
 
@@ -199,6 +244,7 @@ llmswap chat --mentor coach "What's the fastest path to v1?"
 | Have Claude subscription | Install Claude Code (Claude only) | Use llmswap (works with Claude) |
 | Have OpenAI subscription | Build your own scripts | Use llmswap (works with OpenAI) |
 | Have multiple subscriptions | Install 3+ different CLIs | One CLI for all subscriptions |
+| New model launches | Wait for CLI update | Use it same day (pass-through) |
 | Want AI to teach you | Not available | Built-in Eklavya mentorship |
 | Switch providers mid-chat | Can't - locked in | `/switch anthropic` command |
 
@@ -777,6 +823,12 @@ comparison = client.get_provider_comparison()  # Compare costs
 - **🧠 Zero Local Storage**: 99% memory reduction, all context at provider level
 - **⚙️ Git-like Config**: Team-shareable configuration management
 - **📊 Session Analytics**: Real-time cost and token tracking
+
+### Provider & Model Flexibility
+- **🔓 Pass-Through Architecture**: Use ANY model from your provider - GPT-5, Claude Opus 4, Gemini 2.5 Pro work immediately
+- **⚡ Zero-Wait Updates**: New model released? Use it the same day, no llmswap update needed
+- **🌐 8 Providers Currently**: OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama
+- **🔜 Coming Soon**: xAI (Grok) provider support in development
 
 ## 🚀 Complete Feature Set
 
