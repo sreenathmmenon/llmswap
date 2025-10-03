@@ -1,4 +1,4 @@
-# llmswap v5.1.1 - Multiple AI Second Brains with Memory & Mentorship
+# llmswap v5.1.2 - Multiple AI Second Brains with Memory & Mentorship
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -1315,30 +1315,6 @@ print(client.query("Hello, AI!").content)
 ```
 
 **That's it!** You're now using AI with automatic provider detection, failover support, and cost optimization.
-
----
-
-## 🔍 Keywords & SEO
-
-**AI Development Tools:** AI mentor, AI assistant, AI CLI, AI SDK, machine learning tools, LLM orchestration, AI development platform
-
-**Project Memory & Context:** project memory AI, context-aware AI, workspace AI, learning journal AI, AI that remembers, persistent AI context, project-specific AI
-
-**Multi-Provider AI:** multi-provider LLM, AI provider switching, vendor-agnostic AI, universal AI SDK, provider-independent AI, LLM abstraction layer
-
-**AI Learning & Mentorship:** AI mentor, AI tutor, AI teacher, personalized AI learning, AI coaching, teaching personas, Eklavya AI mentor, AI learning journey
-
-**Developer Productivity:** developer AI tools, coding AI assistant, AI for developers, programming AI mentor, software development AI, AI code helper
-
-**Python SDK & CLI:** Python AI SDK, AI CLI tool, terminal AI assistant, command-line AI, Python LLM library, AI development kit
-
-**Cost Optimization:** AI cost tracking, LLM cost optimization, AI analytics, provider cost comparison, AI usage statistics
-
-**Competitors:** Claude Code alternative, Cursor AI alternative, GitHub Copilot alternative, ChatGPT alternative, Aider alternative, Continue.dev alternative
-
-**Technical Keywords:** LangChain alternative, OpenAI SDK alternative, Anthropic SDK alternative, multi-LLM framework, AI orchestration platform, LLM wrapper
-
-**Use Cases:** AI for learning, AI for education, AI for freelancers, AI for teams, AI onboarding tool, AI documentation, AI architecture decisions
 
 ---
 

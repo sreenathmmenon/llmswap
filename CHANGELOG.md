@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.1.2] - 2025-10-01
+
+### Documentation Cleanup
+
+#### **Improved**
+- Removed redundant Keywords & SEO section from README
+- Keywords already in pyproject.toml (156 keywords)
+- Cleaner README, easier to read
+
+---
+
 ## [5.1.1] - 2025-10-01
 
 ### Documentation & Installation
