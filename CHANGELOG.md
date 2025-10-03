@@ -1,5 +1,24 @@
 # Changelog
 
+## [5.1.1] - 2025-10-01
+
+### Documentation & Installation
+
+#### **Improved**
+- Added Quick Start section (30-second setup guide) to README
+- Added Homebrew installation instructions alongside pip
+- Removed "(if available)" from Twitter/X link - account is live
+- Improved Stats & Achievements section:
+  - Removed generic "Growing developer community" line
+  - Added "Installation: pip, Homebrew, or from source"
+- Better visibility for new users with immediate examples
+
+#### **Fixed**
+- Documentation clarity improvements
+- Installation method visibility
+
+---
+
 ## [5.1.0] - 2025-09-28
 
 ### 🚀 **Project Workspace System - Memory & Context**

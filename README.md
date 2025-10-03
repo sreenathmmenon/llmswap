@@ -1,4 +1,4 @@
-# llmswap v5.1.0 - Multiple AI Second Brains with Memory & Mentorship
+# llmswap v5.1.1 - Multiple AI Second Brains with Memory & Mentorship
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -7,6 +7,24 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html)
+
+## ⚡ Quick Start (30 seconds)
+
+```bash
+# Install
+pip install llmswap
+
+# or Homebrew
+brew tap llmswap/tap && brew install llmswap
+
+# Create your first workspace
+cd ~/my-project
+llmswap workspace init
+
+# Chat with AI that remembers everything
+llmswap chat "Help me with Flask routing"
+# AI has full project context + all past learnings!
+```
 
 > **🆕 Now with Claude Sonnet 4.5!** llmswap supports Anthropic's latest and most advanced coding model. Use `--model claude-sonnet-4-5` or set as default in config. The best AI coding assistant just got better!
 
@@ -1334,7 +1352,7 @@ print(client.query("Hello, AI!").content)
 - **PyPI Package:** [pypi.org/project/llmswap](https://pypi.org/project/llmswap)
 - **Homebrew Tap:** [github.com/llmswap/homebrew-tap](https://github.com/llmswap/homebrew-tap)
 - **Issues & Support:** [github.com/sreenathmmenon/llmswap/issues](https://github.com/sreenathmmenon/llmswap/issues)
-- **Twitter/X:** [@llmswap](https://twitter.com/llmswap) (if available)
+- **Twitter/X:** [@llmswap](https://twitter.com/llmswap)
 
 ---
 
@@ -1345,8 +1363,8 @@ print(client.query("Hello, AI!").content)
 - **License:** MIT (100% open source)
 - **Python Support:** 3.8+
 - **Providers Supported:** 8+ (Anthropic, OpenAI, Google, IBM, Groq, Cohere, Perplexity, Ollama)
+- **Installation:** pip, Homebrew, or from source
 - **Active Development:** Regular updates and feature releases
-- **Community:** Growing developer community
 
 ---
 
