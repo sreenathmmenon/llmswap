@@ -4,7 +4,6 @@ import os
 import time
 from typing import Optional, List, Dict, Any
 
-from .providers import AnthropicProvider, OpenAIProvider, GeminiProvider, OllamaProvider, WatsonxProvider, GroqProvider, CoherProvider, PerplexityProvider
 from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
 from .cache import InMemoryCache
@@ -13,7 +12,7 @@ from .cache import InMemoryCache
 class LLMClient:
     """Simple client for any LLM provider."""
     
-    def __init__(self, 
+    def __init__(self,
                  provider: str = "auto",
                  model: Optional[str] = None,
                  api_key: Optional[str] = None,
@@ -21,11 +20,12 @@ class LLMClient:
                  cache_enabled: bool = False,
                  cache_ttl: int = 3600,
                  cache_max_size_mb: int = 100,
-                 analytics_enabled: bool = False):
+                 analytics_enabled: bool = False,
+                 workspace_enabled: bool = True):
         """Initialize LLM client.
-        
+
         Args:
-            provider: Provider name ("auto", "anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama")
+            provider: Provider name ("auto", "anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama", "xai", "sarvam")
             model: Model name (optional, uses provider defaults)
             api_key: API key (optional, uses environment variables)
             fallback: Enable fallback to other providers if primary fails
@@ -33,12 +33,13 @@ class LLMClient:
             cache_ttl: Default cache time-to-live in seconds (default: 3600)
             cache_max_size_mb: Maximum cache size in megabytes (default: 100)
             analytics_enabled: Enable privacy-first usage analytics (default: False)
+            workspace_enabled: Enable workspace detection and learning tracking (default: True)
         """
         self.fallback_enabled = fallback
         self.current_provider = None
-        
+
         # Provider priority order for auto-detection and fallback
-        self.provider_order = ["anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama"]
+        self.provider_order = ["anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama", "xai", "sarvam"]
         
         # Initialize cache if enabled
         self._cache = InMemoryCache(cache_max_size_mb, cache_ttl) if cache_enabled else None
@@ -73,29 +74,30 @@ class LLMClient:
         self.workspace_dir = None
         self.workspace_manager = None
         self.learnings_tracker = None
-        
-        try:
-            from .workspace.detector import WorkspaceDetector
-            from .workspace.manager import WorkspaceManager
-            from .workspace.learnings_tracker import LearningsTracker
-            from .workspace.registry import WorkspaceRegistry
-            from pathlib import Path
-            
-            self.workspace_dir = WorkspaceDetector.detect()
-            
-            if self.workspace_dir:
-                workspace_id = self.workspace_dir.name
-                registry = WorkspaceRegistry()
-                all_workspaces = registry.list_workspaces()
-                
-                for ws in all_workspaces:
-                    if ws["workspace_id"] == workspace_id:
-                        project_path = Path(ws["project_path"])
-                        self.workspace_manager = WorkspaceManager(project_path)
-                        self.learnings_tracker = LearningsTracker(self.workspace_manager)
-                        break
-        except Exception:
-            pass
+
+        if workspace_enabled:
+            try:
+                from .workspace.detector import WorkspaceDetector
+                from .workspace.manager import WorkspaceManager
+                from .workspace.learnings_tracker import LearningsTracker
+                from .workspace.registry import WorkspaceRegistry
+                from pathlib import Path
+
+                self.workspace_dir = WorkspaceDetector.detect()
+
+                if self.workspace_dir:
+                    workspace_id = self.workspace_dir.name
+                    registry = WorkspaceRegistry()
+                    all_workspaces = registry.list_workspaces()
+
+                    for ws in all_workspaces:
+                        if ws["workspace_id"] == workspace_id:
+                            project_path = Path(ws["project_path"])
+                            self.workspace_manager = WorkspaceManager(project_path)
+                            self.learnings_tracker = LearningsTracker(self.workspace_manager)
+                            break
+            except Exception:
+                pass
         
         if provider == "auto":
             self.current_provider = self._detect_available_provider()
@@ -123,45 +125,60 @@ class LLMClient:
     
     def _initialize_provider(self, provider_name: str, model: Optional[str] = None, api_key: Optional[str] = None):
         """Initialize specific provider with config-based model defaults."""
-        
+
         # Load model from config if not specified
         if not model:
             try:
                 from .config import get_config
                 config = get_config()
                 model = config.get(f'provider.models.{provider_name}')
-                
+
                 if not model:
                     raise ConfigurationError(f"No default model configured for {provider_name}. Check your config file or run: llmswap config set provider.models.{provider_name} <model>")
             except ImportError:
                 raise ConfigurationError(f"Configuration system not available. Cannot determine default model for {provider_name}.")
-        
+
+        # Lazy import - only import the provider we need
         if provider_name == "anthropic":
+            from .providers import AnthropicProvider
             return AnthropicProvider(api_key, model)
         elif provider_name == "openai":
+            from .providers import OpenAIProvider
             return OpenAIProvider(api_key, model)
         elif provider_name == "gemini":
+            from .providers import GeminiProvider
             return GeminiProvider(api_key, model)
         elif provider_name == "ollama":
+            from .providers import OllamaProvider
             return OllamaProvider(model=model)
         elif provider_name == "watsonx":
+            from .providers import WatsonxProvider
             # Get required environment variables
             api_key = api_key or os.getenv("WATSONX_API_KEY")
             project_id = os.getenv("WATSONX_PROJECT_ID")
             url = os.getenv("WATSONX_URL", "https://eu-de.ml.cloud.ibm.com")
-            
+
             if not api_key:
                 raise ConfigurationError("WATSONX_API_KEY environment variable required")
             if not project_id:
                 raise ConfigurationError("WATSONX_PROJECT_ID environment variable required")
-            
+
             return WatsonxProvider(api_key=api_key, model=model, project_id=project_id, url=url)
         elif provider_name == "groq":
+            from .providers import GroqProvider
             return GroqProvider(api_key, model)
         elif provider_name == "cohere":
+            from .providers import CoherProvider
             return CoherProvider(api_key, model)
         elif provider_name == "perplexity":
+            from .providers import PerplexityProvider
             return PerplexityProvider(api_key, model)
+        elif provider_name == "xai":
+            from .providers import XAIProvider
+            return XAIProvider(api_key, model)
+        elif provider_name == "sarvam":
+            from .providers import SarvamProvider
+            return SarvamProvider(api_key, model)
         else:
             raise ConfigurationError(f"Unknown provider: {provider_name}")
     

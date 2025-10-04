@@ -3,10 +3,6 @@
 import asyncio
 from typing import Optional, List, AsyncIterator, Dict, Any
 
-from .async_providers import (
-    AsyncAnthropicProvider, AsyncOpenAIProvider, AsyncGeminiProvider, 
-    AsyncOllamaProvider, AsyncWatsonxProvider, AsyncGroqProvider, AsyncCoherProvider, AsyncPerplexityProvider
-)
 from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
 from .logging_handler import LLMLogger
@@ -16,7 +12,7 @@ from .cache import InMemoryCache
 class AsyncLLMClient:
     """Async client for any LLM provider with streaming support."""
     
-    def __init__(self, 
+    def __init__(self,
                  provider: str = "auto",
                  model: Optional[str] = None,
                  api_key: Optional[str] = None,
@@ -25,11 +21,12 @@ class AsyncLLMClient:
                  log_level: str = "info",
                  cache_enabled: bool = False,
                  cache_ttl: int = 3600,
-                 cache_max_size_mb: int = 100):
+                 cache_max_size_mb: int = 100,
+                 workspace_enabled: bool = True):
         """Initialize async LLM client.
         
         Args:
-            provider: Provider name ("auto", "anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama")
+            provider: Provider name ("auto", "anthropic", "openai", "gemini", "cohere", "perplexity", "watsonx", "groq", "ollama", "xai", "sarvam")
             model: Model name (optional, uses provider defaults)
             api_key: API key (optional, uses environment variables)
             fallback: Enable fallback to other providers if primary fails
@@ -79,27 +76,61 @@ class AsyncLLMClient:
         )
     
     def _initialize_provider(self, provider_name: str, model: Optional[str] = None, api_key: Optional[str] = None):
-        """Initialize specific provider."""
+        """Initialize specific provider with config-based model defaults."""
+
+        # Load model from config if not specified (same as sync client)
+        if not model:
+            try:
+                from .config import get_config
+                config = get_config()
+                model = config.get(f'provider.models.{provider_name}')
+                # Note: If no config model, pass None and let provider use its default
+            except (ImportError, Exception):
+                # Config not available - provider will use its hardcoded default
+                pass
+
+        # Lazy import - only import the provider we need
         if provider_name == "anthropic":
+            from .async_providers import AsyncAnthropicProvider
             return AsyncAnthropicProvider(api_key, model)
         elif provider_name == "openai":
+            from .async_providers import AsyncOpenAIProvider
             return AsyncOpenAIProvider(api_key, model)
         elif provider_name == "gemini":
+            from .async_providers import AsyncGeminiProvider
             return AsyncGeminiProvider(api_key, model)
         elif provider_name == "cohere":
+            from .async_providers import AsyncCoherProvider
             return AsyncCoherProvider(api_key, model)
         elif provider_name == "perplexity":
+            from .async_providers import AsyncPerplexityProvider
             return AsyncPerplexityProvider(api_key, model)
         elif provider_name == "groq":
+            from .async_providers import AsyncGroqProvider
             return AsyncGroqProvider(api_key, model)
         elif provider_name == "ollama":
+            from .async_providers import AsyncOllamaProvider
             return AsyncOllamaProvider(model or "llama3")
         elif provider_name == "watsonx":
+            from .async_providers import AsyncWatsonxProvider
             import os
+            # Get required environment variables (same as sync client)
+            api_key = api_key or os.getenv("WATSONX_API_KEY")
             project_id = os.getenv("WATSONX_PROJECT_ID")
+            url = os.getenv("WATSONX_URL", "https://eu-de.ml.cloud.ibm.com")
+
+            if not api_key:
+                raise ConfigurationError("WATSONX_API_KEY environment variable required")
             if not project_id:
                 raise ConfigurationError("WATSONX_PROJECT_ID environment variable required")
-            return AsyncWatsonxProvider(api_key, model, project_id)
+
+            return AsyncWatsonxProvider(api_key, model, project_id, url)
+        elif provider_name == "xai":
+            from .async_providers import AsyncXAIProvider
+            return AsyncXAIProvider(api_key, model)
+        elif provider_name == "sarvam":
+            from .async_providers import AsyncSarvamProvider
+            return AsyncSarvamProvider(api_key, model)
         else:
             raise ConfigurationError(f"Unknown provider: {provider_name}")
     

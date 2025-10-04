@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.1.3"
-description = "cURL for LLMs - Universal SDK + CLI with multiple second brains. Works with Claude Sonnet 4.5, GPT-4 o1, Gemini, Cohere, Grok, Perplexity, watsonx, Groq, Ollama. Features: workspace memory, auto-learning journals, teaching-first AI (Eklavya), persona rotation, decision logs, 50-90% cost savings, zero lock-in. Python SDK or CLI. Alternative to Claude Code, Cursor, Continue.dev, Copilot."
+version = "5.1.4"
+description = "cURL for LLMs - Universal SDK + CLI with multiple second brains. Works with Claude Sonnet 4.5, GPT-4 o1, Gemini, Cohere, xAI Grok, Sarvam AI, Perplexity, watsonx, Groq, Ollama. Features: workspace memory, auto-learning journals, teaching-first AI (Eklavya), persona rotation, decision logs, 50-90% cost savings, zero lock-in. Python SDK or CLI. Alternative to Claude Code, Cursor, Continue.dev, Copilot."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -168,7 +168,27 @@ keywords = [
     "multiple-contexts",
     "persona-rotation",
     "ai-straying-prevention",
-    "project-knowledge-base"
+    "project-knowledge-base",
+    "lmarena",
+    "lmarena-tested-models",
+    "arena-validated-models",
+    "battle-tested-ai",
+    "production-validated-llm",
+    "top-rated-models",
+    "leaderboard-models",
+    "grok-4",
+    "grok-4-0709",
+    "grok-4-fast",
+    "xai-grok",
+    "sonnet-4-5",
+    "sonnet-4.5",
+    "sarvam-ai",
+    "indian-language-ai",
+    "multilingual-ai",
+    "10-providers",
+    "ai-memory",
+    "workspace-ai",
+    "project-context"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -200,7 +220,6 @@ dependencies = [
     "google-generativeai>=0.3.0",
     "requests>=2.25.0",
     "python-dotenv>=0.19.0",
-    "ibm-watsonx-ai>=0.0.5",
     "httpx>=0.24.0",
     "aiohttp>=3.8.0",
     "aiofiles>=23.0.0",
@@ -209,6 +228,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+watsonx = ["ibm-watsonx-ai>=0.0.5"]
+all = [
+    "anthropic>=0.3.0",
+    "openai>=1.0.0",
+    "google-generativeai>=0.3.0",
+    "ibm-watsonx-ai>=0.0.5",
+    "groq>=0.4.0",
+    "cohere>=5.16.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",

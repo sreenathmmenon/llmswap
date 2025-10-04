@@ -38,7 +38,7 @@ class AsyncOpenAIProvider(AsyncBaseProvider):
     """Async provider for OpenAI models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "gpt-3.5-turbo"
+        self.default_model = "gpt-4o-mini"
         
         # Use provided key or get from environment
         if not api_key:
@@ -172,15 +172,15 @@ class AsyncGeminiProvider(AsyncBaseProvider):
     """Async provider for Google Gemini models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        
+
         if not api_key:
             api_key = os.getenv("GEMINI_API_KEY")
-        
+
         if not api_key:
             raise ConfigurationError("Gemini API key required. Set GEMINI_API_KEY environment variable.")
-        
+
         super().__init__(api_key, model)
-        
+
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
@@ -414,7 +414,7 @@ class AsyncPerplexityProvider(AsyncBaseProvider):
     """Async provider for Perplexity online models."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "sonar-pro"
+        self.default_model = "sonar"
         
         if not api_key:
             api_key = os.getenv("PERPLEXITY_API_KEY")
@@ -527,3 +527,168 @@ class AsyncWatsonxProvider(AsyncBaseProvider):
     
     def is_available(self) -> bool:
         return self.api_key is not None and self.project_id is not None
+
+
+class AsyncXAIProvider(AsyncBaseProvider):
+    """Async provider for xAI Grok models."""
+
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = "grok-4-0709"
+
+        if not api_key:
+            api_key = os.getenv("XAI_API_KEY")
+
+        if not api_key:
+            raise ConfigurationError("xAI API key required. Set XAI_API_KEY environment variable.")
+
+        super().__init__(api_key, model)
+
+        try:
+            from openai import AsyncOpenAI
+            self.client = AsyncOpenAI(
+                api_key=self.api_key,
+                base_url="https://api.x.ai/v1"
+            )
+        except ImportError:
+            raise ConfigurationError("openai package not installed. Run: pip install openai")
+
+    async def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000
+            )
+
+            latency = time.time() - start_time
+            content = response.choices[0].message.content
+
+            return LLMResponse(
+                content=content,
+                provider="xai",
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                    "finish_reason": response.choices[0].finish_reason,
+                }
+            )
+        except Exception as e:
+            latency = time.time() - start_time
+            raise ProviderError("xai", str(e))
+
+    async def stream(self, prompt: str) -> AsyncIterator[str]:
+        """Stream response from xAI."""
+        try:
+            stream = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                stream=True
+            )
+
+            async for chunk in stream:
+                if chunk.choices[0].delta.content is not None:
+                    yield chunk.choices[0].delta.content
+
+        except Exception as e:
+            raise ProviderError("xai", str(e))
+
+    def is_available(self) -> bool:
+        return self.api_key is not None
+
+
+class AsyncSarvamProvider(AsyncBaseProvider):
+    """Async provider for Sarvam AI models."""
+
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = "sarvam-m"
+
+        if not api_key:
+            api_key = os.getenv("SARVAM_API_KEY")
+
+        if not api_key:
+            raise ConfigurationError("Sarvam API key required. Set SARVAM_API_KEY environment variable.")
+
+        super().__init__(api_key, model)
+        self.base_url = "https://api.sarvam.ai/v1"
+
+    async def query(self, prompt: str, **kwargs) -> LLMResponse:
+        """Query Sarvam AI models asynchronously.
+
+        Supports:
+        - sarvam-m (Sarvam-M): Chat model (24B parameter)
+        - mayura: Translation model
+        - sarvam-translate: Translation service
+        """
+        start_time = time.time()
+
+        try:
+            import aiohttp
+
+            # Determine endpoint based on model
+            if self.model in ["mayura", "sarvam-translate"]:
+                # Translation models
+                endpoint = f"{self.base_url}/translate"
+                payload = {
+                    "input": prompt,
+                    "source_language_code": kwargs.get("source_language", "en-IN"),
+                    "target_language_code": kwargs.get("target_language", "hi-IN"),
+                    "model": self.model,
+                    "enable_preprocessing": kwargs.get("enable_preprocessing", True)
+                }
+            else:
+                # Chat model (sarvam-2b / Sarvam-M)
+                endpoint = f"{self.base_url}/chat/completions"
+                payload = {
+                    "model": self.model,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": kwargs.get("max_tokens", 4000)
+                }
+
+            headers = {
+                "api-subscription-key": self.api_key,
+                "Content-Type": "application/json"
+            }
+
+            async with aiohttp.ClientSession() as session:
+                async with session.post(endpoint, json=payload, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+
+            latency = time.time() - start_time
+
+            # Extract content based on model type
+            if self.model in ["mayura", "sarvam-translate"]:
+                content = result.get("translated_text", "")
+            else:
+                content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+            # Extract usage info if available
+            usage = {}
+            if "usage" in result:
+                usage = result["usage"]
+
+            return LLMResponse(
+                content=content,
+                provider="sarvam",
+                model=self.model,
+                latency=latency,
+                metadata={
+                    "endpoint": endpoint,
+                    "model_type": "translation" if self.model in ["mayura", "sarvam-translate"] else "chat",
+                    "usage": usage
+                }
+            )
+        except Exception as e:
+            latency = time.time() - start_time
+            raise ProviderError("sarvam", str(e))
+
+    async def stream(self, prompt: str) -> AsyncIterator[str]:
+        """Sarvam AI currently does not support streaming."""
+        raise ProviderError("sarvam", "Streaming not supported by Sarvam AI")
+
+    def is_available(self) -> bool:
+        return self.api_key is not None

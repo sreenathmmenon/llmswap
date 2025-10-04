@@ -1,4 +1,4 @@
-# llmswap v5.1.3 - Multiple AI Second Brains with Memory & Mentorship
+# llmswap v5.1.4 - Multiple AI Second Brains with Memory & Mentorship
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -26,9 +26,11 @@ llmswap chat "Help me with Flask routing"
 # AI has full project context + all past learnings!
 ```
 
-> **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. llmswap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports 8 providers (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama). xAI (Grok) coming soon.
+> **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. llmswap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports **10 providers** (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, **xAI Grok**, **Sarvam AI**).
 
-**The First AI Tool with Project Memory & Learning Journals** - v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama (8 providers). **Use any model from your provider** - even ones released tomorrow. Pass-through architecture means GPT-5, Gemini 2.5 Pro, Claude Opus 4? They work the day they launch. xAI (Grok) support coming soon.
+> **✅ Battle-Tested with LMArena Top Models:** All 10 providers tested and validated with top-rated models from LMArena leaderboard. From Grok-4 (xAI's flagship) to Claude Sonnet 4.5 (best coding model) to Gemini 2.0 Flash Exp - every model in our defaults is production-validated and arena-tested for real-world use.
+
+**The First AI Tool with Project Memory & Learning Journals** - v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, xAI Grok, Sarvam AI (**10 providers**). **Use any model from your provider** - even ones released tomorrow. Pass-through architecture means GPT-5, Gemini 2.5 Pro, Claude Opus 4? They work the day they launch.
 
 **🎯 Solve These Common Problems:**
 - ❌ "I need multiple second brains for different aspects of my life" 🆕
@@ -180,6 +182,33 @@ llmswap chat --mentor coach "What's the fastest path to v1?"
 
 **Traditional AI tools give you answers. llmswap v5.1.0 gives you a personalized learning journey that REMEMBERS.**
 
+## 🏆 Production-Validated with LMArena Top Models
+
+**Every model in llmswap's defaults comes from LMArena's top performers:**
+
+All 10 providers ship with carefully selected default models based on LMArena rankings and real-world production testing. We track arena performance and update defaults to ensure you're always using validated, battle-tested models.
+
+| Provider | Default Model | Arena Status | Why We Chose It |
+|----------|---------------|--------------|-----------------|
+| **Anthropic** | claude-sonnet-4-5 | #1 Coding | Best coding model in the world (Sept 2025) |
+| **xAI** | grok-4-0709 | Top 5 Overall | Advanced reasoning, real-time data access |
+| **Gemini** | gemini-2.0-flash-exp | Top 10 | Lightning-fast, multimodal, cutting-edge |
+| **OpenAI** | gpt-4o-mini | Cost Leader | Best price/performance ratio |
+| **Cohere** | command-r-08-2024 | Top RAG | Enterprise-grade retrieval-augmented generation |
+| **Perplexity** | sonar | Web Search | Real-time web-connected AI with citations |
+| **Groq** | llama-3.1-8b-instant | Speed King | 840+ tokens/second ultra-fast inference |
+| **Sarvam** | sarvam-m | Multilingual | 24B params, best for 10 Indian languages |
+| **Watsonx** | granite-3-8b-instruct | Enterprise | IBM's production-grade AI for business |
+| **Ollama** | granite-code:8b | Local AI | Privacy-first, runs on your hardware |
+
+**✅ Battle-tested with real API calls** - Every provider validated in production, not simulated tests.
+
+**✅ Weekly model updates** - We monitor LMArena rankings and deprecation notices to keep defaults current.
+
+**✅ Zero lock-in** - Don't like our defaults? Override with any model: `LLMClient(model="gpt-5")` or `llmswap config set provider.models.openai gpt-5`
+
+---
+
 ## 🔓 Use Any Model Your Provider Supports (Zero-Wait Model Support)
 
 Here's something cool: llmswap doesn't restrict which models you can use. When GPT-5 or Gemini 2.5 Pro drops tomorrow, you can start using it immediately. No waiting for us to update anything.
@@ -221,8 +250,6 @@ client = LLMClient(provider="openai", model="gpt-6")  # works!
 ```
 
 **The point:** You're not limited to what we've documented. If your provider supports it, llmswap supports it.
-
-**Coming soon:** xAI (Grok) provider support. Until then, you have 8 providers to choose from.
 
 ## 🆚 llmswap vs Single-Provider Tools
 
@@ -827,8 +854,8 @@ comparison = client.get_provider_comparison()  # Compare costs
 ### Provider & Model Flexibility
 - **🔓 Pass-Through Architecture**: Use ANY model from your provider - GPT-5, Claude Opus 4, Gemini 2.5 Pro work immediately
 - **⚡ Zero-Wait Updates**: New model released? Use it the same day, no llmswap update needed
-- **🌐 8 Providers Currently**: OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama
-- **🔜 Coming Soon**: xAI (Grok) provider support in development
+- **🌐 10 Providers Currently**: OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, **xAI (Grok)**, **Sarvam AI**
+- **🆕 v5.1.4**: Added xAI Grok and Sarvam AI support for cutting-edge and Indian language AI
 
 ## 🚀 Complete Feature Set
 
@@ -848,6 +875,8 @@ client = LLMClient(provider="ollama")     # Llama, Mistral, Phi, 100+ local
 client = LLMClient(provider="groq")       # Groq ultra-fast inference
 client = LLMClient(provider="cohere")     # Cohere Command models for RAG
 client = LLMClient(provider="perplexity") # Perplexity web-connected AI
+client = LLMClient(provider="xai")        # xAI Grok models 🆕
+client = LLMClient(provider="sarvam")     # Sarvam AI (Indian languages) 🆕
 
 # Automatic failover
 client = LLMClient(fallback=True)

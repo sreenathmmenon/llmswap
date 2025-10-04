@@ -9,11 +9,29 @@ from .response import LLMResponse
 from .exceptions import ProviderError, ConfigurationError
 
 
+def clean_api_key(api_key: Optional[str]) -> Optional[str]:
+    """Clean API key by removing quotes, whitespace, and invalid characters."""
+    if not api_key:
+        return api_key
+
+    # Strip whitespace
+    api_key = api_key.strip()
+
+    # Remove all non-ASCII characters (API keys are ASCII only)
+    # This removes Unicode quotes and any other invalid characters
+    api_key = api_key.encode('ascii', errors='ignore').decode('ascii')
+
+    # Remove any remaining ASCII quotes and whitespace
+    api_key = api_key.strip().strip('"').strip("'").strip()
+
+    return api_key
+
+
 class BaseProvider(ABC):
     """Abstract base class for LLM providers."""
-    
+
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key
+        self.api_key = clean_api_key(api_key)
         self.model = model
         
     @abstractmethod
@@ -185,20 +203,32 @@ class OpenAIProvider(BaseProvider):
 
 class GeminiProvider(BaseProvider):
     """Provider for Google Gemini models."""
-    
+
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("GEMINI_API_KEY"), model)
         if not self.api_key:
             raise ConfigurationError("GEMINI_API_KEY not found in environment variables")
-        
+
+        self.model_instance = None
+        self._genai = None
+
+    def _initialize(self):
+        """Lazy initialization of Gemini client."""
+        if self.model_instance is not None:
+            return
+
         try:
             import google.generativeai as genai
-            genai.configure(api_key=self.api_key)
-            self.model_instance = genai.GenerativeModel(self.model)
+            self._genai = genai
+            # Set environment variable to cleaned key (Google SDK may read from env)
+            os.environ["GEMINI_API_KEY"] = self.api_key
+            self._genai.configure(api_key=self.api_key)
+            self.model_instance = self._genai.GenerativeModel(self.model)
         except ImportError:
             raise ConfigurationError("google-generativeai package not installed. Run: pip install google-generativeai")
     
     def query(self, prompt: str) -> LLMResponse:
+        self._initialize()
         start_time = time.time()
         try:
             response = self.model_instance.generate_content(prompt)
@@ -237,6 +267,7 @@ class GeminiProvider(BaseProvider):
     
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
+        self._initialize()
         start_time = time.time()
         try:
             # Convert message format for Gemini
@@ -244,7 +275,7 @@ class GeminiProvider(BaseProvider):
             for msg in messages[:-1]:  # All except the last message
                 role = "user" if msg["role"] == "user" else "model"
                 chat_history.append({"role": role, "parts": [msg["content"]]})
-            
+
             # Start chat with history
             chat = self.model_instance.start_chat(history=chat_history)
             
@@ -650,12 +681,20 @@ class PerplexityProvider(BaseProvider):
 class WatsonxProvider(BaseProvider):
     """Provider for IBM watsonx models."""
     
-    def __init__(self, api_key: str, model: Optional[str] = None, 
+    def __init__(self, api_key: str, model: Optional[str] = None,
                  project_id: str = None, url: str = "https://eu-de.ml.cloud.ibm.com"):
         super().__init__(api_key, model)
         self.project_id = project_id
         self.url = url
-        
+
+        # Check Python version - watsonx requires 3.10+
+        import sys
+        if sys.version_info < (3, 10):
+            raise ConfigurationError(
+                f"IBM watsonx requires Python 3.10+ (you have {sys.version_info.major}.{sys.version_info.minor}). "
+                "Please upgrade Python or use a different provider."
+            )
+
         try:
             from ibm_watsonx_ai.foundation_models import ModelInference
             from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
@@ -664,7 +703,7 @@ class WatsonxProvider(BaseProvider):
             self.GenParams = GenParams
             self.APIClient = APIClient
         except ImportError:
-            raise ConfigurationError("ibm-watsonx-ai package not installed. Run: pip install ibm-watsonx-ai")
+            raise ConfigurationError("ibm-watsonx-ai package not installed. Run: pip install 'llmswap[watsonx]'")
     
     def query(self, prompt: str) -> LLMResponse:
         start_time = time.time()
@@ -777,3 +816,206 @@ class WatsonxProvider(BaseProvider):
     
     def is_available(self) -> bool:
         return self.api_key is not None and self.project_id is not None
+
+
+class XAIProvider(BaseProvider):
+    """Provider for xAI Grok models."""
+
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        super().__init__(api_key or os.getenv("XAI_API_KEY"), model)
+        if not self.api_key:
+            raise ConfigurationError("XAI_API_KEY not found in environment variables")
+
+        try:
+            import openai
+            self.client = openai.OpenAI(
+                api_key=self.api_key,
+                base_url="https://api.x.ai/v1",
+                timeout=20.0
+            )
+        except ImportError:
+            raise ConfigurationError("openai package not installed. Run: pip install openai")
+
+    def query(self, prompt: str) -> LLMResponse:
+        start_time = time.time()
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1000
+            )
+
+            latency = time.time() - start_time
+            content = response.choices[0].message.content or ""
+
+            return LLMResponse(
+                content=content,
+                provider="xai",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "prompt_tokens": getattr(response.usage, 'prompt_tokens', 0),
+                    "completion_tokens": getattr(response.usage, 'completion_tokens', 0),
+                },
+                metadata={}
+            )
+        except Exception as e:
+            raise ProviderError("xai", str(e))
+
+    def chat(self, messages: list) -> LLMResponse:
+        """Send conversation with full message history."""
+        start_time = time.time()
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                max_tokens=1000
+            )
+
+            latency = time.time() - start_time
+            content = response.choices[0].message.content or ""
+
+            return LLMResponse(
+                content=content,
+                provider="xai",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "prompt_tokens": getattr(response.usage, 'prompt_tokens', 0),
+                    "completion_tokens": getattr(response.usage, 'completion_tokens', 0),
+                },
+                metadata={}
+            )
+        except Exception as e:
+            raise ProviderError("xai", str(e))
+
+    def is_available(self) -> bool:
+        return self.api_key is not None
+
+
+class SarvamProvider(BaseProvider):
+    """Provider for Sarvam AI models."""
+
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        super().__init__(api_key or os.getenv("SARVAM_API_KEY"), model)
+        if not self.api_key:
+            raise ConfigurationError("SARVAM_API_KEY not found in environment variables")
+
+        self.base_url = "https://api.sarvam.ai/v1"
+
+    def query(self, prompt: str, **kwargs) -> LLMResponse:
+        """Query Sarvam AI models.
+
+        Supports:
+        - sarvam-m (Sarvam-M): Chat model (24B parameter)
+        - mayura: Translation model
+        - sarvam-translate: Translation service
+        """
+        start_time = time.time()
+
+        try:
+            import requests
+
+            # Determine endpoint based on model
+            if self.model in ["mayura", "sarvam-translate"]:
+                # Translation models
+                endpoint = f"{self.base_url}/translate"
+                payload = {
+                    "input": prompt,
+                    "source_language_code": kwargs.get("source_language", "en-IN"),
+                    "target_language_code": kwargs.get("target_language", "hi-IN"),
+                    "model": self.model,
+                    "enable_preprocessing": kwargs.get("enable_preprocessing", True)
+                }
+            else:
+                # Chat model (sarvam-2b / Sarvam-M)
+                endpoint = f"{self.base_url}/chat/completions"
+                payload = {
+                    "model": self.model,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": kwargs.get("max_tokens", 4000)
+                }
+
+            headers = {
+                "api-subscription-key": self.api_key,
+                "Content-Type": "application/json"
+            }
+
+            response = requests.post(endpoint, json=payload, headers=headers)
+            response.raise_for_status()
+
+            latency = time.time() - start_time
+            result = response.json()
+
+            # Extract content based on model type
+            if self.model in ["mayura", "sarvam-translate"]:
+                content = result.get("translated_text", "")
+            else:
+                content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+            # Extract usage info if available
+            usage = {}
+            if "usage" in result:
+                usage = result["usage"]
+
+            return LLMResponse(
+                content=content,
+                provider="sarvam",
+                model=self.model,
+                latency=latency,
+                usage=usage,
+                metadata={
+                    "endpoint": endpoint,
+                    "model_type": "translation" if self.model in ["mayura", "sarvam-translate"] else "chat"
+                }
+            )
+        except Exception as e:
+            raise ProviderError("sarvam", str(e))
+
+    def chat(self, messages: list, **kwargs) -> LLMResponse:
+        """Send conversation with full message history (for chat models only)."""
+        start_time = time.time()
+
+        try:
+            import requests
+
+            if self.model in ["mayura", "sarvam-translate"]:
+                raise ProviderError("sarvam", "Translation models do not support chat method")
+
+            endpoint = f"{self.base_url}/chat/completions"
+            payload = {
+                "model": self.model,
+                "messages": messages,
+                "max_tokens": kwargs.get("max_tokens", 4000)
+            }
+
+            headers = {
+                "api-subscription-key": self.api_key,
+                "Content-Type": "application/json"
+            }
+
+            response = requests.post(endpoint, json=payload, headers=headers)
+            response.raise_for_status()
+
+            latency = time.time() - start_time
+            result = response.json()
+
+            content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+            usage = result.get("usage", {})
+
+            return LLMResponse(
+                content=content,
+                provider="sarvam",
+                model=self.model,
+                latency=latency,
+                usage=usage,
+                metadata={
+                    "endpoint": endpoint,
+                    "model_type": "chat"
+                }
+            )
+        except Exception as e:
+            raise ProviderError("sarvam", str(e))
+
+    def is_available(self) -> bool:
+        return self.api_key is not None

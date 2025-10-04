@@ -33,7 +33,8 @@ Keep each point concise (1-2 sentences max).
 If the conversation is just casual chat or doesn't have educational content, return "SKIP".
 """
             
-            client = LLMClient(provider="groq", model="llama-3.1-8b-instant")
+            # Disable workspace to prevent recursion
+            client = LLMClient(provider="groq", model="llama-3.1-8b-instant", workspace_enabled=False)
             result = client.query(extraction_prompt)
             
             if "SKIP" in result.content:

@@ -1441,7 +1441,7 @@ Examples:
     
     # Global options
     parser.add_argument('--provider', '-p',
-                       choices=['anthropic', 'openai', 'gemini', 'cohere', 'perplexity', 'watsonx', 'groq', 'ollama'],
+                       choices=['anthropic', 'openai', 'gemini', 'cohere', 'perplexity', 'watsonx', 'groq', 'ollama', 'xai', 'sarvam'],
                        help='LLM provider to use')
     parser.add_argument('--no-cache', action='store_true',
                        help='Disable response caching')

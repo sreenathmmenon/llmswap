@@ -6,7 +6,7 @@ Perfect for chatbots, applications, and scripts.
 
 Basic usage:
     from llmswap import LLMClient
-    
+
     client = LLMClient()  # Auto-detects provider
     response = client.query("Hello, world!")
     print(response.content)
@@ -14,15 +14,20 @@ Basic usage:
 Advanced usage:
     # Specify provider
     client = LLMClient(provider="anthropic")
-    
+
     # Switch providers
     client.set_provider("openai")
-    
+
     # With custom model
     client = LLMClient(provider="anthropic", model="claude-3-opus-20240229")
 """
 
-__version__ = "5.1.3"
+# Suppress gRPC ALTS warnings - must be set before any imports
+import os
+os.environ.setdefault('GRPC_VERBOSITY', 'NONE')
+os.environ.setdefault('GLOG_minloglevel', '2')
+
+__version__ = "5.1.4"
 __author__ = "Sreenath Menon"
 __description__ = "Universal AI Platform: CLI + Python SDK | Multi-Provider LLM Interface for Any Use Case"
 

@@ -1,5 +1,77 @@
 # Changelog
 
+## [5.1.4] - 2025-10-04
+
+### New Provider Integrations: xAI Grok & Sarvam AI
+
+Added support for two major new providers, expanding llmswap to **10 total providers**.
+
+**What's New:**
+
+#### xAI (Grok) Provider 🆕
+- Full support for all xAI Grok models via OpenAI-compatible API
+- Default model: grok-4-0709 (top-ranked on LMArena for reasoning)
+- Models: grok-4-0709, grok-3-beta, grok-4-fast, and more
+- SDK and CLI integration
+- Set `XAI_API_KEY` environment variable to use
+
+```python
+# Python SDK
+from llmswap import LLMClient
+client = LLMClient(provider="xai", model="grok-4-0709")
+response = client.query("Hello from Grok!")
+```
+
+```bash
+# CLI
+export XAI_API_KEY="your-key"
+llmswap --provider xai --model grok-4-0709 "Write a Python function"
+```
+
+#### Sarvam AI Provider 🆕
+- Support for Indian AI platform with 10 Indian languages
+- Three models:
+  - **sarvam-m**: 24B parameter chat model for Indian languages (default)
+  - **mayura**: High-quality translation for 22 Indian languages
+  - **sarvam-translate**: Fast translation service
+- SDK and CLI integration
+- Set `SARVAM_API_KEY` environment variable to use
+
+```python
+# Python SDK - Chat
+from llmswap import LLMClient
+client = LLMClient(provider="sarvam", model="sarvam-m")
+response = client.query("नमस्ते, आप कैसे हैं?")
+
+# Python SDK - Translation
+client = LLMClient(provider="sarvam", model="mayura")
+response = client.query("Translate to Hindi", source_language="en-IN", target_language="hi-IN")
+```
+
+```bash
+# CLI
+export SARVAM_API_KEY="your-key"
+llmswap --provider sarvam --model sarvam-m "Hello in Hindi"
+```
+
+**Provider Count:**
+- Now supporting 10 providers: OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, xAI (Grok), Sarvam AI
+- Up from 8 providers in v5.1.3
+
+**Model Validation:**
+- All default models selected from LMArena top performers
+- Production-tested with real API calls across all 10 providers
+- Weekly monitoring of LMArena rankings for model updates
+
+**Technical Details:**
+- Added `XAIProvider` and `SarvamProvider` classes in `providers.py`
+- Added async versions in `async_providers.py`
+- Updated client.py, async_client.py, and cli.py to support new providers
+- Both providers follow llmswap's pass-through architecture
+- 52 critical tests passing - comprehensive test coverage for all providers
+
+---
+
 ## [5.1.3] - 2025-10-03
 
 ### Zero-Wait Model Support (Pass-Through Architecture)
