@@ -1,4 +1,4 @@
-# llmswap v5.1.4 - Multiple AI Second Brains with Memory & Mentorship
+# LLMSwap v5.1.4 - Multiple AI Second Brains with Memory & Mentorship
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -30,7 +30,7 @@ llmswap chat "Help me with Flask routing"
 
 > **✅ Battle-Tested with LMArena Top Models:** All 10 providers tested and validated with top-rated models from LMArena leaderboard. From Grok-4 (xAI's flagship) to Claude Sonnet 4.5 (best coding model) to Gemini 2.0 Flash Exp - every model in our defaults is production-validated and arena-tested for real-world use.
 
-**The First AI Tool with Project Memory & Learning Journals** - v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, xAI Grok, Sarvam AI (**10 providers**). **Use any model from your provider** - even ones released tomorrow. Pass-through architecture means GPT-5, Gemini 2.5 Pro, Claude Opus 4? They work the day they launch.
+**The First AI Tool with Project Memory & Learning Journals** - LLMSwap v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, xAI Grok, Sarvam AI (**10 providers**). **Use any model from your provider** - even ones released tomorrow. Pass-through architecture means GPT-5, Gemini 2.5 Pro, Claude Opus 4? They work the day they launch.
 
 **🎯 Solve These Common Problems:**
 - ❌ "I need multiple second brains for different aspects of my life" 🆕
@@ -54,7 +54,7 @@ llmswap chat "Help me with Flask routing"
 - 🐍 **Python SDK** - Build apps without vendor lock-in (started here!)
 - ⚡ **CLI tool** - Terminal interface that works with any subscription (bonus!)
 
-**Why llmswap?**
+**Why LLMSwap?**
 - 🔓 **No vendor lock-in** - Switch providers with 1 line of code (SDK) or 1 command (CLI)
 - 🎓 **Teaching-first AI** - Eklavya mentorship system (guru, coach, socrates personas)
 - 💰 **Cost optimizer** - Automatic caching saves 50-90% on API calls
@@ -77,7 +77,7 @@ llmswap chat "Help me with Flask routing"
 
 > "I still haven't found an elegant solution to the fact that I need several second brains for the various aspects of my life, each with different styles and contexts." - Industry feedback
 
-**The llmswap Solution: Workspace System**
+**The LLMSwap Solution: Workspace System**
 
 Each aspect of your life gets its own "brain" with independent memory:
 
@@ -99,7 +99,7 @@ Each aspect of your life gets its own "brain" with independent memory:
 
 ## 🎯 Transform AI Into Your Personal Mentor with Project Memory
 
-**Inspired by Eklavya** - the legendary self-taught archer who learned from dedication and the right guidance - llmswap transforms any AI provider into a personalized mentor that adapts to your learning style **and remembers your journey**.
+**Inspired by Eklavya** - the legendary self-taught archer who learned from dedication and the right guidance - LLMSwap transforms any AI provider into a personalized mentor that adapts to your learning style **and remembers your journey**.
 
 **The Challenge:** Developers struggle to learn effectively from AI because:
 - 🔴 Responses are generic, lack personality, and don't adapt to individual needs
@@ -107,7 +107,7 @@ Each aspect of your life gets its own "brain" with independent memory:
 - 🔴 No learning history - AI doesn't know what you already learned
 - 🔴 Project context is lost - AI doesn't understand your codebase
 
-**Our Solution v5.1.0:** Choose your mentorship style, initialize a workspace, and ANY AI provider becomes **your personalized guide that remembers everything**:
+**LLMSwap's Solution v5.1.0:** Choose your mentorship style, initialize a workspace, and ANY AI provider becomes **your personalized guide that remembers everything**:
 
 ```bash
 # 🆕 v5.1.0: Initialize workspace for your project
@@ -180,11 +180,11 @@ llmswap chat --mentor coach "What's the fastest path to v1?"
 - 💰 **Cost Optimized** - Use cheaper providers for learning, premium for complex problems
 - 🔄 **Workspace Detection** - Automatically loads project context ⭐ NEW
 
-**Traditional AI tools give you answers. llmswap v5.1.0 gives you a personalized learning journey that REMEMBERS.**
+**Traditional AI tools give you answers. LLMSwap v5.1.0 gives you a personalized learning journey that REMEMBERS.**
 
 ## 🏆 Production-Validated with LMArena Top Models
 
-**Every model in llmswap's defaults comes from LMArena's top performers:**
+**Every model in LLMSwap's defaults comes from LMArena's top performers:**
 
 All 10 providers ship with carefully selected default models based on LMArena rankings and real-world production testing. We track arena performance and update defaults to ensure you're always using validated, battle-tested models.
 
@@ -211,7 +211,7 @@ All 10 providers ship with carefully selected default models based on LMArena ra
 
 ## 🔓 Use Any Model Your Provider Supports (Zero-Wait Model Support)
 
-Here's something cool: llmswap doesn't restrict which models you can use. When GPT-5 or Gemini 2.5 Pro drops tomorrow, you can start using it immediately. No waiting for us to update anything.
+Here's something cool: LLMSwap doesn't restrict which models you can use. When GPT-5 or Gemini 2.5 Pro drops tomorrow, you can start using it immediately. No waiting for us to update anything.
 
 **How?** We use pass-through architecture. Whatever model name you pass goes directly to your provider's API. We don't gatekeep.
 
@@ -251,11 +251,11 @@ client = LLMClient(provider="openai", model="gpt-6")  # works!
 
 **The point:** You're not limited to what we've documented. If your provider supports it, llmswap supports it.
 
-## 🆚 llmswap vs Single-Provider Tools
+## 🆚 LLMSwap vs Single-Provider Tools
 
 ### For Python Developers Building Apps:
 
-| Your Need | Single-Provider SDKs | llmswap SDK |
+| Your Need | Single-Provider SDKs | LLMSwap SDK |
 |-----------|---------------------|-------------|
 | Build chatbot/app | Import `openai` library (locked in) | Import `llmswap` (works with any provider) |
 | Switch providers | Rewrite all API calls | Change 1 line: `provider="anthropic"` |
@@ -266,7 +266,7 @@ client = LLMClient(provider="openai", model="gpt-6")  # works!
 
 ### For Developers Using Terminal:
 
-| Your Need | Vendor CLIs | llmswap CLI |
+| Your Need | Vendor CLIs | LLMSwap CLI |
 |-----------|-------------|-------------|
 | Have Claude subscription | Install Claude Code (Claude only) | Use llmswap (works with Claude) |
 | Have OpenAI subscription | Build your own scripts | Use llmswap (works with OpenAI) |
@@ -779,9 +779,9 @@ response = client.query("Explain quantum computing in 50 words")
 print(response.content)
 ```
 
-## 🎯 Why llmswap v5.1.0 for AI Development?
+## 🎯 Why LLMSwap v5.1.0 for AI Development?
 
-| Feature | llmswap v5.1.0 | Claude Code | Cursor AI | Aider | LangChain | Direct APIs |
+| Feature | LLMSwap v5.1.0 | Claude Code | Cursor AI | Aider | LangChain | Direct APIs |
 |---------|---------|-----------|---------|-----------|-------------|-------------|
 | **Project Memory** | ✅ Workspace system | ❌ No memory | ❌ No memory | ❌ No memory | ❌ Manual | ❌ None |
 | **Learning Journal** | ✅ Auto-tracked | ❌ Not available | ❌ Not available | ❌ Not available | ❌ Manual | ❌ None |
@@ -798,14 +798,14 @@ print(response.content)
 | **Teaching Personas** | ✅ 6 mentors | ❌ Not available | ❌ Not available | ❌ Not available | ❌ Not available | ❌ None |
 | **Open Source** | ✅ 100% MIT licensed | ❌ Proprietary | ❌ Proprietary | ✅ Open source | ✅ Open source | ⚠️ Varies |
 
-**Key Differentiators for v5.1.0:**
+**Key Differentiators for LLMSwap v5.1.0:**
 - 🧠 **Only AI tool with persistent project memory** - Never repeat context again
 - 📚 **Automatic learning journals** - Track your progress without manual work
 - 🎯 **Workspace-aware mentorship** - AI understands your specific project
 - 🔄 **Zero context switching overhead** - Change projects, AI adapts automatically
 - 💡 **Learning extraction** - AI summarizes key takeaways from conversations
 
-## 🚀 Three Ways to Use llmswap:
+## 🚀 Three Ways to Use LLMSwap:
 
 **📚 1. Python Library/SDK**
 ```python
