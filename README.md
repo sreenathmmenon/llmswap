@@ -1,4 +1,4 @@
-# LLMSwap v5.1.4 - Multiple AI Second Brains with Memory & Mentorship
+# LLMSwap v5.1.5 - Multiple AI Second Brains with Memory & Mentorship
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)

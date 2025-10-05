@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.5] - 2025-10-05
+
+### Branding Update
+- Updated marketing text to use "LLMSwap" branding consistently
+- No functionality changes
+
 ## [5.1.4] - 2025-10-04
 
 ### New Provider Integrations: xAI Grok & Sarvam AI

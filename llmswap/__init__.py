@@ -27,7 +27,7 @@ import os
 os.environ.setdefault('GRPC_VERBOSITY', 'NONE')
 os.environ.setdefault('GLOG_minloglevel', '2')
 
-__version__ = "5.1.4"
+__version__ = "5.1.5"
 __author__ = "Sreenath Menon"
 __description__ = "Universal AI Platform: CLI + Python SDK | Multi-Provider LLM Interface for Any Use Case"
 
