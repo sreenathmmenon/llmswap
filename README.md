@@ -1015,6 +1015,9 @@ llmswap web  # Opens browser at http://localhost:5005
 
 Compare 20+ AI models side-by-side in a beautiful web interface with live streaming results:
 
+![LLMSwap Web UI - Model Comparison](assets/web-ui-screenshot.png)
+*Compare responses from GPT-4, Claude, Gemini, Grok, and more - see speed rankings, costs, and quality side-by-side*
+
 ```bash
 # Install web UI dependencies (one-time, optional)
 pip install llmswap[web]
