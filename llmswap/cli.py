@@ -1412,6 +1412,40 @@ def cmd_workspace(args):
         editor = os.environ.get('EDITOR', 'nano')
         subprocess.call([editor, str(context_file)])
 
+def cmd_web(args):
+    """Handle 'llmswap web' command"""
+    # Check if Flask is available
+    try:
+        from llmswap.web import WEB_AVAILABLE
+    except ImportError:
+        WEB_AVAILABLE = False
+
+    if not WEB_AVAILABLE:
+        print("❌ Web UI requires additional dependencies")
+        print("\nInstall with:")
+        print("  pip install llmswap[web]")
+        print("\nOr use Homebrew:")
+        print("  brew install llmswap")
+        return 1
+
+    # Import server
+    from llmswap.web import start_server
+
+    # Start server with provided options
+    try:
+        start_server(
+            host=args.host,
+            port=args.port,
+            debug=args.debug,
+            open_browser=not args.no_browser
+        )
+    except KeyboardInterrupt:
+        print("\n\n👋 Web UI stopped")
+        return 0
+    except Exception as e:
+        print(f"❌ Error starting web UI: {e}")
+        return 1
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
@@ -1592,6 +1626,18 @@ Examples:
                                  choices=['init', 'info', 'list', 'journal', 'decisions', 'context'],
                                  help='Workspace action to perform')
     workspace_parser.add_argument('--name', '-n', help='Project name for init')
+
+    # web command
+    web_parser = subparsers.add_parser('web', help='Start local web UI for comparing models')
+    web_parser.add_argument('--host', default='127.0.0.1',
+                           help='Host to bind to (default: 127.0.0.1)')
+    web_parser.add_argument('--port', type=int, default=5005,
+                           help='Port to listen on (default: 5005)')
+    web_parser.add_argument('--debug', action='store_true',
+                           help='Enable debug mode')
+    web_parser.add_argument('--no-browser', action='store_true',
+                           help='Do not automatically open browser')
+
     config_parser.add_argument('--file', '-f', help='File path for import/export operations')
     config_parser.add_argument('--merge', action='store_true', 
                               help='Merge imported config instead of replacing')
@@ -1618,6 +1664,7 @@ Examples:
         'config': cmd_config,
         'providers': cmd_providers,
         'workspace': cmd_workspace,
+        'web': cmd_web,
     }
     
     return commands[args.command](args)

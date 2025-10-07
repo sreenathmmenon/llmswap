@@ -1,5 +1,63 @@
 # Changelog
 
+## [5.1.6] - 2025-10-07
+
+### Web UI for Side-by-Side Model Comparison 🌐
+
+Added a local web interface for comparing multiple LLM responses side-by-side.
+
+**What's New:**
+
+#### Web UI Features
+- **Side-by-side comparison**: Compare up to 20 models simultaneously
+- **Live updates**: Results stream in as they complete (⚡ Fastest! 🥈 🥉 badges)
+- **Cost visualization**: Bar chart showing relative costs across models
+- **Response metrics**: Time, tokens, tokens/sec efficiency, response length indicators
+- **Markdown rendering**: Full markdown + syntax highlighting with Highlight.js
+- **Code block copy**: Individual copy buttons for each code block
+- **Hospitality features**: localStorage preferences, welcome messages, first-time tips
+- **Model selection**: 9 visible models, 12 expandable (21 total across 10 providers)
+- **Export results**: Copy individual responses or full comparison
+
+**Quick Start:**
+```bash
+# Install web dependencies
+pip install llmswap[web]
+
+# Start web UI
+llmswap web
+
+# Opens at http://localhost:5005
+```
+
+**Python API:**
+```python
+from llmswap.web import start_server
+
+# Start server (blocking)
+start_server(port=5005, debug=False)
+
+# Or get Flask app for custom deployment
+from llmswap.web import create_app
+app = create_app()
+```
+
+**Technical Details:**
+- Flask + Flask-CORS backend
+- Tailwind CSS + Marked.js + Highlight.js frontend
+- Concurrent model querying with ThreadPoolExecutor
+- Real token counts from API responses (fallback to estimation)
+- Updated pricing for all 20+ models (January 2025 rates)
+- localStorage for user preferences
+- Workspace integration ready
+
+**Use Cases:**
+- Compare quality across models (GPT-4o vs Claude vs Gemini)
+- Find fastest model for latency-sensitive apps
+- Optimize costs (compare GPT-4o-mini vs Gemini Flash vs Groq)
+- Test prompts across providers
+- Evaluate coding responses (Claude vs GPT-4o vs Grok)
+
 ## [5.1.5] - 2025-10-05
 
 ### Branding Update

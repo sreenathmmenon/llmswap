@@ -1,4 +1,4 @@
-# LLMSwap v5.1.5 - Multiple AI Second Brains with Memory & Mentorship
+# LLMSwap v5.1.6 - Multiple AI Second Brains with Memory & Mentorship
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -24,6 +24,10 @@ llmswap workspace init
 # Chat with AI that remembers everything
 llmswap chat "Help me with Flask routing"
 # AI has full project context + all past learnings!
+
+# 🆕 Compare models visually (optional)
+pip install llmswap[web]
+llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 ```
 
 > **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. llmswap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports **10 providers** (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, **xAI Grok**, **Sarvam AI**).
@@ -61,6 +65,14 @@ llmswap chat "Help me with Flask routing"
 - 🔧 **For apps AND terminal** - One tool, two ways to use it
 
 **v5.1.0**: Revolutionary AI mentorship with **project memory**, **workspace-aware context**, **auto-tracked learning journals**, and **persistent mentor relationships**. The first AI tool that truly remembers your learning journey across projects.
+
+**NEW in v5.1.6:**
+- 🌐 **Web UI** - Compare 20+ models side-by-side in beautiful browser interface
+- 📊 **Visual Comparison** - Live streaming results with speed badges (⚡🥈🥉), cost charts, efficiency metrics
+- 💰 **Cost Optimizer** - See exact costs across providers, find cheapest model for your use case
+- 🎨 **Markdown + Code Highlighting** - Syntax-highlighted code blocks with individual copy buttons
+- 💾 **Smart Preferences** - Remembers your favorite models via localStorage
+- 📈 **Real-time Metrics** - Tokens/sec efficiency, response length indicators, actual API token counts
 
 **NEW in v5.1.0:**
 - 🧠 **Workspace Memory** - Per-project context that persists across sessions
@@ -994,7 +1006,64 @@ llmswap debug --error "ConnectionTimeout at line 42"
 
 # Analyze logs with AI
 llmswap logs --analyze app.log --since "2h ago"
+
+# 🆕 Web UI - Compare models side-by-side
+llmswap web  # Opens browser at http://localhost:5005
 ```
+
+### 🌐 **Web UI for Model Comparison** (v5.1.6 NEW!)
+
+Compare 20+ AI models side-by-side in a beautiful web interface with live streaming results:
+
+```bash
+# Install web UI dependencies (one-time, optional)
+pip install llmswap[web]
+
+# Start local web server (opens at http://localhost:5005)
+llmswap web
+
+# Note: If you haven't installed [web] dependencies, you'll get a helpful message
+# with installation instructions. The core SDK and CLI work without it.
+
+# Custom port (if 5005 is already in use)
+llmswap web --port 8080
+
+# Allow network access (access from other devices on your network)
+llmswap web --host 0.0.0.0 --port 8080
+
+# Don't auto-open browser
+llmswap web --no-browser
+
+# Combine options
+llmswap web --port 3000 --host 0.0.0.0 --no-browser
+```
+
+**Features:**
+- ⚡ **Live streaming results** - Cards fill in real-time as responses arrive with speed badges (⚡ Fastest! 🥈 🥉)
+- 📊 **Rich metrics** - Response time, tokens, tokens/sec efficiency, response length indicators (📝 Brief, 📄 Detailed, 📚 Comprehensive)
+- 💰 **Visual cost comparison** - Bar chart showing relative costs, FREE badges for $0 models (Ollama, Groq)
+- 🎨 **Markdown rendering** - Full markdown support with syntax-highlighted code blocks (Highlight.js)
+- 📋 **Code block copy** - Individual copy buttons on each code block with hover reveal
+- 💾 **Smart preferences** - Remembers your favorite models via localStorage with "Welcome back!" messages
+- 🎯 **Real token counts** - Uses actual API token data (not estimates) for accurate cost calculation
+- 🔒 **Local-first** - Runs on your machine, uses your API keys, zero data leaves your system
+
+**Perfect for:**
+- **Quality comparison** - See which model gives better coding responses (Claude vs GPT-4o vs Grok)
+- **Speed testing** - Find fastest model for latency-sensitive apps (Groq vs Gemini Flash)
+- **Cost optimization** - Compare $0.0001 vs $0.0150 and decide if quality difference justifies 150x price
+- **Prompt engineering** - Test same prompt across providers to find best match
+- **Model evaluation** - Compare 20+ models simultaneously without switching tabs
+
+**What Makes It Special:**
+- Compare up to 20 models at once (9 visible by default, 12 expandable)
+- Success/failure tracking - see exactly which models succeeded vs failed
+- First-time user tips - gentle onboarding for new users
+- Better error messages - helpful setup instructions when API keys missing
+
+**Screenshot:** Compare GPT-4o, Claude Sonnet 4.5, Gemini 2.0 Flash, Grok-4, and 17 more models simultaneously. See speed badges update in real-time, cost bars visualize price differences, and code blocks with syntax highlighting.
+
+---
 
 ### 3️⃣ **Provider Management & Model Configuration** (v5.0.4 NEW!)
 
