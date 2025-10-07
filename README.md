@@ -67,7 +67,7 @@ llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 **v5.1.0**: Revolutionary AI mentorship with **project memory**, **workspace-aware context**, **auto-tracked learning journals**, and **persistent mentor relationships**. The first AI tool that truly remembers your learning journey across projects.
 
 **NEW in v5.1.6:**
-- 🌐 **Web UI** - Compare 20+ models side-by-side in beautiful browser interface
+- 🌐 **Web UI** - Compare 20+ models side-by-side in beautiful browser interface & learn prompting techniques
 - 📊 **Visual Comparison** - Live streaming results with speed badges (⚡🥈🥉), cost charts, efficiency metrics
 - 💰 **Cost Optimizer** - See exact costs across providers, find cheapest model for your use case
 - 🎨 **Markdown + Code Highlighting** - Syntax-highlighted code blocks with individual copy buttons
