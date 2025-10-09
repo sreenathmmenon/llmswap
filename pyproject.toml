@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.1.6"
+version = "5.1.7"
 description = "cURL for LLMs - Universal SDK + CLI with multiple second brains. Works with Claude Sonnet 4.5, GPT-4 o1, Gemini, Cohere, xAI Grok, Sarvam AI, Perplexity, watsonx, Groq, Ollama. Features: workspace memory, auto-learning journals, teaching-first AI (Eklavya), persona rotation, decision logs, 50-90% cost savings, zero lock-in. Python SDK or CLI. Alternative to Claude Code, Cursor, Continue.dev, Copilot."
 readme = "README.md"
 requires-python = ">=3.8"
