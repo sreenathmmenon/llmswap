@@ -1021,7 +1021,100 @@ def cmd_costs(args):
 def cmd_providers(args):
     """Handle 'llmswap providers' command"""
     import os
-    
+    import json
+
+    # If --verify flag is set, use verification module
+    if hasattr(args, 'verify') and args.verify:
+        from .verification import verify_all_providers
+
+        print("🔍 Verifying Providers (this may take 10-15 seconds)...")
+
+        verification_result = verify_all_providers(
+            provider_filter=args.provider if hasattr(args, 'provider') else None,
+            timeout=args.timeout if hasattr(args, 'timeout') else 10
+        )
+
+        # Check for errors
+        if 'error' in verification_result:
+            print(f"❌ {verification_result['error']}")
+            if 'available_providers' in verification_result:
+                print(f"Available providers: {', '.join(verification_result['available_providers'])}")
+            return 1
+
+        # Format output
+        if args.format == 'json':
+            print(json.dumps(verification_result, indent=2))
+            return 0
+
+        # Table format
+        providers = verification_result['providers']
+        summary = verification_result['summary']
+        recommendations = verification_result['recommendations']
+
+        # Build table data
+        table_data = []
+        for p in providers:
+            status_icon = {
+                'verified': '✅ OK',
+                'invalid_key': '❌ Invalid',
+                'not_configured': '⚠️  Not Set',
+                'error': '❌ Error',
+                'slow': '⚠️  Slow',
+                'not_running': '❌ Down',
+                'rate_limited': '⚠️  Limited'
+            }.get(p['status'], '❓ Unknown')
+
+            latency = f"{p['latency_ms']}ms" if p['latency_ms'] else '-'
+            api_key = 'Configured' if p['api_key_configured'] else 'Not Set'
+            error_msg = p['error']['message'] if p['error'] else '-'
+
+            table_data.append([
+                p['name'].capitalize(),
+                status_icon,
+                latency,
+                api_key,
+                error_msg[:40] + '...' if len(error_msg) > 40 else error_msg
+            ])
+
+        # Print table
+        try:
+            from tabulate import tabulate
+            print("\n🔍 Provider Verification Results")
+            print("=" * 80)
+            headers = ["Provider", "Status", "Latency", "API Key", "Details"]
+            print(tabulate(table_data, headers=headers, tablefmt="grid"))
+        except ImportError:
+            print("\n🔍 Provider Verification Results")
+            print("=" * 80)
+            for row in table_data:
+                print(f"{row[0]:<12} {row[1]:<12} {row[2]:<10} {row[3]:<15} {row[4]}")
+
+        # Print summary
+        print(f"\n📊 Summary:")
+        print(f"  • Total: {summary['total']}")
+        print(f"  • Verified: {summary['verified']}")
+        print(f"  • Invalid Keys: {summary['invalid']}")
+        print(f"  • Not Configured: {summary['not_configured']}")
+        print(f"  • Errors: {summary['errors']}")
+
+        # Print recommendations
+        if recommendations:
+            print(f"\n💡 Recommendations:")
+            for rec in recommendations:
+                print(f"  • {rec['provider']}: {rec['action']}")
+
+        # Print fastest/cheapest
+        if verification_result.get('fastest'):
+            fastest = verification_result['fastest']
+            print(f"\n⚡ Fastest provider: {fastest['name']} ({fastest['latency_ms']}ms)")
+
+        if verification_result.get('cheapest'):
+            cheapest_names = [p['name'] for p in verification_result['cheapest']]
+            print(f"💰 Cheapest providers: {', '.join(cheapest_names)}")
+
+        return 0
+
+    # Original behavior (no verification, just show configured status)
     try:
         # Initialize client to get provider order
         config = get_config()
@@ -1616,8 +1709,14 @@ Examples:
     
     # providers command - Show provider status table
     providers_parser = subparsers.add_parser('providers', help='Show all providers and their status')
-    providers_parser.add_argument('--format', choices=['table', 'json'], 
+    providers_parser.add_argument('--format', choices=['table', 'json'],
                                  default='table', help='Output format')
+    providers_parser.add_argument('--verify', action='store_true',
+                                 help='Verify providers with real API calls (health check)')
+    providers_parser.add_argument('--provider', type=str,
+                                 help='Verify specific provider only')
+    providers_parser.add_argument('--timeout', type=int, default=10,
+                                 help='Timeout for verification in seconds (default: 10)')
     config_parser.add_argument('value', nargs='?', help='Configuration value for set action')
     
     # workspace command - Manage project workspaces

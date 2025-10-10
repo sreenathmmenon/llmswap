@@ -1,5 +1,73 @@
 # Changelog
 
+## [5.1.8] - 2025-10-10
+
+### Provider Verification - Real Health Checks 🔍
+
+Added real API health checks to verify provider configuration before you need it.
+
+**What's New:**
+
+#### Provider Verification (`--verify` flag)
+- **Real health checks**: Make actual API calls to verify keys work
+- **Latency monitoring**: See response times for each provider
+- **Error detection**: Catch invalid keys, rate limits, timeouts early
+- **Smart recommendations**: Get actionable advice for fixing issues
+- **Performance insights**: Identify fastest and cheapest providers
+- **Zero breaking changes**: Backward compatible with all v5.1.0-5.1.7 features
+
+**Quick Start:**
+```bash
+# Verify all configured providers
+llmswap providers --verify
+
+# Verify specific provider
+llmswap providers --verify --provider anthropic
+
+# JSON output
+llmswap providers --verify --json
+
+# Custom timeout
+llmswap providers --verify --timeout 5
+```
+
+**Example Output:**
+```
+🔍 Verifying Providers (this may take 10-15 seconds)...
+
+Provider Status:
+┌───────────┬──────────┬─────────┬────────────┬─────────────┐
+│ Provider  │ Status   │ Latency │ API Key    │ Details     │
+├───────────┼──────────┼─────────┼────────────┼─────────────┤
+│ Anthropic │ ✅ OK    │ 234ms   │ Configured │ -           │
+│ OpenAI    │ ❌ Invalid│ -      │ Configured │ Invalid key │
+│ Groq      │ ⚡ OK    │ 156ms   │ Configured │ -           │
+│ Ollama    │ ❌ Down  │ -       │ -          │ Not running │
+└───────────┴──────────┴─────────┴────────────┴─────────────┘
+
+💡 Recommendations:
+  • openai: Check OPENAI_API_KEY environment variable
+  • ollama: Run 'ollama serve' to start local server
+
+⚡ Fastest provider: groq (156ms)
+💰 Cheapest providers: groq, gemini
+```
+
+**Technical Details:**
+- Zero new dependencies (uses Python stdlib only)
+- Concurrent verification with ThreadPoolExecutor (5 workers max)
+- Minimal test query costs ~$0.00001 per provider
+- Timeout protection (default 10s, configurable)
+- Detects: 401 (invalid key), 429 (rate limit), timeouts, network errors
+- ~10KB code footprint
+
+**Use Cases:**
+- Debug API key issues before deployment
+- Monitor provider availability in CI/CD
+- Choose fastest provider for your location
+- Optimize costs by testing cheapest options
+- Troubleshoot configuration problems
+
 ## [5.1.6] - 2025-10-07
 
 ### Web UI for Side-by-Side Model Comparison 🌐
