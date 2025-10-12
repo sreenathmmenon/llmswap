@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.1.9] - 2025-10-12
+
+### Enhanced SEO & Discoverability
+- Improved package description highlighting "AI infrastructure" and "LLM routing"
+- Added trending keywords: llm-routing, llm-gateway-routing, ai-infrastructure, provider-health-check, provider-verification
+- Better positioning for enterprise search terms
+- Enhanced discoverability for developers searching AI infrastructure solutions
+
+**Note:** No code changes, purely metadata improvements for better PyPI visibility.
+
 ## [5.1.8] - 2025-10-10
 
 ### Provider Verification - Real Health Checks 🔍
