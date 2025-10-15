@@ -121,6 +121,47 @@ class AnthropicProvider(BaseProvider):
         except Exception as e:
             raise ProviderError("anthropic", str(e))
 
+    def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
+        """Send conversation with tool calling support."""
+        from .tools.response import create_enhanced_response
+
+        start_time = time.time()
+        try:
+            # Convert Tool objects to Anthropic format
+            anthropic_tools = [tool.to_anthropic_format() for tool in tools]
+
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=4000,
+                messages=messages,
+                tools=anthropic_tools
+            )
+
+            latency = time.time() - start_time
+
+            # Use enhanced response to extract tool calls
+            enhanced = create_enhanced_response(response, "anthropic")
+
+            return LLMResponse(
+                content=enhanced.content,
+                provider="anthropic",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
+                },
+                metadata={
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
+                    "tool_calls": enhanced.tool_calls,
+                    "finish_reason": enhanced.finish_reason,
+                    "raw_response": response
+                }
+            )
+        except Exception as e:
+            raise ProviderError("anthropic", str(e))
+
 
 class OpenAIProvider(BaseProvider):
     """Provider for OpenAI GPT models."""
@@ -196,7 +237,48 @@ class OpenAIProvider(BaseProvider):
             )
         except Exception as e:
             raise ProviderError("openai", str(e))
-    
+
+    def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
+        """Send conversation with tool calling support."""
+        from .tools.response import create_enhanced_response
+
+        start_time = time.time()
+        try:
+            # Convert Tool objects to OpenAI format
+            openai_tools = [tool.to_openai_format() for tool in tools]
+
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                max_tokens=4000,
+                tools=openai_tools
+            )
+
+            latency = time.time() - start_time
+
+            # Use enhanced response to extract tool calls
+            enhanced = create_enhanced_response(response, "openai")
+
+            return LLMResponse(
+                content=enhanced.content,
+                provider="openai",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                },
+                metadata={
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                    "tool_calls": enhanced.tool_calls,
+                    "finish_reason": enhanced.finish_reason,
+                    "raw_response": response
+                }
+            )
+        except Exception as e:
+            raise ProviderError("openai", str(e))
+
     def is_available(self) -> bool:
         return self.api_key is not None
 
@@ -314,7 +396,77 @@ class GeminiProvider(BaseProvider):
             )
         except Exception as e:
             raise ProviderError("gemini", str(e))
-    
+
+    def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
+        """Send conversation with tool calling support."""
+        from .tools.response import create_enhanced_response
+
+        self._initialize()
+        start_time = time.time()
+        try:
+            # Convert Tool objects to Gemini format
+            gemini_tool_defs = []
+            for tool in tools:
+                tool_dict = tool.to_gemini_format()
+                # Create FunctionDeclaration
+                func_decl = self._genai.protos.FunctionDeclaration(
+                    name=tool_dict["name"],
+                    description=tool_dict["description"],
+                    parameters=tool_dict["parameters"]
+                )
+                gemini_tool_defs.append(func_decl)
+
+            # Create Tool wrapper
+            gemini_tools = self._genai.protos.Tool(function_declarations=gemini_tool_defs)
+
+            # Convert message format for Gemini
+            chat_history = []
+            for msg in messages[:-1]:  # All except the last message
+                role = "user" if msg["role"] == "user" else "model"
+                chat_history.append({"role": role, "parts": [msg["content"]]})
+
+            # Start chat with history and tools
+            chat = self.model_instance.start_chat(history=chat_history)
+
+            # Send the current message with tools
+            current_message = messages[-1]["content"]
+            response = chat.send_message(current_message, tools=[gemini_tools])
+
+            latency = time.time() - start_time
+
+            # Use enhanced response to extract tool calls
+            enhanced = create_enhanced_response(response, "gemini")
+
+            # Extract usage data
+            usage_data = {}
+            if hasattr(response, 'usage_metadata'):
+                usage_data = {
+                    "prompt_token_count": getattr(response.usage_metadata, 'prompt_token_count', None),
+                    "candidates_token_count": getattr(response.usage_metadata, 'candidates_token_count', None),
+                    "total_token_count": getattr(response.usage_metadata, 'total_token_count', None),
+                }
+                if usage_data.get("prompt_token_count"):
+                    usage_data["input_tokens"] = usage_data["prompt_token_count"]
+                if usage_data.get("candidates_token_count"):
+                    usage_data["output_tokens"] = usage_data["candidates_token_count"]
+
+            return LLMResponse(
+                content=enhanced.content,
+                provider="gemini",
+                model=self.model,
+                latency=latency,
+                usage=usage_data if usage_data else None,
+                metadata={
+                    "safety_ratings": getattr(response, 'safety_ratings', None),
+                    "finish_reason": enhanced.finish_reason,
+                    "usage_metadata": usage_data,
+                    "tool_calls": enhanced.tool_calls,
+                    "raw_response": response
+                }
+            )
+        except Exception as e:
+            raise ProviderError("gemini", str(e))
+
     def is_available(self) -> bool:
         return self.api_key is not None
 
@@ -511,6 +663,48 @@ class GroqProvider(BaseProvider):
                 metadata={
                     "input_tokens": response.usage.prompt_tokens if response.usage else 0,
                     "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                }
+            )
+        except Exception as e:
+            raise ProviderError("groq", str(e))
+
+    def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
+        """Send conversation with tool calling support."""
+        from .tools.response import create_enhanced_response
+
+        start_time = time.time()
+        try:
+            # Convert Tool objects to OpenAI format (Groq is OpenAI-compatible)
+            groq_tools = [tool.to_openai_format() for tool in tools]
+
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                max_tokens=4000,
+                temperature=0.7,
+                tools=groq_tools
+            )
+
+            latency = time.time() - start_time
+
+            # Use enhanced response to extract tool calls
+            enhanced = create_enhanced_response(response, "groq")
+
+            return LLMResponse(
+                content=enhanced.content,
+                provider="groq",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                },
+                metadata={
+                    "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                    "output_tokens": response.usage.completion_tokens if response.usage else 0,
+                    "tool_calls": enhanced.tool_calls,
+                    "finish_reason": enhanced.finish_reason,
+                    "raw_response": response
                 }
             )
         except Exception as e:
@@ -885,6 +1079,45 @@ class XAIProvider(BaseProvider):
                     "completion_tokens": getattr(response.usage, 'completion_tokens', 0),
                 },
                 metadata={}
+            )
+        except Exception as e:
+            raise ProviderError("xai", str(e))
+
+    def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
+        """Send conversation with tool calling support."""
+        from .tools.response import create_enhanced_response
+
+        start_time = time.time()
+        try:
+            # Convert Tool objects to OpenAI format (XAI is OpenAI-compatible)
+            xai_tools = [tool.to_openai_format() for tool in tools]
+
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                max_tokens=1000,
+                tools=xai_tools
+            )
+
+            latency = time.time() - start_time
+
+            # Use enhanced response to extract tool calls (use openai extraction)
+            enhanced = create_enhanced_response(response, "openai")
+
+            return LLMResponse(
+                content=enhanced.content,
+                provider="xai",
+                model=self.model,
+                latency=latency,
+                usage={
+                    "prompt_tokens": getattr(response.usage, 'prompt_tokens', 0),
+                    "completion_tokens": getattr(response.usage, 'completion_tokens', 0),
+                },
+                metadata={
+                    "tool_calls": enhanced.tool_calls,
+                    "finish_reason": enhanced.finish_reason,
+                    "raw_response": response
+                }
             )
         except Exception as e:
             raise ProviderError("xai", str(e))

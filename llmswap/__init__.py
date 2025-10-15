@@ -27,7 +27,7 @@ import os
 os.environ.setdefault('GRPC_VERBOSITY', 'NONE')
 os.environ.setdefault('GLOG_minloglevel', '2')
 
-__version__ = "5.1.6"
+__version__ = "5.2.0"
 __author__ = "Sreenath Menon"
 __description__ = "Universal AI Platform: CLI + Python SDK | Multi-Provider LLM Interface for Any Use Case"
 
@@ -37,10 +37,11 @@ from .response import LLMResponse
 from .cache import InMemoryCache
 from .exceptions import (
     LLMSwapError,
-    ProviderError, 
+    ProviderError,
     ConfigurationError,
     AllProvidersFailedError
 )
+from .tools import Tool, ToolCall, EnhancedResponse
 
 __all__ = [
     "LLMClient",
@@ -49,6 +50,9 @@ __all__ = [
     "InMemoryCache",
     "LLMSwapError",
     "ProviderError",
-    "ConfigurationError", 
-    "AllProvidersFailedError"
+    "ConfigurationError",
+    "AllProvidersFailedError",
+    "Tool",
+    "ToolCall",
+    "EnhancedResponse"
 ]

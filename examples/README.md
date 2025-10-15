@@ -13,6 +13,44 @@ export GEMINI_API_KEY="your-key"
 
 ## Examples
 
+### 🛠️ Tool Calling Examples (NEW in v5.2.0)
+
+**Enable LLMs to access YOUR data and systems**
+
+These examples show REAL use cases where LLM needs YOUR tools:
+- LLM doesn't have real-time weather data
+- LLM doesn't know YOUR database contents
+- LLM doesn't know what products YOU sell
+
+#### [01_weather_api.py](01_weather_api.py)
+**Real-time weather data** - Shows before/after comparison:
+- WITHOUT tools: LLM says "I don't have access to real-time weather"
+- WITH tools: LLM calls YOUR API and returns actual current weather
+```bash
+python examples/01_weather_api.py
+```
+
+#### [02_database_query.py](02_database_query.py)
+**Database access** - LLM queries YOUR customer database:
+- WITHOUT tools: LLM says "I don't have access to your database"
+- WITH tools: LLM queries YOUR data and analyzes results
+```bash
+python examples/02_database_query.py
+```
+
+#### [03_ecommerce_assistant.py](03_ecommerce_assistant.py)
+**Shopping assistant** - LLM searches YOUR product catalog:
+- WITHOUT tools: LLM can't help customers shop
+- WITH tools: LLM becomes a knowledgeable sales assistant
+```bash
+python examples/03_ecommerce_assistant.py
+```
+
+📖 **[Complete Tool Calling Guide](../docs/TOOL_CALLING.md)**
+🚀 **[Quick Start Guide](../docs/TOOL_CALLING_QUICKSTART.md)**
+
+---
+
 ### 💰 [smart_cost_optimizer.py](smart_cost_optimizer.py)
 **Save 50-90% on API costs with intelligent caching**
 

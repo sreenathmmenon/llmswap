@@ -593,22 +593,24 @@ class LLMClient:
                 'error': str(e)
             }
     
-    def chat(self, 
+    def chat(self,
              message,  # Can be str or list of messages
              cache_context: Optional[Dict[str, Any]] = None,
              cache_ttl: Optional[int] = None,
-             cache_bypass: bool = False) -> LLMResponse:
+             cache_bypass: bool = False,
+             tools: Optional[List[Any]] = None) -> LLMResponse:
         """Send message with provider-native conversation context.
-        
+
         Provider handles all conversation context and history.
         No local storage - completely privacy-first approach.
-        
+
         Args:
             message: User message string OR list of conversation messages
             cache_context: Optional context dict for cache key
             cache_ttl: Override default cache TTL in seconds
             cache_bypass: Skip cache lookup and force fresh response
-            
+            tools: Optional list of Tool objects for function calling
+
         Returns:
             LLMResponse with content, metadata, and usage info
         """
@@ -625,7 +627,12 @@ class LLMClient:
         # Always use standard chat method with full conversation history
         if hasattr(self.current_provider, 'chat'):
             # Standard chat method - send full conversation history
-            response = self.current_provider.chat(messages)
+            if tools and hasattr(self.current_provider, 'chat_with_tools'):
+                # Provider supports tool calling
+                response = self.current_provider.chat_with_tools(messages, tools)
+            else:
+                # Standard chat without tools
+                response = self.current_provider.chat(messages)
         else:
             # Fallback: single query (no conversation context)
             if isinstance(message, str):

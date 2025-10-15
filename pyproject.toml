@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.1.9"
-description = "AI infrastructure for LLM routing & cost optimization. Universal SDK + CLI with provider verification, workspace memory, auto-learning journals. Works with Claude Sonnet 4.5, GPT-4 o1, Gemini, Cohere, xAI Grok, Sarvam AI, Perplexity, watsonx, Groq, Ollama. Features: health checks, teaching-first AI (Eklavya), persona rotation, decision logs, 50-90% cost savings, zero lock-in."
+version = "5.2.0"
+description = "Universal LLM SDK with Tool Calling: Enable ANY LLM to access YOUR data/APIs. Multi-provider (Anthropic, OpenAI, Gemini, Groq, xAI) with automatic format conversion. Features: universal tool calling, workspace memory, cost optimization, provider switching, zero vendor lock-in. Build AI agents, chatbots, data assistants with one SDK."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -14,7 +14,14 @@ authors = [
 ]
 keywords = [
     "llm",
-    "ai", 
+    "ai",
+    "tool-calling",
+    "function-calling",
+    "agents",
+    "agentic-ai",
+    "universal-tool-calling",
+    "multi-provider-tools",
+    "llm-tools",
     "openai",
     "anthropic",
     "claude",

@@ -1,4 +1,4 @@
-# LLMSwap v5.1.7 - Multiple AI Second Brains with Memory & Mentorship
+# llmswap: Universal LLM SDK That Just Works
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -6,7 +6,45 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## Ship AI Features in Minutes, Not Weeks
+
+**One SDK. 11 providers. Zero vendor lock-in.**
+
+Stop wrestling with complex frameworks. llmswap gives you tool calling, caching, and multi-provider support in 10 lines of code. Used by developers shipping real products.
+
 **📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html)
+
+## 🆕 NEW in v5.2.0: Universal Tool Calling
+
+**Enable LLMs to access YOUR data and systems** - Define tools once, works across ALL providers.
+
+```python
+from llmswap import LLMClient, Tool
+
+# Define tool to access YOUR weather API
+weather = Tool(
+    name="get_weather",
+    description="Get real-time weather data",
+    parameters={"city": {"type": "string"}},
+    required=["city"]
+)
+
+# Works with ANY provider - Anthropic, OpenAI, Gemini, Groq, xAI
+client = LLMClient(provider="anthropic")
+response = client.chat("What's the weather in Tokyo?", tools=[weather])
+
+# LLM calls YOUR function → you return data → LLM gives natural response
+```
+
+**Real-World Use Cases:**
+- 🌦️ Give LLM access to YOUR weather API for real-time data
+- 💾 Let LLM query YOUR database for customer information
+- 🛒 Enable LLM to search YOUR product catalog for shopping assistance
+- 🔧 Connect LLM to YOUR systems and APIs
+
+**Works with:** Anthropic, OpenAI, Groq, Gemini, xAI | **[Quick Start Guide →](examples/)** | **[Full Docs →](.llmswap/website-docs/)**
+
+---
 
 ## ⚡ Quick Start (30 seconds)
 
@@ -54,21 +92,29 @@ llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 - ✅ Zero context switching - AI loads the right project automatically
 - ✅ Project-aware AI - mentor understands YOUR specific tech stack
 
-**Two tools in one:**
-- 🐍 **Python SDK** - Build apps without vendor lock-in (started here!)
-- ⚡ **CLI tool** - Terminal interface that works with any subscription (bonus!)
+## Why Developers Choose llmswap
 
-**Why LLMSwap?**
-- 🔓 **No vendor lock-in** - Switch providers with 1 line of code (SDK) or 1 command (CLI)
-- 🎓 **Teaching-first AI** - Eklavya mentorship system (guru, coach, socrates personas)
-- 💰 **Cost optimizer** - Automatic caching saves 50-90% on API calls
-- 🔧 **For apps AND terminal** - One tool, two ways to use it
+✅ **10 Lines to Production** - Not 1000 like LangChain
+✅ **Automatic Fallback** - Never down. Switches providers if one fails
+✅ **50-90% Cost Savings** - Built-in caching. Same query = FREE
+✅ **Workspace Memory** - Your AI remembers your project context
+✅ **Universal Tool Calling** - Define once, works everywhere (NEW v5.2.0)
+✅ **CLI + SDK** - Code AND terminal. Your choice
+✅ **Zero Lock-in** - Switch from OpenAI to Claude in 1 line
+
+**Built for Speed:**
+- 🚀 **Hackathons** - Ship in hours
+- 💡 **MVPs** - Validate ideas fast
+- 📱 **Production Apps** - Scale as you grow
+- 🎯 **Real Projects** - Trusted by developers worldwide
 
 **v5.1.0**: Revolutionary AI mentorship with **project memory**, **workspace-aware context**, **auto-tracked learning journals**, and **persistent mentor relationships**. The first AI tool that truly remembers your learning journey across projects.
 
-**NEW in v5.1.7:**
-- 📝 **Enhanced PyPI README** - Improved documentation and visual examples
-- 🎯 **Better Discovery** - Updated for improved searchability on PyPI
+**NEW in v5.2.0:**
+- 🛠️ **Universal Tool Calling** - Enable LLMs to use YOUR custom functions across all providers
+- 🔧 **5 Providers Supported** - Anthropic, OpenAI, Groq, Gemini, xAI with automatic format conversion
+- 📖 **Complete Documentation** - Full guides, examples, and real-world use cases
+- ✅ **100% Backward Compatible** - All existing features work without changes
 
 **v5.1.6:**
 - 🌐 **Web UI** - Compare 20+ models side-by-side in beautiful browser interface & learn prompting techniques
@@ -1459,19 +1505,45 @@ export PERPLEXITY_API_KEY="pplx-..."      # For Perplexity web search
 - **PyPI**: [pypi.org/project/llmswap](https://pypi.org/project/llmswap)
 - **Issues**: [Report bugs or request features](https://github.com/sreenathmmenon/llmswap/issues)
 
-## 🚀 Get Started Now
+## 🚀 Get Started in 30 Seconds
 
 ```bash
+# Install
 pip install llmswap
+
+# Set ANY API key (one is enough)
+export ANTHROPIC_API_KEY="your-key"  # or OpenAI, or Gemini...
+
+# Start building
+llmswap chat "Hello!"
 ```
+
+**Or use the SDK:**
 
 ```python
 from llmswap import LLMClient
+
+# Auto-detects available providers
 client = LLMClient()
-print(client.query("Hello, AI!").content)
+
+# Chat with AI
+response = client.chat("Write a Python function to sort a list")
+print(response.content)
+
+# Add tool calling (v5.2.0)
+from llmswap import Tool
+
+weather = Tool(
+    name="get_weather",
+    description="Get weather data",
+    parameters={"city": {"type": "string"}},
+    required=["city"]
+)
+
+response = client.chat("What's the weather in Tokyo?", tools=[weather])
 ```
 
-**That's it!** You're now using AI with automatic provider detection, failover support, and cost optimization.
+**That's it!** Automatic provider detection, failover, caching, and now tool calling - all in 10 lines.
 
 ---
 
@@ -1489,18 +1561,33 @@ print(client.query("Hello, AI!").content)
 
 ---
 
-## 📊 Stats & Achievements
+## 📊 Why Thousands Choose llmswap
 
-- **Downloads:** 12,000+ on PyPI
-- **Version:** v5.1.0 (latest)
-- **License:** MIT (100% open source)
-- **Python Support:** 3.8+
-- **Providers Supported:** 8+ (Anthropic, OpenAI, Google, IBM, Groq, Cohere, Perplexity, Ollama)
-- **Installation:** pip, Homebrew, or from source
-- **Active Development:** Regular updates and feature releases
+- ⚡ **12,000+ Downloads** - Trusted by developers worldwide
+- 🚀 **v5.2.0** - Now with universal tool calling
+- 🔓 **MIT License** - 100% open source, free forever
+- 🐍 **Python 3.8+** - Works on all platforms
+- 🌍 **11 Providers** - Anthropic, OpenAI, Gemini, Groq, xAI, Cohere, Perplexity, Sarvam, IBM watsonx, Ollama
+- 📦 **pip & Homebrew** - Install in seconds
+- 🎯 **Production Ready** - Used in real products
+
+## Compare with Alternatives
+
+| Feature | llmswap | LiteLLM | LangChain |
+|---------|---------|---------|-----------|
+| **Setup Time** | 30 seconds | 5 minutes | 1 hour |
+| **Lines of Code** | 10 | 20 | 100+ |
+| **Tool Calling** | ✅ Universal | ✅ Universal | ✅ Complex |
+| **Caching** | ✅ Built-in | ✅ Optional | ❌ External |
+| **Workspace Memory** | ✅ Unique | ❌ | ❌ |
+| **CLI + SDK** | ✅ Both | SDK only | SDK only |
+| **Learning Curve** | Easy | Medium | Hard |
+| **Best For** | Shipping fast | Gateway | Agents |
+
+**Choose llmswap when you want to ship fast without the complexity.**
 
 ---
 
-Built with ❤️ for developers who value simplicity, efficiency, and learning. Star us on [GitHub](https://github.com/sreenathmmenon/llmswap) if llmswap saves you time, money, or helps you learn faster!
+Built with ❤️ for developers who ship. Star us on [GitHub](https://github.com/sreenathmmenon/llmswap) if llmswap helps you build faster!
 
-**v5.1.0 Release:** The first AI tool that truly remembers your learning journey. 🚀
+**Latest:** v5.2.0 - Universal tool calling across all providers 🚀

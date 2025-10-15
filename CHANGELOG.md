@@ -1,5 +1,77 @@
 # Changelog
 
+## [5.2.0] - 2025-10-15
+
+### 🛠️ **Universal Tool Calling - Major Feature Release**
+
+Enable LLMs to access YOUR data and systems with universal tool calling across all providers.
+
+#### **Added**
+- **Universal Tool Calling**: Define tools once, works across ALL providers
+  - `Tool` class - Provider-agnostic tool definitions
+  - `ToolCall` class - Normalized tool call representation
+  - `EnhancedResponse` class - Tool calling metadata
+  - Automatic format conversion (Anthropic, OpenAI, Gemini formats)
+
+- **5 Provider Support**: Added `chat_with_tools()` method to:
+  - ✅ Anthropic (Claude) - Native tool_use format
+  - ✅ OpenAI (GPT) - Function calling format
+  - ✅ Groq (Llama) - OpenAI-compatible format
+  - ✅ Google Gemini - FunctionDeclaration format
+  - ✅ xAI (Grok) - OpenAI-compatible format
+
+- **Real-World Examples**: Three production-ready examples showing essential use cases
+  - `01_weather_api.py` - Real-time weather data (LLM needs YOUR API)
+  - `02_database_query.py` - Database access (LLM needs YOUR database)
+  - `03_ecommerce_assistant.py` - Product catalog search (LLM needs YOUR catalog)
+
+- **Comprehensive Documentation**:
+  - Complete tool calling guide with real-world use cases
+  - Quick start guide (5-minute setup)
+  - Best practices and security guidelines
+  - Migration guide from direct provider APIs
+
+#### **Changed**
+- `LLMClient.chat()` now accepts optional `tools` parameter (backward compatible)
+- Response `metadata` now includes `tool_calls`, `finish_reason`, `raw_response`
+- Package description updated to highlight tool calling capabilities
+
+#### **Technical Details**
+- **Files Created**:
+  - `llmswap/tools/__init__.py`
+  - `llmswap/tools/schema.py`
+  - `llmswap/tools/response.py`
+
+- **Files Modified**:
+  - `llmswap/client.py` - Added tools parameter
+  - `llmswap/providers.py` - Added chat_with_tools() to 5 providers
+  - `llmswap/__init__.py` - Export Tool, ToolCall, EnhancedResponse
+
+- **Test Coverage**: 11/11 tests passing (100%)
+  - 5 provider tool calling tests ✅
+  - 6 backward compatibility tests ✅
+
+#### **Why This Matters**
+- ❌ LLM doesn't know YOUR database contents
+- ❌ LLM can't access YOUR APIs
+- ❌ LLM doesn't know what products YOU sell
+- ✅ Tool calling lets LLM use YOUR functions to access YOUR data
+
+#### **Zero Breaking Changes**
+- 100% backward compatible with v1.0-v5.1.9
+- All existing features work without modification
+- Tools parameter is completely optional
+
+#### **References**
+
+Implementation based on official provider documentation:
+- [Anthropic Tool Use](https://docs.anthropic.com/en/docs/build-with-claude/tool-use)
+- [OpenAI Function Calling](https://platform.openai.com/docs/guides/function-calling)
+- [Google Gemini Function Calling](https://ai.google.dev/gemini-api/docs/function-calling)
+- [Groq Tool Use](https://console.groq.com/docs/tool-use)
+
+---
+
 ## [5.1.9] - 2025-10-12
 
 ### Enhanced SEO & Discoverability
