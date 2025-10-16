@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.2.0"
+version = "5.2.1"
 description = "Universal LLM SDK with Tool Calling: Enable ANY LLM to access YOUR data/APIs. Multi-provider (Anthropic, OpenAI, Gemini, Groq, xAI) with automatic format conversion. Features: universal tool calling, workspace memory, cost optimization, provider switching, zero vendor lock-in. Build AI agents, chatbots, data assistants with one SDK."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -299,6 +299,29 @@ Changelog = "https://github.com/sreenathmmenon/llmswap/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["llmswap"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "@",
+    ".env*",
+    "test_*.py",
+    "run_*.sh",
+    "*_test.py",
+    ".github",
+    ".mailmap",
+    ".gitignore",
+    "tests",
+    "docs",
+    "examples/test_*.py",
+]
+only-include = [
+    "llmswap",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "CONTRIBUTORS.md",
+    "examples",
+]
 
 [tool.black]
 line-length = 88

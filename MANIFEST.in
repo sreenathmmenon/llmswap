@@ -1,0 +1,53 @@
+# MANIFEST.in - Controls what goes into PyPI package
+# Only include necessary files to prevent leaking secrets
+
+# Essential documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTORS.md
+
+# Package code only
+recursive-include llmswap *.py
+recursive-include llmswap/analytics *.py
+recursive-include llmswap/eklavya *.py
+recursive-include llmswap/metrics *.py
+recursive-include llmswap/personalization *.py
+recursive-include llmswap/tools *.py
+recursive-include llmswap/web *.py
+recursive-include llmswap/web/static *
+recursive-include llmswap/web/templates *
+
+# Exclude sensitive files
+exclude @
+exclude .*
+exclude .env*
+exclude *.key
+exclude *.pem
+exclude credentials*
+exclude secrets*
+
+# Exclude test files
+exclude test_*.py
+exclude run_*.sh
+exclude *_test.py
+global-exclude test_*.py
+
+# Exclude development files
+exclude .gitignore
+exclude .mailmap
+exclude .pre-commit-config.yaml
+recursive-exclude .github *
+recursive-exclude tests *
+recursive-exclude docs *
+
+# Exclude build artifacts
+global-exclude __pycache__
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.so
+global-exclude .DS_Store
+global-exclude *.egg-info
+
+# Exclude examples (optional - uncomment if you want to exclude)
+# recursive-exclude examples *

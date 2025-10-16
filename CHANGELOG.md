@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.2.1] - 2025-10-16
+
+### 🔒 **Security & Stability Release**
+
+#### **Security**
+- Enhanced error handling to prevent sensitive information exposure
+- Improved exception sanitization across all providers
+- Added security module for consistent error message handling
+- Strengthened build configuration to prevent unintended file inclusion
+
+#### **Improvements**
+- More informative error messages with better categorization
+- Enhanced error handling for authentication, rate limits, and network issues
+- Better structured exception handling across sync and async providers
+
+#### **Technical**
+- Added `llmswap/security.py` module for centralized security utilities
+- Updated build configuration to exclude development and test files
+- Improved package distribution to include only necessary files
+
+---
+
 ## [5.2.0] - 2025-10-15
 
 ### 🛠️ **Universal Tool Calling - Major Feature Release**
