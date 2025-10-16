@@ -7,6 +7,7 @@ from typing import Optional, List, Dict, Any
 from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
 from .cache import InMemoryCache
+from .security import safe_error_string
 
 
 class LLMClient:
@@ -323,7 +324,7 @@ class LLMClient:
             )
             
             # All providers failed
-            raise AllProvidersFailedError(f"All providers failed. Last error: {str(e)}")
+            raise AllProvidersFailedError(f"All providers failed. Last error: {safe_error_string(e, None)}")
     
     def _record_analytics(self, response: Optional[LLMResponse], start_time: float,
                          cache_hit: bool, fallback_used: bool, retry_count: int,
@@ -590,7 +591,7 @@ class LLMClient:
         except Exception as e:
             return {
                 'success': False,
-                'error': str(e)
+                'error': safe_error_string(e, None)
             }
     
     def chat(self,

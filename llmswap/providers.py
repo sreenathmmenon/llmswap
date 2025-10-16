@@ -7,6 +7,7 @@ from typing import Optional
 
 from .response import LLMResponse
 from .exceptions import ProviderError, ConfigurationError
+from .security import safe_error_string
 
 
 def clean_api_key(api_key: Optional[str]) -> Optional[str]:
@@ -25,6 +26,54 @@ def clean_api_key(api_key: Optional[str]) -> Optional[str]:
     api_key = api_key.strip().strip('"').strip("'").strip()
 
     return api_key
+
+
+def classify_and_raise_error(provider_name: str, error: Exception, api_key: Optional[str] = None):
+    """
+    Classify error and raise appropriate exception with safe message.
+
+    Args:
+        provider_name: Name of the provider
+        error: The original exception
+        api_key: API key to remove from error messages
+    """
+    error_text = str(error).lower()
+
+    # Check for authentication errors
+    if any(word in error_text for word in ['401', 'unauthorized', 'invalid', 'authentication', 'api key']):
+        raise ProviderError(
+            provider_name,
+            "Authentication failed. Please check your API key is valid and active.",
+            error_type="auth"
+        )
+
+    # Check for rate limits
+    if any(word in error_text for word in ['429', 'rate limit', 'quota', 'too many requests']):
+        raise ProviderError(
+            provider_name,
+            "Rate limit exceeded. Please wait before retrying.",
+            error_type="rate_limit"
+        )
+
+    # Check for network errors
+    if any(word in error_text for word in ['timeout', 'connection', 'network', 'unreachable']):
+        raise ProviderError(
+            provider_name,
+            "Network error. Please check your connection and try again.",
+            error_type="network"
+        )
+
+    # Check for invalid request
+    if any(word in error_text for word in ['400', 'bad request', 'invalid request', 'validation']):
+        raise ProviderError(
+            provider_name,
+            "Invalid request. Please check your input parameters.",
+            error_type="invalid_request"
+        )
+
+    # Unknown error - use safe string
+    safe_msg = safe_error_string(error, api_key)
+    raise ProviderError(provider_name, f"Request failed: {safe_msg}", error_type="unknown")
 
 
 class BaseProvider(ABC):
@@ -86,8 +135,8 @@ class AnthropicProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("anthropic", str(e))
-    
+            classify_and_raise_error("anthropic", e, self.api_key)
+
     def is_available(self) -> bool:
         return self.api_key is not None
     
@@ -119,7 +168,7 @@ class AnthropicProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("anthropic", str(e))
+            classify_and_raise_error("anthropic", e, self.api_key)
 
     def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
         """Send conversation with tool calling support."""
@@ -160,7 +209,7 @@ class AnthropicProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("anthropic", str(e))
+            classify_and_raise_error("anthropic", e, self.api_key)
 
 
 class OpenAIProvider(BaseProvider):
@@ -205,8 +254,8 @@ class OpenAIProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("openai", str(e))
-    
+            classify_and_raise_error("openai", e, self.api_key)
+
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
         start_time = time.time()
@@ -236,7 +285,7 @@ class OpenAIProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("openai", str(e))
+            classify_and_raise_error("openai", e, self.api_key)
 
     def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
         """Send conversation with tool calling support."""
@@ -277,7 +326,7 @@ class OpenAIProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("openai", str(e))
+            classify_and_raise_error("openai", e, self.api_key)
 
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -345,8 +394,8 @@ class GeminiProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("gemini", str(e))
-    
+            classify_and_raise_error("gemini", e, self.api_key)
+
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
         self._initialize()
@@ -395,7 +444,7 @@ class GeminiProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("gemini", str(e))
+            classify_and_raise_error("gemini", e, self.api_key)
 
     def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
         """Send conversation with tool calling support."""
@@ -465,7 +514,7 @@ class GeminiProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("gemini", str(e))
+            classify_and_raise_error("gemini", e, self.api_key)
 
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -530,8 +579,8 @@ class OllamaProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("ollama", str(e))
-    
+            classify_and_raise_error("ollama", e, self.api_key)
+
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
         start_time = time.time()
@@ -580,8 +629,8 @@ class OllamaProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("ollama", str(e))
-    
+            classify_and_raise_error("ollama", e, self.api_key)
+
     def is_available(self) -> bool:
         try:
             response = self.requests.get(f"{self.url}/api/tags", timeout=5)
@@ -632,11 +681,11 @@ class GroqProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("groq", str(e))
-    
+            classify_and_raise_error("groq", e, self.api_key)
+
     def is_available(self) -> bool:
         return self.api_key is not None
-    
+
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
         start_time = time.time()
@@ -666,7 +715,7 @@ class GroqProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("groq", str(e))
+            classify_and_raise_error("groq", e, self.api_key)
 
     def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
         """Send conversation with tool calling support."""
@@ -708,7 +757,7 @@ class GroqProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("groq", str(e))
+            classify_and_raise_error("groq", e, self.api_key)
 
 
 class CoherProvider(BaseProvider):
@@ -753,11 +802,11 @@ class CoherProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("cohere", str(e))
-    
+            classify_and_raise_error("cohere", e, self.api_key)
+
     def is_available(self) -> bool:
         return self.api_key is not None
-    
+
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
         start_time = time.time()
@@ -787,7 +836,7 @@ class CoherProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("cohere", str(e))
+            classify_and_raise_error("cohere", e, self.api_key)
 
 
 class PerplexityProvider(BaseProvider):
@@ -835,11 +884,11 @@ class PerplexityProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("perplexity", str(e))
-    
+            classify_and_raise_error("perplexity", e, self.api_key)
+
     def is_available(self) -> bool:
         return self.api_key is not None
-    
+
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
         start_time = time.time()
@@ -869,7 +918,7 @@ class PerplexityProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("perplexity", str(e))
+            classify_and_raise_error("perplexity", e, self.api_key)
 
 
 class WatsonxProvider(BaseProvider):
@@ -948,8 +997,8 @@ class WatsonxProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("watsonx", str(e))
-    
+            classify_and_raise_error("watsonx", e, self.api_key)
+
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
         start_time = time.time()
@@ -1006,8 +1055,8 @@ class WatsonxProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("watsonx", str(e))
-    
+            classify_and_raise_error("watsonx", e, self.api_key)
+
     def is_available(self) -> bool:
         return self.api_key is not None and self.project_id is not None
 
@@ -1054,7 +1103,7 @@ class XAIProvider(BaseProvider):
                 metadata={}
             )
         except Exception as e:
-            raise ProviderError("xai", str(e))
+            classify_and_raise_error("xai", e, self.api_key)
 
     def chat(self, messages: list) -> LLMResponse:
         """Send conversation with full message history."""
@@ -1081,7 +1130,7 @@ class XAIProvider(BaseProvider):
                 metadata={}
             )
         except Exception as e:
-            raise ProviderError("xai", str(e))
+            classify_and_raise_error("xai", e, self.api_key)
 
     def chat_with_tools(self, messages: list, tools: list) -> LLMResponse:
         """Send conversation with tool calling support."""
@@ -1120,7 +1169,7 @@ class XAIProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("xai", str(e))
+            classify_and_raise_error("xai", e, self.api_key)
 
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -1203,7 +1252,7 @@ class SarvamProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("sarvam", str(e))
+            classify_and_raise_error("sarvam", e, self.api_key)
 
     def chat(self, messages: list, **kwargs) -> LLMResponse:
         """Send conversation with full message history (for chat models only)."""
@@ -1248,7 +1297,7 @@ class SarvamProvider(BaseProvider):
                 }
             )
         except Exception as e:
-            raise ProviderError("sarvam", str(e))
+            classify_and_raise_error("sarvam", e, self.api_key)
 
     def is_available(self) -> bool:
         return self.api_key is not None

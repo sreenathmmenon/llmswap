@@ -8,6 +8,7 @@ from typing import Optional, AsyncIterator
 
 from .response import LLMResponse
 from .exceptions import ProviderError, ConfigurationError
+from .security import safe_error_string
 
 
 class AsyncBaseProvider(ABC):
@@ -80,7 +81,7 @@ class AsyncOpenAIProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("openai", str(e))
+            raise ProviderError("openai", safe_error_string(e, self.api_key))
     
     async def stream(self, prompt: str) -> AsyncIterator[str]:
         """Stream response from OpenAI."""
@@ -97,7 +98,7 @@ class AsyncOpenAIProvider(AsyncBaseProvider):
                     yield chunk.choices[0].delta.content
                     
         except Exception as e:
-            raise ProviderError("openai", str(e))
+            raise ProviderError("openai", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -148,7 +149,7 @@ class AsyncAnthropicProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("anthropic", str(e))
+            raise ProviderError("anthropic", safe_error_string(e, self.api_key))
     
     async def stream(self, prompt: str) -> AsyncIterator[str]:
         """Stream response from Anthropic."""
@@ -162,7 +163,7 @@ class AsyncAnthropicProvider(AsyncBaseProvider):
                     yield text
                     
         except Exception as e:
-            raise ProviderError("anthropic", str(e))
+            raise ProviderError("anthropic", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -209,7 +210,7 @@ class AsyncGeminiProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("gemini", str(e))
+            raise ProviderError("gemini", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -258,7 +259,7 @@ class AsyncOllamaProvider(AsyncBaseProvider):
                 )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("ollama", str(e))
+            raise ProviderError("ollama", safe_error_string(e, self.api_key))
     
     async def stream(self, prompt: str) -> AsyncIterator[str]:
         """Stream response from Ollama."""
@@ -289,7 +290,7 @@ class AsyncOllamaProvider(AsyncBaseProvider):
                                 continue
                                 
         except Exception as e:
-            raise ProviderError("ollama", str(e))
+            raise ProviderError("ollama", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         try:
@@ -349,7 +350,7 @@ class AsyncCoherProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("cohere", str(e))
+            raise ProviderError("cohere", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -404,7 +405,7 @@ class AsyncGroqProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("groq", str(e))
+            raise ProviderError("groq", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -462,7 +463,7 @@ class AsyncPerplexityProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("perplexity", str(e))
+            raise ProviderError("perplexity", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -523,7 +524,7 @@ class AsyncWatsonxProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("watsonx", str(e))
+            raise ProviderError("watsonx", safe_error_string(e, self.api_key))
     
     def is_available(self) -> bool:
         return self.api_key is not None and self.project_id is not None
@@ -577,7 +578,7 @@ class AsyncXAIProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("xai", str(e))
+            raise ProviderError("xai", safe_error_string(e, self.api_key))
 
     async def stream(self, prompt: str) -> AsyncIterator[str]:
         """Stream response from xAI."""
@@ -594,7 +595,7 @@ class AsyncXAIProvider(AsyncBaseProvider):
                     yield chunk.choices[0].delta.content
 
         except Exception as e:
-            raise ProviderError("xai", str(e))
+            raise ProviderError("xai", safe_error_string(e, self.api_key))
 
     def is_available(self) -> bool:
         return self.api_key is not None
@@ -684,7 +685,7 @@ class AsyncSarvamProvider(AsyncBaseProvider):
             )
         except Exception as e:
             latency = time.time() - start_time
-            raise ProviderError("sarvam", str(e))
+            raise ProviderError("sarvam", safe_error_string(e, self.api_key))
 
     async def stream(self, prompt: str) -> AsyncIterator[str]:
         """Sarvam AI currently does not support streaming."""
