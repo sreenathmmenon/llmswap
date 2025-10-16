@@ -167,3 +167,8 @@ research_notes.md
 docs/
 documentation/
 notes/
+# Build artifacts
+@
+dist/
+build/
+*.egg-info/
