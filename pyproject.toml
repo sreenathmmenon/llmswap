@@ -224,7 +224,21 @@ keywords = [
     "web-interface",
     "flask-ui",
     "comparison-dashboard",
-    "ai-dashboard"
+    "ai-dashboard",
+    "enterprise",
+    "contract-analysis",
+    "customer-support",
+    "churn-detection",
+    "m&a",
+    "due-diligence",
+    "intelligent-routing",
+    "multi-provider-routing",
+    "document-qa",
+    "pdf-qa",
+    "financial-analysis",
+    "support-triage",
+    "cost-savings",
+    "enterprise-ai"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
