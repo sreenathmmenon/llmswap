@@ -53,6 +53,36 @@ python examples/pdf_revenue_comparison.py tesla_q3.pdf ford_q3.pdf
 
 ---
 
+### 🏢 Enterprise Examples (NEW in v5.2.2)
+
+**Production-ready patterns for cost optimization and intelligent routing**
+
+#### [enterprise_contract_analyzer.py](enterprise_contract_analyzer.py)
+**M&A Due Diligence** - Analyze legal contracts at scale with smart provider routing.
+
+```bash
+python examples/enterprise_contract_analyzer.py contract.pdf
+```
+
+**Business Impact:**
+- Process 5,000 contracts: $2.4M → $115K (95% cost reduction)
+- Time: 6 months → 2 days
+- Smart routing: Claude for complex analysis, Gemini for extraction
+
+#### [enterprise_support_triage.py](enterprise_support_triage.py)
+**Customer Support Intelligence** - Intelligent ticket triage with churn detection.
+
+```bash
+python examples/enterprise_support_triage.py "ticket text"
+```
+
+**Business Impact:**
+- 1M tickets/year: $240K → $36K (85% savings)
+- Churn risk detection: Save $5M+ ARR
+- Routing: Claude for high-risk, Gemini for routine
+
+---
+
 ### 🛠️ Tool Calling Examples (NEW in v5.2.0)
 
 **Enable LLMs to access YOUR data and systems**

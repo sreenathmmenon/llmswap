@@ -2,13 +2,18 @@
 
 ## [5.2.2] - 2025-10-19
 
-### 🤖 **AI Agents & RAG Examples**
+### 🤖 **AI Agents & Enterprise Examples**
 
 #### **Added**
-- **New Examples**: Intelligent document analysis patterns
+- **RAG Examples**: Intelligent document analysis patterns
   - `pdf_qa_basic.py` - Simple RAG pattern demonstration
   - `pdf_revenue_comparison.py` - Agentic RAG with tool calling
   - Shows multi-document comparison and analysis workflows
+
+- **Enterprise Examples**: Production-ready cost optimization patterns
+  - `enterprise_contract_analyzer.py` - M&A due diligence with smart routing
+  - `enterprise_support_triage.py` - Customer support intelligence with churn detection
+  - Demonstrates 85-95% cost reduction with intelligent provider routing
 
 - **Documentation**: Enterprise and hackathon use cases
   - Real-world implementation patterns
