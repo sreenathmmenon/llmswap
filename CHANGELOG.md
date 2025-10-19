@@ -1,5 +1,22 @@
 # Changelog
 
+## [5.2.2] - 2025-10-19
+
+### 🤖 **AI Agents & RAG Examples**
+
+#### **Added**
+- **New Examples**: Intelligent document analysis patterns
+  - `pdf_qa_basic.py` - Simple RAG pattern demonstration
+  - `pdf_revenue_comparison.py` - Agentic RAG with tool calling
+  - Shows multi-document comparison and analysis workflows
+
+- **Documentation**: Enterprise and hackathon use cases
+  - Real-world implementation patterns
+  - Cost optimization strategies
+  - Multi-provider routing architectures
+
+---
+
 ## [5.2.1] - 2025-10-16
 
 ### 🔒 **Security & Stability Release**

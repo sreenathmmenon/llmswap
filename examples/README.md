@@ -7,11 +7,51 @@ This directory contains practical examples showing how to use llmswap in real-wo
 Make sure you have at least one API key set:
 ```bash
 export ANTHROPIC_API_KEY="your-key"    # or
-export OPENAI_API_KEY="your-key"       # or  
+export OPENAI_API_KEY="your-key"       # or
 export GEMINI_API_KEY="your-key"
 ```
 
 ## Examples
+
+### 🤖 AI Agents & RAG (NEW in v5.2.2)
+
+**Build intelligent document assistants with Retrieval-Augmented Generation**
+
+Install dependencies:
+```bash
+pip install chromadb pypdf2
+```
+
+#### [pdf_qa_basic.py](pdf_qa_basic.py) - Simple RAG
+Learn RAG basics. Load PDF, search with vector DB, query LLM.
+```bash
+python examples/pdf_qa_basic.py company_report.pdf "What is the revenue?"
+```
+
+#### [pdf_revenue_comparison.py](pdf_revenue_comparison.py) ⭐ **Featured**
+**Agentic RAG** - Compare financial metrics from multiple company reports.
+
+```bash
+# Download quarterly reports (public examples):
+# Tesla: https://ir.tesla.com/sec-filings
+# Ford: https://shareholder.ford.com/financials
+
+python examples/pdf_revenue_comparison.py tesla_q3.pdf ford_q3.pdf
+```
+
+**What it demonstrates:**
+- Multi-document RAG with ChromaDB
+- Tool calling (document search + calculator)
+- Multi-hop reasoning (search → extract → compare)
+- Universal tool calling (works with Claude, GPT, Gemini, Groq, xAI)
+
+**Example queries:**
+- "Which company had higher revenue?"
+- "What was Tesla's operating income?"
+- "Compare their gross profit margins"
+- "Calculate the year-over-year growth rates"
+
+---
 
 ### 🛠️ Tool Calling Examples (NEW in v5.2.0)
 
