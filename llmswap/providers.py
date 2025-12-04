@@ -405,14 +405,29 @@ class GeminiProvider(BaseProvider):
             chat_history = []
             for msg in messages[:-1]:  # All except the last message
                 role = "user" if msg["role"] == "user" else "model"
-                chat_history.append({"role": role, "parts": [msg["content"]]})
+                # Handle messages that already have parts (from format_tool_results)
+                if "parts" in msg:
+                    # Message already formatted for Gemini
+                    if msg["role"] == "function":
+                        # Function role stays as is
+                        chat_history.append({"role": "function", "parts": msg["parts"]})
+                    else:
+                        chat_history.append({"role": role, "parts": msg["parts"]})
+                else:
+                    # Standard message with content
+                    chat_history.append({"role": role, "parts": [msg["content"]]})
 
             # Start chat with history
             chat = self.model_instance.start_chat(history=chat_history)
             
             # Send the current message
-            current_message = messages[-1]["content"]
-            response = chat.send_message(current_message)
+            last_msg = messages[-1]
+            if "parts" in last_msg:
+                # Message already has parts
+                response = chat.send_message(last_msg["parts"])
+            else:
+                # Standard message with content
+                response = chat.send_message(last_msg["content"])
             
             latency = time.time() - start_time
             content = response.text
@@ -472,14 +487,29 @@ class GeminiProvider(BaseProvider):
             chat_history = []
             for msg in messages[:-1]:  # All except the last message
                 role = "user" if msg["role"] == "user" else "model"
-                chat_history.append({"role": role, "parts": [msg["content"]]})
+                # Handle messages that already have parts (from format_tool_results)
+                if "parts" in msg:
+                    # Message already formatted for Gemini
+                    if msg["role"] == "function":
+                        # Function role stays as is
+                        chat_history.append({"role": "function", "parts": msg["parts"]})
+                    else:
+                        chat_history.append({"role": role, "parts": msg["parts"]})
+                else:
+                    # Standard message with content
+                    chat_history.append({"role": role, "parts": [msg["content"]]})
 
             # Start chat with history and tools
             chat = self.model_instance.start_chat(history=chat_history)
 
             # Send the current message with tools
-            current_message = messages[-1]["content"]
-            response = chat.send_message(current_message, tools=[gemini_tools])
+            last_msg = messages[-1]
+            if "parts" in last_msg:
+                # Message already has parts
+                response = chat.send_message(last_msg["parts"], tools=[gemini_tools])
+            else:
+                # Standard message with content
+                response = chat.send_message(last_msg["content"], tools=[gemini_tools])
 
             latency = time.time() - start_time
 
@@ -1065,9 +1095,14 @@ class XAIProvider(BaseProvider):
     """Provider for xAI Grok models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        super().__init__(api_key or os.getenv("XAI_API_KEY"), model)
+        # Support both XAI_API_KEY and GROK_X_AI_API_KEY for backwards compatibility
+        api_key = api_key or os.getenv("XAI_API_KEY") or os.getenv("GROK_X_AI_API_KEY")
+        super().__init__(api_key, model)
         if not self.api_key:
-            raise ConfigurationError("XAI_API_KEY not found in environment variables")
+            raise ConfigurationError(
+                "XAI_API_KEY or GROK_X_AI_API_KEY not found in environment variables. "
+                "Set one of these environment variables with your X.AI API key."
+            )
 
         try:
             import openai

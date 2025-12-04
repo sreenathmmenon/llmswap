@@ -6,13 +6,13 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Ship AI Features in Minutes, Not Weeks
+## Ship AI Apps Faster
 
-**One SDK. 11 providers. Zero vendor lock-in.**
+**11 LLMs + Tools + MCP in One Beautiful SDK. Zero Lock-In.**
 
-Stop wrestling with complex frameworks. llmswap gives you tool calling, caching, and multi-provider support in 10 lines of code. Used by developers shipping real products.
+One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Universal tool calling, MCP integration, workspace memory, and smart caching. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
 
-**📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html)
+**📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html) | **🔧 MCP Guide:** [#mcp-integration](#-mcp-integration-new)
 
 ## 🆕 NEW in v5.2.0: Universal Tool Calling
 
@@ -63,6 +63,12 @@ llmswap workspace init
 llmswap chat "Help me with Flask routing"
 # AI has full project context + all past learnings!
 
+# 🆕 NEW: Connect to MCP servers with natural language
+llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
+# Ask: "List all PDF files"
+# Ask: "Read the contents of README.md"
+# AI uses filesystem tools automatically!
+
 # 🆕 Compare models visually (optional)
 pip install llmswap[web]
 llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
@@ -95,6 +101,7 @@ llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 ## Why Developers Choose llmswap
 
 ✅ **10 Lines to Production** - Not 1000 like LangChain
+✅ **MCP Protocol Support** - Connect to any MCP server with natural language 🆕
 ✅ **Automatic Fallback** - Never down. Switches providers if one fails
 ✅ **50-90% Cost Savings** - Built-in caching. Same query = FREE
 ✅ **Workspace Memory** - Your AI remembers your project context
@@ -243,6 +250,121 @@ llmswap chat --mentor coach "What's the fastest path to v1?"
 - 🔄 **Workspace Detection** - Automatically loads project context ⭐ NEW
 
 **Traditional AI tools give you answers. LLMSwap v5.1.0 gives you a personalized learning journey that REMEMBERS.**
+
+---
+
+## 🔧 MCP Integration (NEW)
+
+**The Model Context Protocol (MCP)** lets LLMs connect to external tools and data sources. llmswap provides the **best MCP client experience** - just talk naturally, and AI handles the tools.
+
+### Natural Language MCP CLI
+
+Connect to any MCP server and interact with tools using plain English:
+
+```bash
+# Filesystem access
+llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
+
+# Then ask naturally:
+> "What files are in this directory?"
+> "Read the contents of report.pdf"
+> "Find all files modified in the last week"
+
+# Database queries
+llmswap-mcp --command npx -y @modelcontextprotocol/server-sqlite ./mydb.sqlite
+
+> "Show me all users in the database"
+> "What are the top 10 products by sales?"
+
+# GitHub integration
+llmswap-mcp --command npx -y @modelcontextprotocol/server-github --owner anthropics --repo anthropic-sdk-python
+
+> "Show me recent issues"
+> "What pull requests are open?"
+```
+
+### Supported MCP Transports
+
+- **stdio** - Local command-line tools (most common)
+- **SSE** - Server-Sent Events for remote servers
+- **HTTP** - REST API endpoints
+
+### Works With All 5 Providers
+
+```bash
+# Use your preferred LLM provider
+llmswap-mcp --provider anthropic --command <mcp-server>
+llmswap-mcp --provider openai --command <mcp-server>
+llmswap-mcp --provider gemini --command <mcp-server>
+llmswap-mcp --provider groq --command <mcp-server>    # Fastest!
+llmswap-mcp --provider xai --command <mcp-server>     # Grok
+```
+
+### Python SDK Integration
+
+```python
+from llmswap import LLMClient
+
+# Add MCP server to your client
+client = LLMClient(provider="anthropic")
+client.add_mcp_server("filesystem", command=["npx", "-y", "@modelcontextprotocol/server-filesystem", "/tmp"])
+
+# Chat naturally - AI uses MCP tools automatically
+response = client.chat("List all log files in /tmp", use_mcp=True)
+print(response.content)
+
+# List available tools
+tools = client.list_mcp_tools()
+for tool in tools:
+    print(f"- {tool['name']}: {tool['description']}")
+```
+
+### Popular MCP Servers
+
+- **Filesystem** - Read/write files and directories
+- **GitHub** - Search repos, issues, PRs
+- **GitLab** - Project management
+- **Google Drive** - Access documents
+- **Slack** - Send messages, read channels
+- **PostgreSQL** - Database queries
+- **Brave Search** - Web search
+- **Memory** - Persistent knowledge graphs
+
+[Browse all MCP servers →](https://github.com/modelcontextprotocol/servers)
+
+### MCP Features
+
+✅ **Natural language interface** - No JSON, no manual tool calls  
+✅ **Multi-turn conversations** - Context preserved across queries  
+✅ **Beautiful UI** - Clean bordered interface like Claude/Factory Droids  
+✅ **Provider-specific formatting** - Optimized for each LLM  
+✅ **Connection management** - Automatic reconnection and health checks  
+✅ **Error handling** - Graceful degradation with circuit breaker
+
+### Example Use Cases
+
+**For Data Analysis:**
+```bash
+llmswap-mcp --command npx -y @modelcontextprotocol/server-sqlite ./sales.db
+> "What were our top 5 products last quarter?"
+> "Show me revenue trends by region"
+```
+
+**For Development:**
+```bash
+llmswap-mcp --command npx -y @modelcontextprotocol/server-github --owner myorg --repo myapp
+> "What issues are labeled as bugs?"
+> "Summarize recent commits"
+```
+
+**For Research:**
+```bash
+llmswap-mcp --command npx -y @modelcontextprotocol/server-brave-search
+> "Find recent papers on transformer architectures"
+> "What are the latest developments in quantum computing?"
+```
+
+---
 
 ## 🏆 Production-Validated with LMArena Top Models
 

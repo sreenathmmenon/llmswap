@@ -183,11 +183,20 @@ def extract_gemini_tool_calls(response: Any) -> List[ToolCall]:
             for part in candidate.content.parts:
                 if hasattr(part, 'function_call'):
                     func_call = part.function_call
+                    
+                    # Skip empty function calls (Gemini sometimes returns these)
+                    if not hasattr(func_call, 'name') or not func_call.name:
+                        continue
+                    
                     # Convert Gemini's protobuf args to dict
                     args = {}
-                    if hasattr(func_call, 'args'):
-                        for key, value in func_call.args.items():
-                            args[key] = value
+                    if hasattr(func_call, 'args') and func_call.args:
+                        try:
+                            for key, value in func_call.args.items():
+                                args[key] = value
+                        except:
+                            # If iteration fails, just use empty args
+                            pass
 
                     tool_calls.append(ToolCall(
                         id=func_call.name,  # Gemini doesn't have separate ID
