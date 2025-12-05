@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.3.1] - 2025-12-05
+
+### Updated
+- **Latest Models (November 2025):** Claude Opus 4.5, Gemini 3 Pro, GPT-5.1, Grok 4.1
+- **Enterprise Documentation:** Remote MCP servers (SSE/HTTP), Security & Compliance (AWS/Azure/Vault), Production Deployment (Docker/K8s)
+- **New Examples:** `latest_models_nov_2025.py` (450 lines), `gemini_3_multimodal.py` (280 lines)
+- **SEO Optimization:** Added 43 MCP/model-specific keywords (293 total)
+- **Bug Fixes:** Fixed provider tests (7/7 passing), corrected dates (2024 → 2025)
+- **Default Models:** Updated to November 2025 releases (claude-opus-4-5, gpt-5.1, gemini-3-pro, grok-4.1)
+
 ## [5.3.0] - 2024-12-04
 
 ### Added - MCP Protocol Support 🎉
