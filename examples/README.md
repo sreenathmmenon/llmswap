@@ -1,199 +1,185 @@
-# llmswap Examples
+# LLMSwap Examples
 
-This directory contains practical examples showing how to use llmswap in real-world scenarios.
+Comprehensive examples demonstrating LLMSwap's capabilities across different use cases.
 
-## Quick Start
+## 📁 Directory Structure
 
-Make sure you have at least one API key set:
-```bash
-export ANTHROPIC_API_KEY="your-key"    # or
-export OPENAI_API_KEY="your-key"       # or
-export GEMINI_API_KEY="your-key"
+```
+examples/
+├── README.md (this file)
+├── basic/                    # Getting started
+│   ├── simple_query.py       # Basic LLM query
+│   ├── provider_switching.py # Switch providers
+│   └── streaming.py          # Streaming responses
+│
+├── advanced/                 # Advanced features
+│   ├── tool_calling.py       # Function calling
+│   ├── async_operations.py   # Async/await usage
+│   ├── error_handling.py     # Error handling patterns
+│   └── cost_tracking.py      # Track API costs
+│
+├── integrations/             # Framework integrations
+│   ├── fastapi_app.py        # FastAPI integration
+│   ├── django_app.py         # Django integration
+│   ├── flask_app.py          # Flask integration
+│   └── streamlit_app.py      # Streamlit app
+│
+├── enterprise/               # Enterprise features
+│   ├── workspace_setup.py    # Workspace management
+│   ├── analytics.py          # Usage analytics
+│   └── multi_provider.py     # Provider fallback
+│
+└── mcp/                      # MCP protocol
+    ├── basic_mcp.py          # Basic MCP usage
+    ├── stdio_transport.py    # stdio transport
+    └── http_transport.py     # HTTP transport
 ```
 
-## Examples
+## 🚀 Quick Start
 
-### 🤖 AI Agents & RAG (NEW in v5.2.2)
+### 1. Basic Query
 
-**Build intelligent document assistants with Retrieval-Augmented Generation**
+```python
+from llmswap import LLMClient
 
-Install dependencies:
-```bash
-pip install chromadb pypdf2
+client = LLMClient(provider="anthropic")
+response = client.query("What is LLMSwap?")
+print(response)
 ```
 
-#### [pdf_qa_basic.py](pdf_qa_basic.py) - Simple RAG
-Learn RAG basics. Load PDF, search with vector DB, query LLM.
-```bash
-python examples/pdf_qa_basic.py company_report.pdf "What is the revenue?"
+### 2. Provider Switching
+
+```python
+from llmswap import LLMClient
+
+# Start with Anthropic
+client = LLMClient(provider="anthropic")
+response1 = client.query("Hello!")
+
+# Switch to OpenAI
+client.set_provider("openai")
+response2 = client.query("Hello!")
 ```
 
-#### [pdf_revenue_comparison.py](pdf_revenue_comparison.py) ⭐ **Featured**
-**Agentic RAG** - Compare financial metrics from multiple company reports.
+### 3. Streaming Responses
 
-```bash
-# Download quarterly reports (public examples):
-# Tesla: https://ir.tesla.com/sec-filings
-# Ford: https://shareholder.ford.com/financials
+```python
+from llmswap import LLMClient
 
-python examples/pdf_revenue_comparison.py tesla_q3.pdf ford_q3.pdf
+client = LLMClient(provider="anthropic")
+for chunk in client.stream("Write a story"):
+    print(chunk, end="", flush=True)
 ```
 
-**What it demonstrates:**
-- Multi-document RAG with ChromaDB
-- Tool calling (document search + calculator)
-- Multi-hop reasoning (search → extract → compare)
-- Universal tool calling (works with Claude, GPT, Gemini, Groq, xAI)
+## 📚 Example Categories
 
-**Example queries:**
-- "Which company had higher revenue?"
-- "What was Tesla's operating income?"
-- "Compare their gross profit margins"
-- "Calculate the year-over-year growth rates"
+### Basic Examples
+
+Perfect for getting started with LLMSwap:
+- `simple_query.py` - Your first LLMSwap query
+- `provider_switching.py` - Switch between providers
+- `streaming.py` - Stream responses in real-time
+
+### Advanced Examples
+
+Leverage powerful features:
+- `tool_calling.py` - Function calling with all providers
+- `async_operations.py` - High-performance async usage
+- `error_handling.py` - Robust error handling
+- `cost_tracking.py` - Track and optimize API costs
+
+### Integration Examples
+
+Integrate LLMSwap with popular frameworks:
+- `fastapi_app.py` - Build REST APIs with FastAPI
+- `django_app.py` - Add LLM features to Django
+- `flask_app.py` - Flask web applications
+- `streamlit_app.py` - Interactive Streamlit apps
+
+### Enterprise Examples
+
+Production-ready patterns:
+- `workspace_setup.py` - Organize projects with workspaces
+- `analytics.py` - Monitor usage and costs
+- `multi_provider.py` - Automatic fallback strategies
+
+### MCP Examples
+
+Model Context Protocol usage:
+- `basic_mcp.py` - Get started with MCP
+- `stdio_transport.py` - Use stdio transport
+- `http_transport.py` - HTTP-based MCP
+
+## 🔧 Setup
+
+1. **Install LLMSwap:**
+   ```bash
+   pip install llmswap
+   ```
+
+2. **Set up API keys:**
+   ```bash
+   export ANTHROPIC_API_KEY=sk-ant-...
+   export OPENAI_API_KEY=sk-...
+   export GEMINI_API_KEY=...
+   ```
+
+3. **Run an example:**
+   ```bash
+   cd examples/basic
+   python simple_query.py
+   ```
+
+## 💡 Usage Tips
+
+- **Start with basics** - Try `basic/` examples first
+- **Copy and modify** - All examples are copy-paste ready
+- **Check comments** - Each file has detailed comments
+- **Mix and match** - Combine patterns for your use case
+
+## 🐛 Troubleshooting
+
+**Missing API key:**
+```
+ConfigurationError: No LLM providers available
+```
+→ Set at least one API key (see Setup above)
+
+**Module not found:**
+```
+ModuleNotFoundError: No module named 'llmswap'
+```
+→ Install LLMSwap: `pip install llmswap`
+
+**Rate limit errors:**
+```
+RateLimitError: Rate limit exceeded
+```
+→ Use provider fallback (see `enterprise/multi_provider.py`)
+
+## 📖 Learn More
+
+- **[Documentation](../README.md)** - Full documentation
+- **[API Reference](../ARCHITECTURE.md)** - Architecture details
+- **[Contributing](../CONTRIBUTING.md)** - Add your own examples
+
+## 🤝 Contributing Examples
+
+Have a useful example? Share it!
+
+1. Create your example file
+2. Add clear comments
+3. Test it works
+4. Submit a pull request
+
+We especially welcome:
+- Real-world use cases
+- Integration examples
+- Performance optimization patterns
+- Error handling strategies
 
 ---
 
-### 🏢 Enterprise Examples (NEW in v5.2.2)
-
-**Production-ready patterns for cost optimization and intelligent routing**
-
-#### [enterprise_contract_analyzer.py](enterprise_contract_analyzer.py)
-**M&A Due Diligence** - Analyze legal contracts at scale with smart provider routing.
-
-```bash
-python examples/enterprise_contract_analyzer.py contract.pdf
-```
-
-**Business Impact:**
-- Process 5,000 contracts: $2.4M → $115K (95% cost reduction)
-- Time: 6 months → 2 days
-- Smart routing: Claude for complex analysis, Gemini for extraction
-
-#### [enterprise_support_triage.py](enterprise_support_triage.py)
-**Customer Support Intelligence** - Intelligent ticket triage with churn detection.
-
-```bash
-python examples/enterprise_support_triage.py "ticket text"
-```
-
-**Business Impact:**
-- 1M tickets/year: $240K → $36K (85% savings)
-- Churn risk detection: Save $5M+ ARR
-- Routing: Claude for high-risk, Gemini for routine
-
----
-
-### 🛠️ Tool Calling Examples (NEW in v5.2.0)
-
-**Enable LLMs to access YOUR data and systems**
-
-These examples show REAL use cases where LLM needs YOUR tools:
-- LLM doesn't have real-time weather data
-- LLM doesn't know YOUR database contents
-- LLM doesn't know what products YOU sell
-
-#### [01_weather_api.py](01_weather_api.py)
-**Real-time weather data** - Shows before/after comparison:
-- WITHOUT tools: LLM says "I don't have access to real-time weather"
-- WITH tools: LLM calls YOUR API and returns actual current weather
-```bash
-python examples/01_weather_api.py
-```
-
-#### [02_database_query.py](02_database_query.py)
-**Database access** - LLM queries YOUR customer database:
-- WITHOUT tools: LLM says "I don't have access to your database"
-- WITH tools: LLM queries YOUR data and analyzes results
-```bash
-python examples/02_database_query.py
-```
-
-#### [03_ecommerce_assistant.py](03_ecommerce_assistant.py)
-**Shopping assistant** - LLM searches YOUR product catalog:
-- WITHOUT tools: LLM can't help customers shop
-- WITH tools: LLM becomes a knowledgeable sales assistant
-```bash
-python examples/03_ecommerce_assistant.py
-```
-
-📖 **[Complete Tool Calling Guide](../docs/TOOL_CALLING.md)**
-🚀 **[Quick Start Guide](../docs/TOOL_CALLING_QUICKSTART.md)**
-
----
-
-### 💰 [smart_cost_optimizer.py](smart_cost_optimizer.py)
-**Save 50-90% on API costs with intelligent caching**
-
-Demonstrates how llmswap automatically optimizes costs by caching responses and using smart provider selection. Perfect for production applications.
-
-```bash
-python examples/smart_cost_optimizer.py
-```
-
-### 🔄 [provider_comparison.py](provider_comparison.py)
-**Compare responses from different LLM providers**
-
-See how Anthropic, OpenAI, Gemini, and local models respond to the same question. Great for finding the best provider for your use case.
-
-```bash
-python examples/provider_comparison.py
-```
-
-### 💬 [quick_chat.py](quick_chat.py)
-**Minimal chat interface in 10 lines**
-
-A simple chat interface that shows llmswap's ease of use. Includes provider switching and caching indicators.
-
-```bash
-python examples/quick_chat.py
-```
-
-### 🚀 [hackathon_starter.py](hackathon_starter.py)
-**Perfect for hackathons and rapid prototyping**
-
-Ready-to-use chatbot template with caching, error handling, and conversation flow. Built for speed and reliability.
-
-```bash
-python examples/hackathon_starter.py
-```
-
-### 📚 [basic_usage.py](basic_usage.py)
-**Learn the fundamentals**
-
-Step-by-step introduction to llmswap features including provider switching, caching, and async operations.
-
-```bash
-python examples/basic_usage.py
-```
-
-### 🧪 [test_caching.py](test_caching.py)
-**See caching in action**
-
-Interactive demo showing how response caching works and how much money it saves.
-
-```bash
-python examples/test_caching.py
-```
-
-## Key Features Demonstrated
-
-- **💰 Cost Optimization**: Intelligent caching reduces API costs by 50-90%
-- **🔄 Provider Switching**: Seamlessly switch between different LLM providers
-- **🛡️ Automatic Fallback**: Keep working even when one provider fails
-- **⚡ Async Support**: Non-blocking operations for web applications
-- **🎯 Zero Configuration**: Works with any API key you have
-- **📊 Response Caching**: Same questions are answered for free
-
-## Tips
-
-1. **Enable caching** for repeated queries: `LLMClient(cache_enabled=True)`
-2. **Use fallback** for reliability: `LLMClient(fallback=True)`
-3. **Switch providers** based on cost or quality needs
-4. **Check cache status** with `response.from_cache`
-5. **Compare providers** to find the best fit for your use case
-
-## Need Help?
-
-- Check the main [README](../README.md) for full documentation
-- Report issues on [GitHub](https://github.com/sreenathmmenon/llmswap/issues)
-- See the [PyPI page](https://pypi.org/project/llmswap/) for latest updates
+<p align="center">
+  Made with ❤️ by the LLMSwap community
+</p>

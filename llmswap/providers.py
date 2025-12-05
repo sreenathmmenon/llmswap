@@ -6,7 +6,12 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from .response import LLMResponse
-from .exceptions import ProviderError, ConfigurationError
+from .exceptions import (
+    ProviderError, ConfigurationError,
+    RateLimitError, AuthenticationError,
+    TimeoutError, InvalidRequestError,
+    QuotaExceededError
+)
 from .security import safe_error_string
 
 
@@ -30,48 +35,64 @@ def clean_api_key(api_key: Optional[str]) -> Optional[str]:
 
 def classify_and_raise_error(provider_name: str, error: Exception, api_key: Optional[str] = None):
     """
-    Classify error and raise appropriate exception with safe message.
+    Classify error and raise appropriate specific exception.
+    
+    Works for ALL providers (Anthropic, OpenAI, Gemini, Groq, Cohere, 
+    Perplexity, WatsonX, xAI, Ollama, Sarvam).
 
     Args:
-        provider_name: Name of the provider
-        error: The original exception
-        api_key: API key to remove from error messages
+        provider_name: Name of the provider (e.g., "anthropic", "openai")
+        error: The original exception from any provider
+        api_key: API key to remove from error messages (security)
     """
     error_text = str(error).lower()
+    
+    # Extract retry-after from rate limit responses (if present)
+    retry_after = None
+    if 'retry-after' in error_text or 'retry after' in error_text:
+        import re
+        match = re.search(r'retry[- ]after[:\s]+(\d+)', error_text)
+        if match:
+            retry_after = int(match.group(1))
 
-    # Check for authentication errors
-    if any(word in error_text for word in ['401', 'unauthorized', 'invalid', 'authentication', 'api key']):
-        raise ProviderError(
+    # Check for authentication errors (401, invalid key, unauthorized)
+    if any(word in error_text for word in ['401', 'unauthorized', 'invalid', 'authentication', 'api key', 'forbidden', '403']):
+        raise AuthenticationError(
             provider_name,
-            "Authentication failed. Please check your API key is valid and active.",
-            error_type="auth"
+            "Authentication failed. Check your API key is valid and active."
         )
 
-    # Check for rate limits
-    if any(word in error_text for word in ['429', 'rate limit', 'quota', 'too many requests']):
-        raise ProviderError(
+    # Check for rate limits (429, too many requests, quota)
+    if any(word in error_text for word in ['429', 'rate limit', 'too many requests', 'requests per']):
+        raise RateLimitError(
             provider_name,
-            "Rate limit exceeded. Please wait before retrying.",
-            error_type="rate_limit"
+            "Rate limit exceeded. Wait before retrying or switch providers.",
+            retry_after=retry_after
+        )
+    
+    # Check for quota exceeded (different from rate limit)
+    if any(word in error_text for word in ['quota', 'exceeded', 'insufficient', 'credits']):
+        raise QuotaExceededError(
+            provider_name,
+            "API quota exceeded. Check your account limits."
         )
 
-    # Check for network errors
-    if any(word in error_text for word in ['timeout', 'connection', 'network', 'unreachable']):
-        raise ProviderError(
+    # Check for timeout/network errors
+    if any(word in error_text for word in ['timeout', 'connection', 'network', 'unreachable', 'timed out']):
+        raise TimeoutError(
             provider_name,
-            "Network error. Please check your connection and try again.",
-            error_type="network"
+            "Request timed out. Check your network or try again."
         )
 
-    # Check for invalid request
-    if any(word in error_text for word in ['400', 'bad request', 'invalid request', 'validation']):
-        raise ProviderError(
+    # Check for invalid request (400, bad request, validation)
+    if any(word in error_text for word in ['400', 'bad request', 'invalid request', 'validation', 'invalid parameter']):
+        safe_msg = safe_error_string(error, api_key)
+        raise InvalidRequestError(
             provider_name,
-            "Invalid request. Please check your input parameters.",
-            error_type="invalid_request"
+            f"Invalid request: {safe_msg}"
         )
 
-    # Unknown error - use safe string
+    # Unknown error - use safe generic ProviderError
     safe_msg = safe_error_string(error, api_key)
     raise ProviderError(provider_name, f"Request failed: {safe_msg}", error_type="unknown")
 
