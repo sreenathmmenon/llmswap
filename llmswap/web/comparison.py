@@ -217,66 +217,30 @@ def _get_provider_for_model(model: str) -> str:
 def _estimate_cost(model: str, prompt_tokens: int, response_tokens: int) -> float:
     """
     Estimate cost based on model and token counts.
-
-    Pricing per 1M tokens (as of January 2025):
-    - OpenAI: GPT-4o ($2.50/$10), GPT-4o-mini ($0.15/$0.60), GPT-4 ($30/$60)
-    - Anthropic: Sonnet 4.5 ($3/$15), Haiku ($1/$5), Opus ($15/$75)
-    - Google: Gemini 2.0 Flash ($0.075/$0.30), 1.5 Pro ($1.25/$5.00)
-    - xAI: Grok Beta ($5/$15)
-    - Perplexity: Sonar Pro ($3/$15)
-    - Groq: Free tier (approximated as $0.10/$0.10)
-    - Ollama: Local (free)
+    
+    Uses dynamic pricing from models.py (December 2025 latest).
+    
+    Args:
+        model: Model ID
+        prompt_tokens: Number of input tokens
+        response_tokens: Number of output tokens
+        
+    Returns:
+        Cost in USD
     """
-    pricing = {
-        # OpenAI models
-        'gpt-4o': (2.50, 10.00),
-        'gpt-4o-mini': (0.15, 0.60),
-        'gpt-4-turbo': (10, 30),
-        'gpt-4': (30, 60),
-        'gpt-3.5-turbo': (0.50, 1.50),
-        'o1-preview': (15, 60),
-        'o1-mini': (3, 12),
-
-        # Anthropic models
-        'claude-3-5-sonnet-20241022': (3, 15),
-        'claude-3-5-sonnet': (3, 15),
-        'claude-3-5-haiku-20241022': (1, 5),
-        'claude-3-haiku': (0.25, 1.25),
-        'claude-3-opus': (15, 75),
-        'claude-3-sonnet': (3, 15),
-
-        # Google models
-        'gemini-2.0-flash': (0.075, 0.30),
-        'gemini-1.5-flash': (0.075, 0.30),
-        'gemini-1.5-pro': (1.25, 5.00),
-        'gemini-pro': (0.50, 1.50),
-
-        # xAI models
-        'grok-beta': (5, 15),
-
-        # Perplexity models
-        'sonar-pro': (3, 15),
-        'sonar': (1, 5),
-
-        # Groq (free tier)
-        'llama-3.3-70b': (0.10, 0.10),
-        'llama': (0.10, 0.10),
-
-        # Ollama (local, free)
-        'ollama': (0, 0),
-    }
-
-    # Find matching pricing
-    input_cost, output_cost = (3, 15)  # Default: Claude Sonnet pricing
-
-    for key, (inp, out) in pricing.items():
-        if key in model.lower():
-            input_cost, output_cost = inp, out
-            break
-
+    # Try to get pricing from models.py
+    try:
+        from .models import get_model_pricing
+        pricing = get_model_pricing(model)
+        input_cost = pricing.get('input', 3.0)
+        output_cost = pricing.get('output', 15.0)
+    except:
+        # Fallback to default pricing
+        input_cost, output_cost = (3.0, 15.0)
+    
     # Calculate cost (pricing is per 1M tokens)
     cost = (prompt_tokens * input_cost + response_tokens * output_cost) / 1_000_000
-
+    
     return cost
 
 
