@@ -392,12 +392,18 @@ Include: Key benefits, challenges, and future outlook`
             streamComparison(prompt, selectedModels);
         });
 
+        // Track selected models count
+        let expectedResults = 0;
+
         // SSE Streaming
         function streamComparison(prompt, models) {
             loading.classList.add('hidden');
             
             // Show results area
             resultsDiv.classList.remove('hidden');
+            
+            // Set expected results count
+            expectedResults = models.length;
             
             // For now, use regular API (SSE implementation in next iteration)
             models.forEach(model => queryModel(prompt, model));
@@ -418,7 +424,7 @@ Include: Key benefits, challenges, and future outlook`
                 allResults.push(result);
 
                 // Check if all done
-                if (allResults.length === models.length) {
+                if (allResults.length === expectedResults) {
                     detectAndShowWinner();
                 }
 
@@ -430,6 +436,12 @@ Include: Key benefits, challenges, and future outlook`
                     tokens: 0,
                     cost: 0
                 });
+                allResults.push({model, error: error.message});
+                
+                // Check if all done (even with errors)
+                if (allResults.length === expectedResults) {
+                    detectAndShowWinner();
+                }
             }
         }
 
