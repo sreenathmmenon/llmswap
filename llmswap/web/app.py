@@ -259,6 +259,22 @@ llmswap web</pre>
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
+    @app.route('/api/models', methods=['GET'])
+    def get_models():
+        """Get available models from dynamic system"""
+        try:
+            from .models import get_available_models, get_featured_models
+            
+            all_models = get_available_models()
+            featured = get_featured_models()
+            
+            return jsonify({
+                'models': all_models,
+                'featured': featured
+            })
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
     return app
 
 
