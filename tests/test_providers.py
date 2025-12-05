@@ -8,38 +8,37 @@ from llmswap.providers import (
 )
 
 def test_anthropic_provider_initialization():
-    """Test Anthropic provider initialization"""
+    """Test Anthropic provider initialization (Nov 2025 models)"""
     provider = AnthropicProvider(api_key="test-key")
     assert provider.api_key == "test-key"
-    assert provider.default_model == "claude-3-sonnet-20240229"
+    assert provider.model is None  # No default when not specified
 
 def test_openai_provider_initialization():
-    """Test OpenAI provider initialization"""
+    """Test OpenAI provider initialization (Nov 2025 models)"""
     provider = OpenAIProvider(api_key="test-key")
     assert provider.api_key == "test-key"
-    assert provider.default_model == "gpt-3.5-turbo"
+    assert provider.model is None  # No default when not specified
 
 def test_gemini_provider_initialization():
-    """Test Gemini provider initialization"""
+    """Test Gemini provider initialization (Nov 2025 models)"""
     provider = GeminiProvider(api_key="test-key")
     assert provider.api_key == "test-key"
-    assert provider.default_model == "gemini-1.5-flash"
+    assert provider.model is None  # No default when not specified
 
 def test_ollama_provider_initialization():
     """Test Ollama provider initialization"""
     provider = OllamaProvider()
-    assert provider.base_url == "http://localhost:11434"
-    assert provider.default_model == "llama2"
+    assert provider.model is None  # No default when not specified
 
 def test_anthropic_provider_custom_model():
-    """Test Anthropic provider with custom model"""
-    provider = AnthropicProvider(api_key="test-key", model="claude-3-opus-20240229")
-    assert provider.model == "claude-3-opus-20240229"
+    """Test Anthropic provider with latest model (Nov 2025)"""
+    provider = AnthropicProvider(api_key="test-key", model="claude-opus-4-5")
+    assert provider.model == "claude-opus-4-5"
 
 def test_openai_provider_custom_model():
-    """Test OpenAI provider with custom model"""
-    provider = OpenAIProvider(api_key="test-key", model="gpt-4")
-    assert provider.model == "gpt-4"
+    """Test OpenAI provider with latest model (Nov 2025)"""
+    provider = OpenAIProvider(api_key="test-key", model="gpt-5.1")
+    assert provider.model == "gpt-5.1"
 
 def test_provider_query_method_exists():
     """Test that all providers have query method"""

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "llmswap"
 version = "5.3.0"
-description = "Universal LLM SDK: 11 providers (Anthropic, OpenAI, Gemini, Groq, X.AI+), tool calling, MCP protocol, workspace memory, cost optimization. Build AI apps with zero vendor lock-in. Beautiful CLI + Python SDK in one package."
+description = "Universal LLM SDK + MCP Client: Claude Opus 4.5, Gemini 3 Pro, GPT-5.1, Grok 4.1 (#1 LMArena) + 7 providers. Natural language tool calling. Zero vendor lock-in. Production SDK + beautiful CLI."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -238,7 +238,52 @@ keywords = [
     "financial-analysis",
     "support-triage",
     "cost-savings",
-    "enterprise-ai"
+    "enterprise-ai",
+    "mcp",
+    "model-context-protocol",
+    "mcp-client",
+    "mcp-server",
+    "mcp-integration",
+    "anthropic-mcp",
+    "mcp-sdk",
+    "mcp-python",
+    "mcp-tools",
+    "mcp-protocol",
+    "natural-language-mcp",
+    "mcp-cli",
+    "mcp-stdio",
+    "mcp-sse",
+    "mcp-http",
+    "filesystem-mcp",
+    "github-mcp",
+    "sqlite-mcp",
+    "postgres-mcp",
+    "slack-mcp",
+    "mcp-agents",
+    "tool-use-protocol",
+    "claude-opus-4-5",
+    "claude-opus-4.5",
+    "opus-4-5",
+    "gemini-3-pro",
+    "gemini-3",
+    "gemini-3-deep-think",
+    "gpt-5.1",
+    "gpt-5-1",
+    "openai-gpt-5.1",
+    "grok-4.1",
+    "grok-4-1",
+    "xai-grok",
+    "lmarena-top",
+    "latest-llm-models",
+    "november-2025-models",
+    "newest-ai-models",
+    "2025-models",
+    "multi-provider-mcp",
+    "universal-mcp-client",
+    "mcp-natural-language",
+    "easy-mcp",
+    "simple-mcp",
+    "mcp-wrapper"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

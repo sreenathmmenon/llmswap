@@ -50,13 +50,14 @@ class LLMSwapConfig:
                 'fallback_order': ['anthropic', 'openai', 'gemini', 'cohere', 
                                  'perplexity', 'watsonx', 'groq', 'ollama'],
                 'models': {
-                    'anthropic': 'claude-sonnet-4-5',
-                    'openai': 'gpt-4o',
-                    'gemini': 'gemini-1.5-pro',
-                    'groq': 'llama-3.3-70b-versatile',
-                    'cohere': 'command-r-plus-08-2024',
-                    'perplexity': 'sonar-pro',
-                    'watsonx': 'granite-13b-chat',
+                    'anthropic': 'claude-opus-4-5',            # Latest: Nov 24, 2025 - Flagship
+                    'openai': 'gpt-5.1',                       # Latest: Nov 13, 2025 - 2-3x faster
+                    'gemini': 'gemini-3-pro',                  # Latest: Nov 18, 2025 - Multimodal
+                    'xai': 'grok-4.1',                         # Latest: Nov 17, 2025 - #1 LMArena
+                    'groq': 'llama-3.3-70b-versatile',         # LPU-accelerated
+                    'cohere': 'command-r-plus-08-2024',        # Enterprise
+                    'perplexity': 'sonar-pro',                 # Search-optimized
+                    'watsonx': 'granite-4.0-h-small',          # Latest: Oct 2, 2025 - ISO 42001
                     'ollama': 'llama3.1'
                 }
             },

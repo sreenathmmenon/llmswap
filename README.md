@@ -1,4 +1,4 @@
-# llmswap: Universal LLM SDK That Just Works
+# LLMSwap: Universal LLM SDK + MCP Client
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -8,9 +8,12 @@
 
 ## Ship AI Apps Faster
 
-**11 LLMs + Tools + MCP in One Beautiful SDK. Zero Lock-In.**
+**Natural Language MCP + 11 LLM Providers. Latest Models Day-One.**
 
-One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Universal tool calling, MCP integration, workspace memory, and smart caching. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
+Claude Opus 4.5 (Nov '25) • Gemini 3 Pro (Nov '25) • GPT-5.1 (Nov '25) • Grok 4.1 (#1 LMArena) + 7 more.  
+Universal tool calling • MCP protocol • Zero vendor lock-in • Production-ready SDK + CLI.
+
+One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
 
 **📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html) | **🔧 MCP Guide:** [#mcp-integration](#-mcp-integration-new)
 
@@ -74,7 +77,63 @@ pip install llmswap[web]
 llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 ```
 
-> **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. llmswap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports **10 providers** (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, **xAI Grok**, **Sarvam AI**).
+---
+
+## 🆕 Latest Models Supported (November 2025)
+
+**New models work the day they launch** - LLMSwap's pass-through architecture means no SDK updates needed.
+
+### ⚡ Claude Opus 4.5 (Released Nov 24, 2025)
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="anthropic", model="claude-opus-4-5")
+response = client.chat("Build a full-stack application with authentication...")
+print(response.content)
+```
+**Latest flagship from Anthropic.** State-of-the-art for coding & software engineering. Pricing: $5/$25 per million tokens.  
+**Best for:** Complex coding, deep research, software engineering, spreadsheet management
+
+### 🚀 Gemini 3 Pro (Released Nov 18, 2025)
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="gemini", model="gemini-3-pro")
+response = client.chat("Analyze this video and extract key insights...")
+print(response.content)
+```
+**Google's most advanced multimodal model.** Processes text, images, videos, audio, PDFs. 1M+ input tokens.  
+**Best for:** Multimodal understanding, large document analysis, batch processing
+
+### 🧠 GPT-5.1 (Released Nov 13, 2025)
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="openai", model="gpt-5.1")
+response = client.chat("Design an algorithm for real-time fraud detection...")
+print(response.content)
+```
+**OpenAI's latest.** 2-3x faster than GPT-5 with adaptive reasoning. Variants: Instant (speed) & Thinking (reasoning).  
+**Best for:** Fast responses, adaptive reasoning, complex problem-solving
+
+### 🏆 Grok 4.1 (Released Nov 17, 2025)
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="xai", model="grok-4.1")
+response = client.chat("Help me understand this nuanced ethical dilemma...")
+print(response.content)
+```
+**#1 on LMArena Text Leaderboard.** Enhanced emotional intelligence & creative collaboration. Preferred 64.78% in blind tests.  
+**Best for:** Emotional intelligence, creative writing, collaborative tasks, nuanced understanding
+
+**Plus 7 more providers:** Groq (5x faster LPU), Cohere (enterprise), Perplexity (search), IBM Watsonx (Granite 4.0), Ollama, Sarvam AI, local models.
+
+**Why it matters:** New models work day-one. Pass-through architecture means future models work immediately upon release.
+
+---
+
+> **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. LLMSwap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports **11 providers** (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, **xAI Grok**, **Sarvam AI**).
 
 > **✅ Battle-Tested with LMArena Top Models:** All 10 providers tested and validated with top-rated models from LMArena leaderboard. From Grok-4 (xAI's flagship) to Claude Sonnet 4.5 (best coding model) to Gemini 2.0 Flash Exp - every model in our defaults is production-validated and arena-tested for real-world use.
 
@@ -366,6 +425,502 @@ llmswap-mcp --command npx -y @modelcontextprotocol/server-brave-search
 
 ---
 
+## 🏢 Enterprise Deployment
+
+### Remote MCP Servers (Production)
+
+#### SSE Transport (Server-Sent Events)
+```python
+from llmswap import LLMClient
+import os
+
+# Connect to internal MCP server via SSE
+client = LLMClient(provider="anthropic")
+client.add_mcp_server(
+    "internal-api",
+    transport="sse",
+    url="https://mcp.yourcompany.com/events",
+    headers={
+        "Authorization": f"Bearer {os.getenv('INTERNAL_MCP_TOKEN')}"
+    }
+)
+
+# Use with natural language
+response = client.chat("Query internal data", use_mcp=True)
+```
+
+#### HTTP Transport (REST API)
+```python
+# Connect to MCP server via HTTP
+client.add_mcp_server(
+    "crm-api",
+    transport="http", 
+    url="https://api.yourcompany.com/mcp",
+    headers={
+        "X-API-Key": os.getenv('CRM_API_KEY')
+    }
+)
+
+# Query your internal systems
+response = client.chat("Get customer data for account #12345", use_mcp=True)
+```
+
+### Production Features
+
+#### Health Monitoring
+```python
+# Check MCP server health
+if not client.check_mcp_health("internal-api"):
+    logger.error("MCP server unhealthy")
+    # Fallback logic
+```
+
+#### Circuit Breaker (Built-in)
+```python
+# Automatic circuit breaker prevents cascade failures
+client.add_mcp_server(
+    "backend-api",
+    transport="sse",
+    url="https://backend.company.com/mcp",
+    circuit_breaker_threshold=5,  # Opens after 5 failures
+    circuit_breaker_timeout=60     # Retry after 60 seconds
+)
+```
+
+### Multi-Provider Routing
+
+#### Cost Optimization
+```python
+# Route to cheapest provider first, fallback to premium
+try:
+    response = LLMClient(provider="groq").chat(query)  # Fast & cheap
+except:
+    response = LLMClient(provider="anthropic").chat(query)  # Premium fallback
+```
+
+#### Latency Optimization
+```python
+# Route based on latency requirements
+if requires_realtime:
+    client = LLMClient(provider="groq")  # 840+ tokens/sec
+else:
+    client = LLMClient(provider="openai")  # More capable
+```
+
+#### Provider Fallback Chain
+```python
+from llmswap import LLMClient
+
+providers = ["groq", "anthropic", "openai"]  # Priority order
+
+for provider in providers:
+    try:
+        client = LLMClient(provider=provider)
+        response = client.chat(query)
+        break
+    except Exception as e:
+        logger.warning(f"{provider} failed: {e}")
+        continue
+```
+
+---
+
+## 🔒 Security & Compliance
+
+### API Key Management
+
+#### Environment Variables (Recommended)
+```bash
+# Never hardcode API keys
+export ANTHROPIC_API_KEY="sk-ant-..."
+export OPENAI_API_KEY="sk-..."
+export INTERNAL_MCP_TOKEN="your-token"
+```
+
+```python
+import os
+from llmswap import LLMClient
+
+# Keys loaded from environment automatically
+client = LLMClient(provider="anthropic")  # Uses ANTHROPIC_API_KEY
+```
+
+#### Secrets Management Integration
+
+**AWS Secrets Manager:**
+```python
+import boto3
+import json
+from llmswap import LLMClient
+
+def get_secret(secret_name):
+    client = boto3.client('secretsmanager')
+    response = client.get_secret_value(SecretId=secret_name)
+    return json.loads(response['SecretString'])
+
+secrets = get_secret('llm-api-keys')
+client = LLMClient(provider="anthropic", api_key=secrets['anthropic_key'])
+```
+
+**Azure Key Vault:**
+```python
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+from llmswap import LLMClient
+
+credential = DefaultAzureCredential()
+vault_client = SecretClient(
+    vault_url="https://your-vault.vault.azure.net", 
+    credential=credential
+)
+
+api_key = vault_client.get_secret("anthropic-api-key").value
+client = LLMClient(provider="anthropic", api_key=api_key)
+```
+
+**HashiCorp Vault:**
+```python
+import hvac
+from llmswap import LLMClient
+
+vault_client = hvac.Client(url='https://vault.company.com')
+vault_client.auth.approle.login(role_id=..., secret_id=...)
+
+secret = vault_client.secrets.kv.v2.read_secret_version(path='llm-keys')
+api_key = secret['data']['data']['anthropic_key']
+
+client = LLMClient(provider="anthropic", api_key=api_key)
+```
+
+### Data Privacy
+
+**Zero Telemetry:**
+- LLMSwap collects NO usage data
+- NO analytics sent to third parties
+- NO phone-home behavior
+
+**Data Flow:**
+```
+Your Application → LLMSwap → LLM Provider API
+                              ↑
+                    Your data goes ONLY here
+                    (governed by provider's privacy policy)
+```
+
+**On-Premise MCP Servers:**
+```python
+# All data stays within your infrastructure
+client.add_mcp_server(
+    "internal-db",
+    transport="http",
+    url="https://internal.company.local/mcp"  # Internal network only
+)
+```
+
+### Network Security
+
+#### TLS/SSL Enforcement
+```python
+# HTTPS enforced for remote connections
+client.add_mcp_server(
+    "api",
+    transport="https",
+    url="https://secure.company.com/mcp",
+    verify_ssl=True  # Certificate verification
+)
+```
+
+#### Timeout Controls
+```python
+# Prevent hanging connections
+client = LLMClient(
+    provider="anthropic",
+    timeout=30  # 30 second timeout
+)
+```
+
+### Audit Logging
+
+```python
+import logging
+
+# Enable detailed logging for compliance
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('llmswap')
+
+# Logs include:
+# - Provider used
+# - Token usage
+# - MCP tool calls
+# - Error details
+# - No sensitive data (keys redacted)
+```
+
+### Compliance Notes
+
+**SOC2 / GDPR Considerations:**
+- LLMSwap is a client library - does NOT store data
+- Data retention governed by your chosen LLM provider
+- See provider compliance: [Anthropic](https://www.anthropic.com/security), [OpenAI](https://openai.com/security), [Google](https://cloud.google.com/security/compliance)
+
+**Industry Standards:**
+- Uses standard HTTPS/TLS for transport security
+- Supports enterprise authentication (OAuth, API keys, custom headers)
+- No vendor lock-in - switch providers without code changes
+
+---
+
+## 🐳 Production Deployment
+
+### Docker
+
+#### Simple Dockerfile
+```dockerfile
+FROM python:3.11-slim
+
+# Install llmswap
+RUN pip install llmswap
+
+# Set working directory
+WORKDIR /app
+
+# Copy your application
+COPY . .
+
+# Environment variables set at runtime
+ENV ANTHROPIC_API_KEY=""
+ENV MCP_SERVER_URL=""
+
+# Run your application
+CMD ["python", "your_app.py"]
+```
+
+#### Multi-Stage Build (Optimized)
+```dockerfile
+# Build stage
+FROM python:3.11-slim as builder
+
+RUN pip install --user llmswap
+
+# Runtime stage
+FROM python:3.11-slim
+
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+WORKDIR /app
+COPY . .
+
+CMD ["python", "your_app.py"]
+```
+
+#### Docker Compose
+```yaml
+version: '3.8'
+
+services:
+  llmswap-app:
+    build: .
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MCP_SERVER_URL=https://mcp.company.com
+    networks:
+      - internal
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
+```
+
+### Kubernetes
+
+#### Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llmswap-service
+  labels:
+    app: llmswap
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: llmswap
+  template:
+    metadata:
+      labels:
+        app: llmswap
+    spec:
+      containers:
+      - name: llmswap
+        image: your-registry/llmswap-app:latest
+        env:
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: llm-secrets
+              key: anthropic-key
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: llm-secrets
+              key: openai-key
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+```
+
+#### Secrets Management
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: llm-secrets
+type: Opaque
+data:
+  anthropic-key: <base64-encoded-key>
+  openai-key: <base64-encoded-key>
+```
+
+```bash
+# Create secrets from file
+kubectl create secret generic llm-secrets \
+  --from-literal=anthropic-key=$ANTHROPIC_API_KEY \
+  --from-literal=openai-key=$OPENAI_API_KEY
+```
+
+#### Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: llmswap-service
+spec:
+  selector:
+    app: llmswap
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: ClusterIP
+```
+
+#### ConfigMap (MCP Configuration)
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-config
+data:
+  mcp-servers.json: |
+    {
+      "internal-api": {
+        "transport": "sse",
+        "url": "https://mcp.company.com/events"
+      },
+      "crm-system": {
+        "transport": "http",
+        "url": "https://crm-api.company.com/mcp"
+      }
+    }
+```
+
+### Environment Variables Reference
+
+```bash
+# LLM Provider API Keys
+ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
+GEMINI_API_KEY=...
+GROQ_API_KEY=gsk_...
+XAI_API_KEY=xai-...
+
+# MCP Configuration
+MCP_SERVER_URL=https://mcp.company.com
+MCP_AUTH_TOKEN=your-token
+
+# Optional: Override defaults
+LLMSWAP_DEFAULT_PROVIDER=anthropic
+LLMSWAP_TIMEOUT=30
+LLMSWAP_LOG_LEVEL=INFO
+```
+
+### Health Checks
+
+```python
+# your_app.py
+from flask import Flask, jsonify
+from llmswap import LLMClient
+
+app = Flask(__name__)
+client = LLMClient(provider="anthropic")
+
+@app.route('/health')
+def health():
+    """Kubernetes liveness probe"""
+    return jsonify({"status": "healthy"}), 200
+
+@app.route('/ready')
+def ready():
+    """Kubernetes readiness probe"""
+    try:
+        # Check if LLM provider is accessible
+        client.chat("test", max_tokens=1)
+        return jsonify({"status": "ready"}), 200
+    except Exception as e:
+        return jsonify({"status": "not ready", "error": str(e)}), 503
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+```
+
+### Monitoring & Observability
+
+#### Prometheus Metrics (Example)
+```python
+from prometheus_client import Counter, Histogram, start_http_server
+from llmswap import LLMClient
+
+# Metrics
+llm_requests = Counter('llm_requests_total', 'Total LLM requests', ['provider'])
+llm_latency = Histogram('llm_request_duration_seconds', 'LLM request latency', ['provider'])
+llm_errors = Counter('llm_errors_total', 'Total LLM errors', ['provider', 'error_type'])
+
+# Start metrics endpoint
+start_http_server(9090)
+
+# Instrument your calls
+client = LLMClient(provider="anthropic")
+with llm_latency.labels(provider="anthropic").time():
+    try:
+        response = client.chat("query")
+        llm_requests.labels(provider="anthropic").inc()
+    except Exception as e:
+        llm_errors.labels(provider="anthropic", error_type=type(e).__name__).inc()
+        raise
+```
+
+---
+
 ## 🏆 Production-Validated with LMArena Top Models
 
 **Every model in LLMSwap's defaults comes from LMArena's top performers:**
@@ -460,9 +1015,36 @@ client = LLMClient(provider="openai", model="gpt-6")  # works!
 | Switch providers mid-chat | Can't - locked in | `/switch anthropic` command |
 
 **The Bottom Line:**
-- **Building an app?** Use llmswap SDK - no vendor lock-in
-- **Using terminal?** Use llmswap CLI - works with your existing subscriptions
+- **Building an app?** Use LLMSwap SDK - no vendor lock-in
+- **Using terminal?** Use LLMSwap CLI - works with your existing subscriptions
 - **Both?** Perfect - it's the same tool!
+
+---
+
+## 🔧 LLMSwap vs MCP Alternatives
+
+**The only multi-provider MCP client with natural language interface:**
+
+| Feature | LLMSwap | langchain-mcp-tools | mcp-use | Anthropic SDK |
+|---------|---------|---------------------|---------|---------------|
+| **Natural Language** | ✅ Ask in plain English | ❌ Manual JSON | ❌ Manual JSON | ❌ Manual JSON |
+| **Multi-Provider MCP** | ✅ 11 providers | ❌ LangChain only | ⚠️ Limited | ❌ Claude only |
+| **Latest Models** | ✅ Day-one support (Dec '24) | ⚠️ Delayed updates | ⚠️ Delayed updates | ✅ Claude only |
+| **Beautiful CLI** | ✅ Bordered UI | ❌ No CLI | ❌ Basic | ❌ No CLI |
+| **Setup Time** | 🟢 30 seconds | 🔴 Hours (LangChain) | 🟡 Medium | 🟢 Fast |
+| **Production Ready** | ✅ Circuit breakers | ❌ DIY | ❌ DIY | ⚠️ Limited |
+| **Cost Optimization** | ✅ Auto caching | ❌ Manual | ❌ Manual | ❌ No |
+| **Learning Curve** | 🟢 10 lines | 🔴 Complex | 🟡 Medium | 🟢 Easy |
+| **Remote MCP** | ✅ SSE/HTTP | ⚠️ Limited | ⚠️ Limited | ✅ Yes |
+| **Zero Lock-in** | ✅ Switch providers | ❌ Locked to LangChain | ⚠️ Limited | ❌ Claude only |
+
+**Why LLMSwap for MCP?**
+- **Natural language**: Just ask "List all PDFs" - no JSON schemas
+- **Universal**: Works with 11 providers, not just one
+- **Production-ready**: Circuit breakers, health checks, monitoring built-in
+- **Latest models**: Claude 3.5 Haiku, Gemini 2.0, o1 work day-one
+
+---
 
 ```bash
 # 🆕 NEW v5.1.0: Workspace System - Project Memory That Persists

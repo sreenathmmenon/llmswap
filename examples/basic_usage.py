@@ -50,17 +50,18 @@ def provider_switching_example():
 
 
 def custom_model_example():
-    """Example with custom models."""
-    print("=== Custom Model Example ===")
+    """Example with custom models - Latest Nov 2025."""
+    print("=== Custom Model Example (Latest Models) ===")
     
-    # Use specific provider and model
+    # Use specific provider and latest model
     try:
-        client = LLMClient(provider="anthropic", model="claude-3-sonnet-20240229")
+        # Claude Opus 4.5 - Latest from Anthropic (Nov 24, 2025)
+        client = LLMClient(provider="anthropic", model="claude-opus-4-5")
         
         response = client.query("Explain machine learning in one sentence")
         
         print(f"Provider: {response.provider}")
-        print(f"Model: {response.model}")
+        print(f"Model: {response.model} (Nov 2025)")
         print(f"Response: {response.content}")
         print(f"Metadata: {response.metadata}")
         

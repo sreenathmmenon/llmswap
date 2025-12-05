@@ -8,10 +8,10 @@ Great for testing which provider works best for your use case.
 from llmswap import LLMClient
 
 def compare_providers(question):
-    """Compare responses from all available providers"""
+    """Compare responses from all available providers (Nov 2025 models)"""
     
-    # List of providers to try
-    providers = ["anthropic", "openai", "gemini", "ollama"]
+    # List of providers to try (with latest models from Nov 2025)
+    providers = ["anthropic", "openai", "gemini", "xai", "ollama"]
     
     print(f"Comparing providers for: '{question}'\n")
     
