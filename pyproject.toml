@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.3.1"
+version = "5.5.0"
 description = "Universal LLM SDK + MCP Client: Claude Opus 4.5, Gemini 3 Pro, GPT-5.1, Grok 4.1 (#1 LMArena) + 7 providers. Natural language tool calling. Zero vendor lock-in. Production SDK + beautiful CLI."
 readme = "README.md"
 requires-python = ">=3.8"
