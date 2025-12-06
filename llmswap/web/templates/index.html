@@ -409,6 +409,11 @@ Include: Key benefits, challenges, and future outlook`
             // Show results area
             resultsDiv.classList.remove('hidden');
             
+            // Scroll to results area
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
+            
             // Set expected results count
             expectedResults = models.length;
             
