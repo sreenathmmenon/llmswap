@@ -691,9 +691,9 @@ Include: Key benefits, challenges, and future outlook`
                                     class="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 font-semibold transition-all hover:scale-105">
                                 📋 Copy Winner's Response
                             </button>
-                            <button onclick="shareOnTwitter()"
+                            <button onclick="shareResults()"
                                     class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-semibold transition-all hover:scale-105">
-                                🐦 Share Results
+                                📋 Copy Results
                             </button>
                             <button onclick="tryAnother()"
                                     class="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-800 font-semibold transition-all hover:scale-105">
@@ -721,11 +721,51 @@ Include: Key benefits, challenges, and future outlook`
             });
         }
 
-        // Share on Twitter
-        function shareOnTwitter() {
-            const text = `Just compared ${allResults.length} AI models on @LLMSwap! 🏆 ${allResults[0]?.model} won. Try it yourself:`;
-            const url = 'https://github.com/yourusername/llmswap';
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        // Share results - Copy to clipboard
+        function shareResults() {
+            const winner = allResults[0];
+            const runnerUp = allResults[1] || null;
+            
+            let text = `🏆 LLMSwap Comparison Results\n`;
+            text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            text += `📝 Prompt: "${promptTextarea.value.substring(0, 80)}${promptTextarea.value.length > 80 ? '...' : ''}"\n`;
+            text += `🤖 Models tested: ${allResults.length}\n\n`;
+            
+            text += `🥇 WINNER: ${winner.model}\n`;
+            if (winner.scores) {
+                text += `   Overall Score: ${winner.scores.overall}/10\n`;
+            }
+            text += `   Speed: ${winner.time}s`;
+            if (winner.tokens_per_sec) {
+                text += ` (${winner.tokens_per_sec} tok/s)`;
+            }
+            text += `\n   Cost: $${winner.cost}\n\n`;
+            
+            if (runnerUp) {
+                text += `🥈 Runner-up: ${runnerUp.model}\n`;
+                if (runnerUp.scores) {
+                    text += `   Overall Score: ${runnerUp.scores.overall}/10\n`;
+                }
+                text += `   Speed: ${runnerUp.time}s, Cost: $${runnerUp.cost}\n\n`;
+            }
+            
+            text += `📊 All Results:\n`;
+            allResults.forEach((r, i) => {
+                text += `${i+1}. ${r.model} - ${r.time}s, $${r.cost}`;
+                if (r.scores) {
+                    text += ` (${r.scores.overall}/10)`;
+                }
+                text += `\n`;
+            });
+            
+            text += `\n🔗 Try it yourself: https://github.com/sreenathmmenon/llmswap\n`;
+            text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showTooltip('✅ Results copied to clipboard! Paste anywhere to share.', event.target, 3000);
+            }).catch(() => {
+                alert('Failed to copy. Please try again.');
+            });
         }
 
         // Try another comparison
