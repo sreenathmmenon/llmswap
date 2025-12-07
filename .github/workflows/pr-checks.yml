@@ -61,7 +61,7 @@ jobs:
       docs: ${{ steps.filter.outputs.docs }}
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - uses: dorny/paths-filter@v2
       id: filter
@@ -85,7 +85,7 @@ jobs:
     needs: changes
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -127,7 +127,7 @@ jobs:
     if: needs.changes.outputs.core == 'true'
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
     
@@ -166,7 +166,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v5
