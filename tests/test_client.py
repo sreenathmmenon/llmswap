@@ -27,6 +27,12 @@ def test_client_provider_switching():
 
 def test_client_fallback_disabled():
     """Test client with fallback disabled"""
+    if not any([
+        os.getenv('ANTHROPIC_API_KEY'),
+        os.getenv('OPENAI_API_KEY'),
+        os.getenv('GEMINI_API_KEY')
+    ]):
+        pytest.skip("No API keys available")
     client = LLMClient(fallback=False)
     assert client.fallback == False
 
