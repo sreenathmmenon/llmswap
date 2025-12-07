@@ -259,24 +259,54 @@ llmswap web</pre>
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
+    @app.route('/api/models', methods=['GET'])
+    def get_models():
+        """Get available models from dynamic system"""
+        try:
+            from .models import get_available_models, get_featured_models
+            
+            all_models = get_available_models()
+            featured = get_featured_models()
+            
+            return jsonify({
+                'models': all_models,
+                'featured': featured
+            })
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
     return app
 
 
 def stream_comparison(prompt: str, models: list):
     """
     Stream comparison results as Server-Sent Events.
+    
+    Streams token-by-token updates for real-time side-by-side comparison.
 
     Yields:
-        SSE formatted events
+        SSE formatted events with model updates
     """
     from llmswap import LLMClient
+    from .comparison import detect_winner
+    
     client = LLMClient()
+    all_results = []
 
-    for result in compare_models_streaming(prompt, models, client):
-        # Format as SSE
-        event_data = json.dumps(result)
+    for update in compare_models_streaming(prompt, models, client):
+        # Send each update immediately
+        event_data = json.dumps(update)
         yield f"data: {event_data}\n\n"
-
+        
+        # Track completed results for winner detection
+        if update.get('done') and not update.get('error'):
+            all_results.append(update)
+    
+    # After all models complete, detect winner
+    if all_results:
+        winner_info = detect_winner(all_results)
+        yield f"data: {json.dumps({'event': 'winner', 'data': winner_info})}\n\n"
+    
     # Send completion event
     yield f"data: {json.dumps({'event': 'complete'})}\n\n"
 

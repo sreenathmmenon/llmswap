@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLMSwap - Compare AI Models Live 🚀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        /* WOW Animations */
+        @keyframes winner-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5); }
+        }
+        
+        @keyframes pulse-button {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.95; }
+        }
+        
+        @keyframes slide-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes bounce-in {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .winner-card {
+            border: 3px solid #ffd700 !important;
+            animation: winner-glow 2s ease-in-out infinite;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        
+        .runner-up-card {
+            border: 2px solid #c0c0c0 !important;
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.3);
+        }
+        
+        .winner-badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: bounce-in 0.6s ease-out;
+        }
+        
+        .pulse-button {
+            animation: pulse-button 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .slide-up {
+            animation: slide-up 0.4s ease-out;
+        }
+        
+        .progress-fast {
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+        }
+        
+        .progress-medium {
+            background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+        }
+        
+        .progress-slow {
+            background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+        }
+        
+        /* Markdown styles */
+        .markdown-content h1 { font-size: 1.875rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; }
+        .markdown-content h2 { font-size: 1.5rem; font-weight: bold; margin-top: 1.25rem; margin-bottom: 0.75rem; }
+        .markdown-content h3 { font-size: 1.25rem; font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .markdown-content p { margin-bottom: 1rem; line-height: 1.625; }
+        .markdown-content ul, .markdown-content ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        .markdown-content li { margin-bottom: 0.5rem; }
+        .markdown-content code { background-color: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
+        .markdown-content pre { background-color: #1f2937; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 1rem; }
+        .markdown-content pre code { background-color: transparent; padding: 0; color: #e5e7eb; }
+        
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: #1f2937;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            z-index: 1000;
+            animation: bounce-in 0.3s ease-out;
+        }
+        
+        /* Keyboard shortcut styling */
+        kbd {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.875em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <header class="mb-8 slide-up">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        LLMSwap
+                    </h1>
+                    <p class="text-gray-600 mt-2 text-lg">⚡ Compare AI models live • 🏆 See the winner instantly</p>
+                </div>
+                <div class="text-right">
+                    <a href="/api/provider-status" target="_blank" 
+                       class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                        Provider Status
+                    </a>
+                    <div class="text-xs text-gray-500 mt-1">
+                        <kbd class="px-2 py-1 bg-gray-200 rounded">⌨️</kbd> for shortcuts
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6 slide-up" style="animation-delay: 0.1s">
+            <form id="compareForm">
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        1️⃣ Enter Your Prompt
+                    </label>
+                    <textarea
+                        id="prompt"
+                        name="prompt"
+                        rows="6"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm transition-all"
+                        placeholder="Write your prompt here..."
+                        required
+                    ></textarea>
+                    <div class="flex justify-between items-center mt-2">
+                        <div class="text-xs text-gray-500" id="charCount">0 characters</div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="loadExample('coding')"
+                                    class="text-xs text-blue-600 hover:text-blue-800">
+                                💻 Coding
+                            </button>
+                            <button type="button" onclick="loadExample('writing')"
+                                    class="text-xs text-blue-600 hover:text-blue-800">
+                                ✍️ Writing
+                            </button>
+                            <button type="button" onclick="clearPrompt()"
+                                    class="text-xs text-gray-500 hover:text-gray-700">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        2️⃣ Select Models <span id="selectedCount" class="text-gray-500 font-normal">(0 selected)</span>
+                    </label>
+                    <div id="modelGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- Models will be loaded dynamically -->
+                    </div>
+                    <div class="mt-3 text-xs text-gray-500 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        💡 <span class="font-semibold">Want to add your own models?</span> 
+                        Create <code class="bg-white px-2 py-0.5 rounded border border-gray-300 font-mono text-gray-700">~/.llmswap/models.json</code>
+                        with your custom models and pricing. 
+                        <a href="https://github.com/sreenathmmenon/llmswap#custom-models" 
+                           target="_blank" 
+                           class="text-blue-600 hover:text-blue-800 underline">
+                            Learn how →
+                        </a>
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    id="compareBtn"
+                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-300 font-bold text-lg transition-all pulse-button"
+                >
+                    🚀 Compare Models Now
+                </button>
+                <p class="text-center text-xs text-gray-500 mt-2">
+                    Press <kbd class="px-1 bg-gray-200 rounded">Cmd+Enter</kbd> to start
+                </p>
+            </form>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-4"></div>
+            <p id="loadingMessage" class="text-gray-700 font-medium text-lg">🔌 Connecting to AI models...</p>
+            <div class="mt-4 flex justify-center gap-2">
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+            </div>
+        </div>
+
+        <!-- Winner Card (shown after comparison) -->
+        <div id="winnerCard" class="hidden"></div>
+
+        <!-- Results -->
+        <div id="results" class="space-y-4"></div>
+    </div>
+
+    <!-- Keyboard Shortcuts Help -->
+    <button onclick="toggleShortcuts()" 
+            class="fixed bottom-4 left-4 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition-all hover:scale-110">
+        ⌨️
+    </button>
+
+    <div id="shortcutsHelp" class="hidden fixed bottom-16 left-4 bg-white rounded-lg shadow-2xl p-4 text-sm border-2 border-blue-200">
+        <h4 class="font-bold mb-3 text-blue-600">⌨️ Keyboard Shortcuts</h4>
+        <ul class="space-y-2 text-xs">
+            <li><kbd class="px-2 py-1 bg-gray-200 rounded">Cmd+Enter</kbd> Start comparison</li>
+            <li><kbd class="px-2 py-1 bg-gray-200 rounded">Alt+P</kbd> Focus prompt</li>
+            <li><kbd class="px-2 py-1 bg-gray-200 rounded">Esc</kbd> Clear results</li>
+        </ul>
+    </div>
+
+    <script>
+        // Example prompts
+        const EXAMPLES = {
+            coding: `Write a Python function to find the longest palindromic substring in a string.
+
+Requirements:
+- Time complexity should be O(n²) or better
+- Handle empty strings and single characters
+- Include docstring with examples
+- Add type hints
+- Write 3 unit tests`,
+            
+            writing: `Write a blog post introduction about the impact of AI on software development.
+
+Target audience: Software developers
+Tone: Professional but conversational
+Length: 2-3 paragraphs
+Include: Key benefits, challenges, and future outlook`
+        };
+
+        // State
+        let allResults = [];
+        let eventSource = null;
+        const form = document.getElementById('compareForm');
+        const resultsDiv = document.getElementById('results');
+        const loading = document.getElementById('loading');
+        const promptTextarea = document.getElementById('prompt');
+        const charCount = document.getElementById('charCount');
+        const compareBtn = document.getElementById('compareBtn');
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadModels();
+            setupAutoFill();
+            setupKeyboardShortcuts();
+            updateCharCount();
+        });
+
+        // Load models dynamically
+        async function loadModels() {
+            try {
+                const response = await fetch('/api/models');
+                const data = await response.json();
+                
+                const modelGrid = document.getElementById('modelGrid');
+                const featured = data.featured || [];
+                
+                // Show featured models
+                featured.slice(0, 9).forEach(model => {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center p-3 border-2 border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all';
+                    label.innerHTML = `
+                        <input type="checkbox" name="models" value="${model.id}" class="mr-3 w-5 h-5" onchange="updateSelectedCount()">
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-900">${model.name}</div>
+                            <div class="text-xs text-gray-500">${model.description}</div>
+                        </div>
+                    `;
+                    modelGrid.appendChild(label);
+                });
+                
+            } catch (error) {
+                console.error('Failed to load models:', error);
+                // Fallback to default models
+                loadDefaultModels();
+            }
+        }
+
+        function loadDefaultModels() {
+            const defaults = [
+                {id: 'gpt-4o', name: 'GPT-4o', description: 'OpenAI • Fast & Smart'},
+                {id: 'claude-3-5-sonnet-20241022', name: 'Claude Sonnet 4.5', description: 'Anthropic • Best Coding'},
+                {id: 'gemini-2.0-flash-exp', name: 'Gemini 2.0 Flash', description: 'Google • Fast'}
+            ];
+            
+            const modelGrid = document.getElementById('modelGrid');
+            defaults.forEach(model => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center p-3 border-2 border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer';
+                label.innerHTML = `
+                    <input type="checkbox" name="models" value="${model.id}" class="mr-3 w-5 h-5" onchange="updateSelectedCount()">
+                    <div>
+                        <div class="font-semibold">${model.name}</div>
+                        <div class="text-xs text-gray-500">${model.description}</div>
+                    </div>
+                `;
+                modelGrid.appendChild(label);
+            });
+        }
+
+        // Auto-fill on load
+        function setupAutoFill() {
+            // Check if first time
+            const hasUsed = localStorage.getItem('llmswap_has_used');
+            
+            if (!hasUsed) {
+                // First time - auto-fill everything
+                setTimeout(() => {
+                    loadExample('coding');
+                    
+                    // Auto-select top 3 models
+                    const checkboxes = document.querySelectorAll('input[name="models"]');
+                    checkboxes.forEach((cb, i) => {
+                        if (i < 3) cb.checked = true;
+                    });
+                    updateSelectedCount();
+                    
+                    // Show tooltip
+                    showTooltip('👋 Welcome! Everything is ready. Just click the button to compare! 🚀', compareBtn, 5000);
+                    
+                    localStorage.setItem('llmswap_has_used', 'true');
+                }, 500);
+            }
+        }
+
+        // Load example
+        function loadExample(type) {
+            promptTextarea.value = EXAMPLES[type];
+            updateCharCount();
+            promptTextarea.focus();
+        }
+
+        // Character counter
+        function updateCharCount() {
+            const length = promptTextarea.value.length;
+            charCount.textContent = `${length} character${length !== 1 ? 's' : ''}`;
+        }
+        promptTextarea.addEventListener('input', updateCharCount);
+
+        // Clear prompt
+        function clearPrompt() {
+            promptTextarea.value = '';
+            updateCharCount();
+            promptTextarea.focus();
+        }
+
+        // Update selected count
+        function updateSelectedCount() {
+            const count = document.querySelectorAll('input[name="models"]:checked').length;
+            document.getElementById('selectedCount').textContent = `(${count} selected)`;
+            
+            if (count === 0) {
+                compareBtn.disabled = true;
+                compareBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                compareBtn.classList.remove('pulse-button');
+            } else {
+                compareBtn.disabled = false;
+                compareBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                compareBtn.classList.add('pulse-button');
+            }
+        }
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const prompt = promptTextarea.value.trim();
+            const selectedModels = Array.from(document.querySelectorAll('input[name="models"]:checked'))
+                .map(cb => cb.value);
+
+            if (selectedModels.length === 0) {
+                showTooltip('💡 Please select at least one model!', compareBtn);
+                return;
+            }
+
+            // Reset state
+            resultsDiv.innerHTML = '';
+            document.getElementById('winnerCard').innerHTML = '';
+            document.getElementById('winnerCard').classList.add('hidden');
+            loading.classList.remove('hidden');
+            allResults = [];
+            
+            startLoadingMessages();
+
+            // Create placeholder cards
+            selectedModels.forEach(model => createPlaceholderCard(model));
+
+            // Start SSE streaming
+            streamComparison(prompt, selectedModels);
+        });
+
+        // Track selected models count
+        let expectedResults = 0;
+
+        // SSE Streaming
+        function streamComparison(prompt, models) {
+            loading.classList.add('hidden');
+            
+            // Show results area
+            resultsDiv.classList.remove('hidden');
+            
+            // Scroll to results area
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
+            
+            // Set expected results count
+            expectedResults = models.length;
+            
+            // For now, use regular API (SSE implementation in next iteration)
+            models.forEach(model => queryModel(prompt, model));
+        }
+
+        async function queryModel(prompt, model) {
+            try {
+                const response = await fetch('/compare', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, models: [model] })
+                });
+
+                const data = await response.json();
+                const result = data.results[0];
+
+                updateCard(model, result);
+                allResults.push(result);
+
+                // Check if all done
+                if (allResults.length === expectedResults) {
+                    detectAndShowWinner();
+                }
+
+            } catch (error) {
+                updateCard(model, {
+                    model,
+                    error: error.message,
+                    time: 0,
+                    tokens: 0,
+                    cost: 0
+                });
+                allResults.push({model, error: error.message});
+                
+                // Check if all done (even with errors)
+                if (allResults.length === expectedResults) {
+                    detectAndShowWinner();
+                }
+            }
+        }
+
+        // Create placeholder card
+        function createPlaceholderCard(model) {
+            const card = document.createElement('div');
+            card.id = `card-${model}`;
+            card.className = 'bg-white rounded-xl shadow-lg p-6 border-2 border-gray-100 slide-up';
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">${model}</h3>
+                        <div class="text-sm text-gray-500 mt-1" id="status-${model}">⏳ Starting...</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-semibold text-gray-700" id="time-${model}">-</div>
+                        <div class="text-xs text-gray-500 mt-1" id="cost-${model}">-</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mb-4" id="progress-container-${model}">
+                    <div class="flex justify-between text-xs text-gray-600 mb-2">
+                        <span id="progress-text-${model}">0%</span>
+                        <span id="speed-${model}">0 tok/s</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progressBar-${model}" 
+                             class="h-3 rounded-full transition-all duration-500 progress-medium"
+                             style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-center py-8" id="spinner-${model}">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+                </div>
+                <div class="hidden" id="content-${model}">
+                    <div class="markdown-content text-gray-700 mb-4 prose max-w-none" id="response-${model}"></div>
+                    <div class="flex justify-between items-center border-t pt-4">
+                        <div class="text-xs text-gray-500" id="meta-${model}"></div>
+                        <button onclick="copyResponse('${model}')"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-semibold transition-all hover:scale-105">
+                            📋 Copy
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            resultsDiv.appendChild(card);
+        }
+
+        // Update card with result
+        function updateCard(model, result) {
+            const spinner = document.getElementById(`spinner-${model}`);
+            const content = document.getElementById(`content-${model}`);
+            const statusDiv = document.getElementById(`status-${model}`);
+            const timeDiv = document.getElementById(`time-${model}`);
+            const costDiv = document.getElementById(`cost-${model}`);
+            const responseDiv = document.getElementById(`response-${model}`);
+            const metaDiv = document.getElementById(`meta-${model}`);
+            const progressContainer = document.getElementById(`progress-container-${model}`);
+
+            spinner.classList.add('hidden');
+            content.classList.remove('hidden');
+            progressContainer.classList.add('hidden');
+
+            if (result.error) {
+                responseDiv.className = 'text-red-600 mb-4 whitespace-pre-wrap text-sm p-4 bg-red-50 rounded-lg border border-red-200';
+                responseDiv.textContent = `❌ Error: ${result.error}`;
+                statusDiv.textContent = '❌ Error';
+                statusDiv.className = 'text-sm text-red-600 font-semibold';
+            } else {
+                const html = marked.parse(result.response || '');
+                responseDiv.innerHTML = html;
+                
+                // Highlight code blocks
+                responseDiv.querySelectorAll('pre code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+
+                const time = result.time?.toFixed(2) || '0.00';
+                const cost = result.cost?.toFixed(4) || '0.0000';
+                const tokens = result.tokens || 0;
+                const tokensPerSec = time > 0 ? (tokens / time).toFixed(1) : '0';
+
+                statusDiv.textContent = `✅ Complete (${tokensPerSec} tok/s)`;
+                statusDiv.className = 'text-sm text-green-600 font-semibold';
+                timeDiv.textContent = `⏱️ ${time}s`;
+                costDiv.textContent = `💰 $${cost}`;
+                metaDiv.textContent = `${tokens} tokens • ${tokensPerSec} tok/s`;
+            }
+        }
+
+        // Detect winner
+        function detectAndShowWinner() {
+            stopLoadingMessages();
+            
+            const validResults = allResults.filter(r => !r.error);
+            if (validResults.length === 0) return;
+
+            // Simple scoring
+            const scored = validResults.map(r => {
+                const time = r.time || 999;
+                const tokens = r.tokens || 0;
+                const cost = r.cost || 999;
+                const tokensPerSec = time > 0 ? tokens / time : 0;
+                
+                // Score: higher tokens/sec, lower cost, more tokens
+                const qualityScore = Math.min(tokens / 100, 10);
+                const speedScore = Math.min(tokensPerSec / 10, 10);
+                const costScore = Math.max(10 - (cost * 1000), 0);
+                
+                const totalScore = (qualityScore * 0.4) + (speedScore * 0.3) + (costScore * 0.3);
+                
+                return {
+                    ...r,
+                    score: totalScore,
+                    scores: {
+                        quality: qualityScore.toFixed(1),
+                        speed: speedScore.toFixed(1),
+                        cost: costScore.toFixed(1)
+                    }
+                };
+            }).sort((a, b) => b.score - a.score);
+
+            const winner = scored[0];
+            const runnerUp = scored[1];
+
+            // Celebrate!
+            celebrateWinner();
+            
+            // Highlight cards
+            highlightWinner(winner.model);
+            if (runnerUp) {
+                const runnerCard = document.getElementById(`card-${runnerUp.model}`);
+                if (runnerCard) runnerCard.classList.add('runner-up-card');
+            }
+            
+            // Show winner card
+            showWinnerCard(winner);
+        }
+
+        // Confetti celebration
+        function celebrateWinner() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ffd700', '#ffed4e', '#ffa500']
+            });
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+            }, 250);
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 400);
+        }
+
+        // Highlight winner card
+        function highlightWinner(modelId) {
+            const card = document.getElementById(`card-${modelId}`);
+            if (!card) return;
+            
+            card.classList.add('winner-card');
+            
+            // Add winner badge
+            const header = card.querySelector('.flex');
+            const badge = document.createElement('div');
+            badge.className = 'winner-badge';
+            badge.innerHTML = '🏆 WINNER';
+            header.appendChild(badge);
+        }
+
+        // Show winner card
+        function showWinnerCard(winner) {
+            const winnerCard = document.getElementById('winnerCard');
+            winnerCard.className = 'bg-gradient-to-r from-yellow-50 via-amber-50 to-yellow-50 border-4 border-yellow-400 rounded-xl p-8 mb-6 slide-up';
+            
+            winnerCard.innerHTML = `
+                <div class="flex items-start gap-6">
+                    <div class="text-6xl">🏆</div>
+                    <div class="flex-1">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                            ${winner.model} Wins!
+                        </h2>
+                        <p class="text-gray-700 text-lg mb-6">
+                            Overall Score: <span class="font-bold text-2xl text-yellow-600">${winner.score.toFixed(1)}/10</span>
+                        </p>
+                        
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div>
+                                <div class="text-sm text-gray-600 mb-1">Quality</div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-3">
+                                        <div class="bg-green-500 h-3 rounded-full" style="width: ${winner.scores.quality * 10}%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold">${winner.scores.quality}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-600 mb-1">Speed</div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-3">
+                                        <div class="bg-blue-500 h-3 rounded-full" style="width: ${winner.scores.speed * 10}%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold">${winner.scores.speed}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-600 mb-1">Cost</div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-3">
+                                        <div class="bg-purple-500 h-3 rounded-full" style="width: ${winner.scores.cost * 10}%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold">${winner.scores.cost}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button onclick="copyResponse('${winner.model}')"
+                                    class="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 font-semibold transition-all hover:scale-105">
+                                📋 Copy Winner's Response
+                            </button>
+                            <button onclick="shareResults()"
+                                    class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-semibold transition-all hover:scale-105">
+                                📋 Copy Results
+                            </button>
+                            <button onclick="tryAnother()"
+                                    class="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-800 font-semibold transition-all hover:scale-105">
+                                🔄 Try Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            winnerCard.classList.remove('hidden');
+            
+            // Scroll to winner card
+            winnerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Copy response
+        function copyResponse(model) {
+            const responseDiv = document.getElementById(`response-${model}`);
+            if (!responseDiv) return;
+            
+            const text = responseDiv.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showTooltip('✅ Copied to clipboard!', document.getElementById(`card-${model}`));
+            });
+        }
+
+        // Share results - Copy to clipboard
+        function shareResults() {
+            const winner = allResults[0];
+            const runnerUp = allResults[1] || null;
+            
+            let text = `🏆 LLMSwap Comparison Results\n`;
+            text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            text += `📝 Prompt: "${promptTextarea.value.substring(0, 80)}${promptTextarea.value.length > 80 ? '...' : ''}"\n`;
+            text += `🤖 Models tested: ${allResults.length}\n\n`;
+            
+            text += `🥇 WINNER: ${winner.model}\n`;
+            if (winner.scores) {
+                text += `   Overall Score: ${winner.scores.overall}/10\n`;
+            }
+            text += `   Speed: ${winner.time}s`;
+            if (winner.tokens_per_sec) {
+                text += ` (${winner.tokens_per_sec} tok/s)`;
+            }
+            text += `\n   Cost: $${winner.cost}\n\n`;
+            
+            if (runnerUp) {
+                text += `🥈 Runner-up: ${runnerUp.model}\n`;
+                if (runnerUp.scores) {
+                    text += `   Overall Score: ${runnerUp.scores.overall}/10\n`;
+                }
+                text += `   Speed: ${runnerUp.time}s, Cost: $${runnerUp.cost}\n\n`;
+            }
+            
+            text += `📊 All Results:\n`;
+            allResults.forEach((r, i) => {
+                text += `${i+1}. ${r.model} - ${r.time}s, $${r.cost}`;
+                if (r.scores) {
+                    text += ` (${r.scores.overall}/10)`;
+                }
+                text += `\n`;
+            });
+            
+            text += `\n🔗 Try it yourself: https://github.com/sreenathmmenon/llmswap\n`;
+            text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showTooltip('✅ Results copied to clipboard! Paste anywhere to share.', event.target, 3000);
+            }).catch(() => {
+                alert('Failed to copy. Please try again.');
+            });
+        }
+
+        // Try another comparison
+        function tryAnother() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            promptTextarea.focus();
+        }
+
+        // Loading messages
+        let loadingInterval;
+        let loadingMsgIndex = 0;
+        const loadingMessages = [
+            '🔌 Connecting to AI models...',
+            '🚀 Starting comparison race...',
+            '🧠 Models are thinking...',
+            '⚡ Processing responses...',
+            '📊 Almost done...'
+        ];
+
+        function startLoadingMessages() {
+            const msgDiv = document.getElementById('loadingMessage');
+            loadingInterval = setInterval(() => {
+                msgDiv.textContent = loadingMessages[loadingMsgIndex];
+                loadingMsgIndex = (loadingMsgIndex + 1) % loadingMessages.length;
+            }, 2000);
+        }
+
+        function stopLoadingMessages() {
+            if (loadingInterval) {
+                clearInterval(loadingInterval);
+            }
+        }
+
+        // Detect OS for keyboard shortcuts display
+        const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+        const modKey = isMac ? '⌘' : 'Ctrl';
+        
+        // Keyboard shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Cmd/Ctrl + Enter: Submit
+                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!compareBtn.disabled) {
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                }
+                
+                // Alt + P: Focus prompt (no browser conflicts!)
+                if (e.altKey && e.key === 'p') {
+                    e.preventDefault();
+                    promptTextarea.focus();
+                }
+                
+                // Escape: Clear
+                if (e.key === 'Escape') {
+                    resultsDiv.innerHTML = '';
+                    document.getElementById('winnerCard').classList.add('hidden');
+                }
+            });
+            
+            // Update keyboard shortcut hints in UI
+            updateKeyboardHints();
+        }
+        
+        // Update keyboard shortcut display based on OS
+        function updateKeyboardHints() {
+            document.querySelectorAll('kbd').forEach(kbd => {
+                let text = kbd.textContent;
+                // Replace Cmd with correct modifier for this OS
+                if (text.includes('Cmd') || text.includes('⌘')) {
+                    text = text.replace(/Cmd|⌘/g, modKey);
+                    kbd.textContent = text;
+                }
+            });
+        }
+
+        // Toggle shortcuts help
+        function toggleShortcuts() {
+            const help = document.getElementById('shortcutsHelp');
+            help.classList.toggle('hidden');
+        }
+
+        // Show tooltip
+        function showTooltip(message, element, duration = 3000) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = message;
+            
+            const rect = element.getBoundingClientRect();
+            tooltip.style.top = `${rect.top - 50}px`;
+            tooltip.style.left = `${rect.left + rect.width / 2 - 100}px`;
+            
+            document.body.appendChild(tooltip);
+            
+            setTimeout(() => tooltip.remove(), duration);
+        }
+    </script>
+</body>
+</html>

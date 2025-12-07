@@ -1,0 +1,66 @@
+{
+  "openai": [
+    {
+      "id": "gpt-4o-mini",
+      "name": "GPT-4o Mini",
+      "description": "OpenAI • Fast & Cheap",
+      "featured": true,
+      "pricing": {
+        "input": 0.15,
+        "output": 0.60
+      }
+    },
+    {
+      "id": "my-fine-tuned-gpt4",
+      "name": "My Fine-tuned GPT-4",
+      "description": "OpenAI • Custom Fine-tune",
+      "pricing": {
+        "input": 10.0,
+        "output": 30.0
+      }
+    }
+  ],
+  "anthropic": [
+    {
+      "id": "claude-3-5-sonnet-20241022",
+      "name": "Claude Sonnet 3.5",
+      "description": "Anthropic • Best for Coding",
+      "featured": true,
+      "pricing": {
+        "input": 3.0,
+        "output": 15.0
+      }
+    }
+  ],
+  "ollama": [
+    {
+      "id": "llama3.3:70b",
+      "name": "Llama 3.3 70B (Local)",
+      "description": "Meta • Self-hosted via Ollama",
+      "pricing": {
+        "input": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "id": "deepseek-r1:latest",
+      "name": "DeepSeek R1 (Local)",
+      "description": "DeepSeek • Reasoning Model",
+      "pricing": {
+        "input": 0.0,
+        "output": 0.0
+      }
+    }
+  ],
+  "custom": [
+    {
+      "id": "my-custom-model",
+      "name": "My Custom Model",
+      "description": "Custom • Your Own Model",
+      "pricing": {
+        "input": 0.5,
+        "output": 1.5
+      }
+    }
+  ]
+}

@@ -217,74 +217,42 @@ def _get_provider_for_model(model: str) -> str:
 def _estimate_cost(model: str, prompt_tokens: int, response_tokens: int) -> float:
     """
     Estimate cost based on model and token counts.
-
-    Pricing per 1M tokens (as of January 2025):
-    - OpenAI: GPT-4o ($2.50/$10), GPT-4o-mini ($0.15/$0.60), GPT-4 ($30/$60)
-    - Anthropic: Sonnet 4.5 ($3/$15), Haiku ($1/$5), Opus ($15/$75)
-    - Google: Gemini 2.0 Flash ($0.075/$0.30), 1.5 Pro ($1.25/$5.00)
-    - xAI: Grok Beta ($5/$15)
-    - Perplexity: Sonar Pro ($3/$15)
-    - Groq: Free tier (approximated as $0.10/$0.10)
-    - Ollama: Local (free)
+    
+    Uses dynamic pricing from models.py (December 2025 latest).
+    
+    Args:
+        model: Model ID
+        prompt_tokens: Number of input tokens
+        response_tokens: Number of output tokens
+        
+    Returns:
+        Cost in USD
     """
-    pricing = {
-        # OpenAI models
-        'gpt-4o': (2.50, 10.00),
-        'gpt-4o-mini': (0.15, 0.60),
-        'gpt-4-turbo': (10, 30),
-        'gpt-4': (30, 60),
-        'gpt-3.5-turbo': (0.50, 1.50),
-        'o1-preview': (15, 60),
-        'o1-mini': (3, 12),
-
-        # Anthropic models
-        'claude-3-5-sonnet-20241022': (3, 15),
-        'claude-3-5-sonnet': (3, 15),
-        'claude-3-5-haiku-20241022': (1, 5),
-        'claude-3-haiku': (0.25, 1.25),
-        'claude-3-opus': (15, 75),
-        'claude-3-sonnet': (3, 15),
-
-        # Google models
-        'gemini-2.0-flash': (0.075, 0.30),
-        'gemini-1.5-flash': (0.075, 0.30),
-        'gemini-1.5-pro': (1.25, 5.00),
-        'gemini-pro': (0.50, 1.50),
-
-        # xAI models
-        'grok-beta': (5, 15),
-
-        # Perplexity models
-        'sonar-pro': (3, 15),
-        'sonar': (1, 5),
-
-        # Groq (free tier)
-        'llama-3.3-70b': (0.10, 0.10),
-        'llama': (0.10, 0.10),
-
-        # Ollama (local, free)
-        'ollama': (0, 0),
-    }
-
-    # Find matching pricing
-    input_cost, output_cost = (3, 15)  # Default: Claude Sonnet pricing
-
-    for key, (inp, out) in pricing.items():
-        if key in model.lower():
-            input_cost, output_cost = inp, out
-            break
-
+    # Try to get pricing from models.py
+    try:
+        from .models import get_model_pricing
+        pricing = get_model_pricing(model)
+        input_cost = pricing.get('input', 3.0)
+        output_cost = pricing.get('output', 15.0)
+    except:
+        # Fallback to default pricing
+        input_cost, output_cost = (3.0, 15.0)
+    
     # Calculate cost (pricing is per 1M tokens)
     cost = (prompt_tokens * input_cost + response_tokens * output_cost) / 1_000_000
-
+    
     return cost
 
 
 def compare_models_streaming(prompt: str, models: List[str], client=None):
     """
-    Compare models with streaming responses (generator).
-
-    Yields results as they complete.
+    Compare models with REAL-TIME streaming (side-by-side).
+    
+    Yields token-by-token updates as models generate responses.
+    This enables LIVE side-by-side comparison in the UI.
+    
+    Yields:
+        Dict with: model, chunk, done, time, tokens, cost
     """
     if not prompt or not prompt.strip():
         raise ValueError("Prompt cannot be empty")
@@ -296,23 +264,205 @@ def compare_models_streaming(prompt: str, models: List[str], client=None):
         from llmswap import LLMClient
         client = LLMClient()
 
-    with ThreadPoolExecutor(max_workers=len(models)) as executor:
-        future_to_model = {
-            executor.submit(_query_model, client, model, prompt): model
-            for model in models
-        }
+    # Track per-model state
+    model_states = {model: {
+        'chunks': [],
+        'start_time': None,
+        'tokens': 0,
+        'done': False
+    } for model in models}
 
-        for future in as_completed(future_to_model):
-            try:
-                result = future.result()
-                yield result
-            except Exception as e:
-                model = future_to_model[future]
+    def stream_single_model(model: str):
+        """Stream a single model and yield chunks."""
+        try:
+            provider = _get_provider_for_model(model)
+            client.set_provider(provider)
+            client.model = model
+            
+            model_states[model]['start_time'] = time.time()
+            
+            # Stream from provider
+            for chunk in client.stream(prompt):
+                # Extract text from chunk
+                if hasattr(chunk, 'content'):
+                    text = chunk.content
+                elif isinstance(chunk, str):
+                    text = chunk
+                else:
+                    text = str(chunk)
+                
+                model_states[model]['chunks'].append(text)
+                model_states[model]['tokens'] = len(''.join(model_states[model]['chunks'])) // 4
+                
                 yield {
                     'model': model,
-                    'response': None,
-                    'error': str(e),
-                    'time': 0,
-                    'tokens': 0,
-                    'cost': 0
+                    'chunk': text,
+                    'done': False,
+                    'time': round(time.time() - model_states[model]['start_time'], 2),
+                    'tokens': model_states[model]['tokens'],
+                    'cost': 0  # Calculate at end
                 }
+            
+            # Final summary
+            full_response = ''.join(model_states[model]['chunks'])
+            elapsed = time.time() - model_states[model]['start_time']
+            total_tokens = len(full_response) // 4
+            prompt_tokens = len(prompt) // 4
+            cost = _estimate_cost(model, prompt_tokens, total_tokens - prompt_tokens)
+            
+            model_states[model]['done'] = True
+            
+            yield {
+                'model': model,
+                'chunk': '',
+                'done': True,
+                'time': round(elapsed, 2),
+                'tokens': total_tokens,
+                'tokens_per_sec': round(total_tokens / elapsed, 1) if elapsed > 0 else 0,
+                'cost': round(cost, 4),
+                'full_response': full_response
+            }
+            
+        except Exception as e:
+            yield {
+                'model': model,
+                'chunk': '',
+                'done': True,
+                'error': _format_error_message(model, str(e)),
+                'time': 0,
+                'tokens': 0,
+                'cost': 0
+            }
+
+    # Use ThreadPoolExecutor for concurrent streaming
+    import queue
+    q = queue.Queue()
+    
+    def worker(model):
+        for update in stream_single_model(model):
+            q.put(update)
+    
+    with ThreadPoolExecutor(max_workers=len(models)) as executor:
+        # Start all streams
+        futures = [executor.submit(worker, model) for model in models]
+        
+        # Yield updates as they arrive
+        completed = 0
+        while completed < len(models):
+            try:
+                update = q.get(timeout=0.1)
+                yield update
+                
+                if update.get('done'):
+                    completed += 1
+                    
+            except queue.Empty:
+                continue
+        
+        # Wait for all to complete
+        for future in futures:
+            future.result()
+
+
+def detect_winner(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Automatically detect the "winner" from comparison results.
+    
+    Scoring algorithm:
+    - Quality (40%): Response length, structure
+    - Speed (30%): Tokens per second
+    - Cost (20%): Lower is better
+    - Completeness (10%): Error-free response
+    
+    Args:
+        results: List of comparison results
+        
+    Returns:
+        Dict with winner, runner_up, reasoning
+    """
+    if not results:
+        return {'winner': None, 'reasoning': 'No results to compare'}
+    
+    # Filter out errors
+    valid_results = [r for r in results if not r.get('error')]
+    
+    if not valid_results:
+        return {'winner': None, 'reasoning': 'All models failed'}
+    
+    # Score each result
+    scored = []
+    
+    for result in valid_results:
+        # Quality score (0-10): Based on response length and token count
+        tokens = result.get('tokens', 0)
+        quality = min(10, tokens / 100)  # 1000 tokens = 10/10
+        
+        # Speed score (0-10): Tokens per second (higher is better)
+        time_sec = result.get('time', 1)
+        if time_sec > 0:
+            tokens_per_sec = tokens / time_sec
+            speed = min(10, tokens_per_sec / 10)  # 100 tok/sec = 10/10
+        else:
+            speed = 0
+        
+        # Cost score (0-10): Lower cost is better
+        cost = result.get('cost', 0)
+        if cost == 0:  # Free (Ollama)
+            cost_score = 10
+        else:
+            cost_score = max(0, 10 - (cost * 1000))  # $0.01 = 0/10
+        
+        # Completeness score (0-10): No errors = 10
+        completeness = 10 if not result.get('error') else 0
+        
+        # Weighted total score
+        total_score = (
+            quality * 0.4 +
+            speed * 0.3 +
+            cost_score * 0.2 +
+            completeness * 0.1
+        )
+        
+        scored.append({
+            'result': result,
+            'score': total_score,
+            'quality': quality,
+            'speed': speed,
+            'cost_score': cost_score
+        })
+    
+    # Sort by score
+    scored.sort(key=lambda x: x['score'], reverse=True)
+    
+    winner = scored[0]
+    runner_up = scored[1] if len(scored) > 1 else None
+    
+    # Generate reasoning
+    reasons = []
+    if winner['quality'] > 7:
+        reasons.append(f"high quality response ({winner['result']['tokens']} tokens)")
+    if winner['speed'] > 7:
+        tokens_per_sec = winner['result']['tokens'] / winner['result']['time'] if winner['result']['time'] > 0 else 0
+        reasons.append(f"fast generation ({round(tokens_per_sec, 1)} tok/s)")
+    if winner['cost_score'] > 7:
+        if winner['result']['cost'] == 0:
+            reasons.append("free (local model)")
+        else:
+            reasons.append(f"low cost (${winner['result']['cost']:.4f})")
+    
+    reasoning = "Best " + ", ".join(reasons) if reasons else "Highest overall score"
+    
+    return {
+        'winner': winner['result']['model'],
+        'winner_score': round(winner['score'], 1),
+        'runner_up': runner_up['result']['model'] if runner_up else None,
+        'reasoning': reasoning,
+        'all_scores': {
+            r['result']['model']: {
+                'total': round(r['score'], 1),
+                'quality': round(r['quality'], 1),
+                'speed': round(r['speed'], 1),
+                'cost': round(r['cost_score'], 1)
+            } for r in scored
+        }
+    }
