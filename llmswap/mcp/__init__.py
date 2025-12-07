@@ -6,13 +6,13 @@ Connects to any MCP server and enables LLMs to use external tools.
 
 Usage:
     from llmswap.mcp import MCPClient
-    
+
     # Local MCP server via stdio
     client = MCPClient()
     client.connect_stdio(["python", "mcp_server.py"])
     tools = client.list_tools()
     result = client.call_tool("my_tool", {"arg": "value"})
-    
+
     # Remote MCP server via HTTP
     from llmswap.mcp.transports import HTTPTransport
     transport = HTTPTransport("https://api.example.com/mcp")
@@ -30,19 +30,17 @@ from .exceptions import (
     MCPTransportError,
     MCPServerError,
     MCPToolExecutionError,
-    MCPProtocolError
+    MCPProtocolError,
 )
 
 __all__ = [
     # Core client
     "MCPClient",
-    
     # Connection management
     "ConnectionPool",
     "ConnectionPoolMetrics",
     "CircuitBreaker",
     "CircuitState",
-    
     # Exceptions
     "MCPError",
     "MCPConnectionError",
@@ -51,7 +49,7 @@ __all__ = [
     "MCPTransportError",
     "MCPServerError",
     "MCPToolExecutionError",
-    "MCPProtocolError"
+    "MCPProtocolError",
 ]
 
 __version__ = "0.2.0"

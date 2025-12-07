@@ -22,6 +22,7 @@ class ToolCall:
         name: Name of the tool to call
         arguments: Dictionary of arguments for the tool
     """
+
     id: str
     name: str
     arguments: Dict[str, Any]
@@ -54,7 +55,7 @@ class EnhancedResponse:
         tool_calls: Optional[List[ToolCall]] = None,
         finish_reason: Optional[str] = None,
         raw_response: Any = None,
-        provider: Optional[str] = None
+        provider: Optional[str] = None,
     ):
         """
         Initialize enhanced response.
@@ -114,16 +115,14 @@ def extract_anthropic_tool_calls(response: Any) -> List[ToolCall]:
     """
     tool_calls = []
 
-    if not hasattr(response, 'content'):
+    if not hasattr(response, "content"):
         return tool_calls
 
     for block in response.content:
-        if hasattr(block, 'type') and block.type == "tool_use":
-            tool_calls.append(ToolCall(
-                id=block.id,
-                name=block.name,
-                arguments=block.input
-            ))
+        if hasattr(block, "type") and block.type == "tool_use":
+            tool_calls.append(
+                ToolCall(id=block.id, name=block.name, arguments=block.input)
+            )
 
     return tool_calls
 
@@ -142,21 +141,22 @@ def extract_openai_tool_calls(response: Any) -> List[ToolCall]:
     """
     tool_calls = []
 
-    if not hasattr(response, 'choices') or not response.choices:
+    if not hasattr(response, "choices") or not response.choices:
         return tool_calls
 
     message = response.choices[0].message
 
-    if hasattr(message, 'tool_calls') and message.tool_calls:
+    if hasattr(message, "tool_calls") and message.tool_calls:
         import json
+
         for tc in message.tool_calls:
             # OpenAI returns arguments as JSON string
-            args = json.loads(tc.function.arguments) if isinstance(tc.function.arguments, str) else tc.function.arguments
-            tool_calls.append(ToolCall(
-                id=tc.id,
-                name=tc.function.name,
-                arguments=args
-            ))
+            args = (
+                json.loads(tc.function.arguments)
+                if isinstance(tc.function.arguments, str)
+                else tc.function.arguments
+            )
+            tool_calls.append(ToolCall(id=tc.id, name=tc.function.name, arguments=args))
 
     return tool_calls
 
@@ -175,22 +175,22 @@ def extract_gemini_tool_calls(response: Any) -> List[ToolCall]:
     """
     tool_calls = []
 
-    if not hasattr(response, 'candidates') or not response.candidates:
+    if not hasattr(response, "candidates") or not response.candidates:
         return tool_calls
 
     for candidate in response.candidates:
-        if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+        if hasattr(candidate, "content") and hasattr(candidate.content, "parts"):
             for part in candidate.content.parts:
-                if hasattr(part, 'function_call'):
+                if hasattr(part, "function_call"):
                     func_call = part.function_call
-                    
+
                     # Skip empty function calls (Gemini sometimes returns these)
-                    if not hasattr(func_call, 'name') or not func_call.name:
+                    if not hasattr(func_call, "name") or not func_call.name:
                         continue
-                    
+
                     # Convert Gemini's protobuf args to dict
                     args = {}
-                    if hasattr(func_call, 'args') and func_call.args:
+                    if hasattr(func_call, "args") and func_call.args:
                         try:
                             for key, value in func_call.args.items():
                                 args[key] = value
@@ -198,19 +198,18 @@ def extract_gemini_tool_calls(response: Any) -> List[ToolCall]:
                             # If iteration fails, just use empty args
                             pass
 
-                    tool_calls.append(ToolCall(
-                        id=func_call.name,  # Gemini doesn't have separate ID
-                        name=func_call.name,
-                        arguments=args
-                    ))
+                    tool_calls.append(
+                        ToolCall(
+                            id=func_call.name,  # Gemini doesn't have separate ID
+                            name=func_call.name,
+                            arguments=args,
+                        )
+                    )
 
     return tool_calls
 
 
-def create_enhanced_response(
-    response: Any,
-    provider: str
-) -> EnhancedResponse:
+def create_enhanced_response(response: Any, provider: str) -> EnhancedResponse:
     """
     Create enhanced response from provider response.
 
@@ -227,7 +226,7 @@ def create_enhanced_response(
     if provider_lower == "anthropic":
         content = ""
         for block in response.content:
-            if hasattr(block, 'type') and block.type == "text":
+            if hasattr(block, "type") and block.type == "text":
                 content += block.text
         tool_calls = extract_anthropic_tool_calls(response)
         finish_reason = response.stop_reason
@@ -240,14 +239,18 @@ def create_enhanced_response(
 
     elif provider_lower == "gemini":
         content = ""
-        if hasattr(response, 'candidates') and response.candidates:
+        if hasattr(response, "candidates") and response.candidates:
             candidate = response.candidates[0]
-            if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+            if hasattr(candidate, "content") and hasattr(candidate.content, "parts"):
                 for part in candidate.content.parts:
-                    if hasattr(part, 'text'):
+                    if hasattr(part, "text"):
                         content += part.text
         tool_calls = extract_gemini_tool_calls(response)
-        finish_reason = getattr(response.candidates[0], 'finish_reason', None) if hasattr(response, 'candidates') and response.candidates else None
+        finish_reason = (
+            getattr(response.candidates[0], "finish_reason", None)
+            if hasattr(response, "candidates") and response.candidates
+            else None
+        )
 
     else:
         # Fallback for unknown providers
@@ -260,5 +263,5 @@ def create_enhanced_response(
         tool_calls=tool_calls,
         finish_reason=finish_reason,
         raw_response=response,
-        provider=provider
+        provider=provider,
     )

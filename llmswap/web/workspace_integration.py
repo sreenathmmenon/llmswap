@@ -32,15 +32,15 @@ def save_comparison(workspace, data: Dict[str, Any]) -> Optional[str]:
         entry = format_comparison_entry(data)
 
         # Log to workspace (if workspace has log_interaction method)
-        if hasattr(workspace, 'log_interaction'):
+        if hasattr(workspace, "log_interaction"):
             workspace.log_interaction(
-                prompt=data.get('prompt', ''),
+                prompt=data.get("prompt", ""),
                 response=entry,
-                model='multi-model-comparison',
-                cost=sum(r.get('cost', 0) for r in data.get('results', []))
+                model="multi-model-comparison",
+                cost=sum(r.get("cost", 0) for r in data.get("results", [])),
             )
 
-        return str(workspace.path / 'workspace-journal.md')
+        return str(workspace.path / "workspace-journal.md")
     except Exception as e:
         print(f"Error saving comparison: {e}")
         return None
@@ -56,9 +56,9 @@ def format_comparison_entry(data: Dict[str, Any]) -> str:
     Returns:
         Formatted markdown string
     """
-    prompt = data.get('prompt', '')
-    results = data.get('results', [])
-    timestamp = data.get('timestamp', datetime.now().isoformat())
+    prompt = data.get("prompt", "")
+    results = data.get("results", [])
+    timestamp = data.get("timestamp", datetime.now().isoformat())
 
     lines = [
         f"## Model Comparison - {timestamp}",
@@ -66,16 +66,16 @@ def format_comparison_entry(data: Dict[str, Any]) -> str:
         f"**Prompt:** {prompt}",
         "",
         "### Results",
-        ""
+        "",
     ]
 
     for result in results:
-        model = result.get('model', 'unknown')
-        response = result.get('response', '')
-        time_taken = result.get('time', 0)
-        tokens = result.get('tokens', 0)
-        cost = result.get('cost', 0)
-        error = result.get('error')
+        model = result.get("model", "unknown")
+        response = result.get("response", "")
+        time_taken = result.get("time", 0)
+        tokens = result.get("tokens", 0)
+        cost = result.get("cost", 0)
+        error = result.get("error")
 
         lines.append(f"#### {model}")
         lines.append("")
@@ -92,8 +92,8 @@ def format_comparison_entry(data: Dict[str, Any]) -> str:
         lines.append("")
 
     # Total stats
-    total_cost = sum(r.get('cost', 0) for r in results if not r.get('error'))
-    total_time = sum(r.get('time', 0) for r in results if not r.get('error'))
+    total_cost = sum(r.get("cost", 0) for r in results if not r.get("error"))
+    total_time = sum(r.get("time", 0) for r in results if not r.get("error"))
 
     lines.append("### Summary")
     lines.append("")
@@ -116,6 +116,7 @@ def get_workspace(name: str):
     """
     try:
         from llmswap.workspace import Workspace
+
         return Workspace(name)
     except Exception:
         return None
@@ -133,12 +134,14 @@ def get_or_create_workspace(name: str):
     """
     try:
         from llmswap.workspace import Workspace
+
         ws = Workspace(name)
         return ws
     except Exception:
         # If error, try creating
         try:
             from llmswap.workspace import Workspace
+
             ws = Workspace(name)
             # Initialize if needed
             return ws
@@ -155,11 +158,12 @@ def list_workspaces() -> List[str]:
     """
     try:
         from llmswap.workspace import Workspace
-        if hasattr(Workspace, 'list_all'):
+
+        if hasattr(Workspace, "list_all"):
             return Workspace.list_all()
         else:
             # Fallback: scan workspace directory
-            workspace_dir = Path.home() / '.llmswap' / 'workspaces'
+            workspace_dir = Path.home() / ".llmswap" / "workspaces"
             if workspace_dir.exists():
                 return [d.name for d in workspace_dir.iterdir() if d.is_dir()]
             return []
@@ -178,21 +182,13 @@ def get_workspace_stats(workspace) -> Dict[str, Any]:
         Dict with stats
     """
     try:
-        if hasattr(workspace, 'get_stats'):
+        if hasattr(workspace, "get_stats"):
             return workspace.get_stats()
         else:
             # Fallback stats
-            return {
-                'total_queries': 0,
-                'total_cost': 0.0,
-                'comparisons': 0
-            }
+            return {"total_queries": 0, "total_cost": 0.0, "comparisons": 0}
     except Exception:
-        return {
-            'total_queries': 0,
-            'total_cost': 0.0,
-            'comparisons': 0
-        }
+        return {"total_queries": 0, "total_cost": 0.0, "comparisons": 0}
 
 
 def get_comparison_history(workspace) -> List[Dict[str, Any]]:
@@ -206,10 +202,10 @@ def get_comparison_history(workspace) -> List[Dict[str, Any]]:
         List of comparison entries
     """
     try:
-        if hasattr(workspace, 'get_journal'):
+        if hasattr(workspace, "get_journal"):
             journal = workspace.get_journal()
             # Filter for comparison entries
-            return [entry for entry in journal if entry.get('type') == 'comparison']
+            return [entry for entry in journal if entry.get("type") == "comparison"]
         return []
     except Exception:
         return []
@@ -227,7 +223,7 @@ def export_comparison(data: Dict[str, Any], output_path: str) -> bool:
         True if successful
     """
     try:
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(data, f, indent=2)
         return True
     except Exception as e:

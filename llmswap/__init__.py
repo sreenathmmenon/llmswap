@@ -24,8 +24,9 @@ Advanced usage:
 
 # Suppress gRPC ALTS warnings - must be set before any imports
 import os
-os.environ.setdefault('GRPC_VERBOSITY', 'NONE')
-os.environ.setdefault('GLOG_minloglevel', '2')
+
+os.environ.setdefault("GRPC_VERBOSITY", "NONE")
+os.environ.setdefault("GLOG_minloglevel", "2")
 
 __version__ = "5.5.0"
 __author__ = "Sreenath Menon"
@@ -39,7 +40,7 @@ from .exceptions import (
     LLMSwapError,
     ProviderError,
     ConfigurationError,
-    AllProvidersFailedError
+    AllProvidersFailedError,
 )
 from .tools import Tool, ToolCall, EnhancedResponse
 
@@ -54,5 +55,5 @@ __all__ = [
     "AllProvidersFailedError",
     "Tool",
     "ToolCall",
-    "EnhancedResponse"
+    "EnhancedResponse",
 ]

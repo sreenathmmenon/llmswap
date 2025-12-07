@@ -34,7 +34,7 @@ class Tool:
         name: str,
         description: str,
         parameters: Dict[str, Any],
-        required: Optional[List[str]] = None
+        required: Optional[List[str]] = None,
     ):
         """
         Initialize a Tool definition.
@@ -52,7 +52,9 @@ class Tool:
         if not name:
             raise ValueError("Tool name cannot be empty")
         if not name.replace("_", "").isalnum():
-            raise ValueError(f"Tool name '{name}' must be alphanumeric with underscores only")
+            raise ValueError(
+                f"Tool name '{name}' must be alphanumeric with underscores only"
+            )
 
         # Validate description
         if not description or not description.strip():
@@ -68,7 +70,9 @@ class Tool:
                 raise ValueError("Required must be a list of parameter names")
             for req_param in required:
                 if req_param not in parameters:
-                    raise ValueError(f"Required parameter '{req_param}' not found in parameters")
+                    raise ValueError(
+                        f"Required parameter '{req_param}' not found in parameters"
+                    )
 
         self.name = name
         self.description = description.strip()
@@ -86,7 +90,7 @@ class Tool:
             "name": self.name,
             "description": self.description,
             "parameters": self.parameters,
-            "required": self.required
+            "required": self.required,
         }
 
     def to_anthropic_format(self) -> Dict[str, Any]:
@@ -104,8 +108,8 @@ class Tool:
             "input_schema": {
                 "type": "object",
                 "properties": self.parameters,
-                "required": self.required
-            }
+                "required": self.required,
+            },
         }
 
     def to_openai_format(self) -> Dict[str, Any]:
@@ -125,9 +129,9 @@ class Tool:
                 "parameters": {
                     "type": "object",
                     "properties": self.parameters,
-                    "required": self.required
-                }
-            }
+                    "required": self.required,
+                },
+            },
         }
 
     def to_gemini_format(self) -> Dict[str, Any]:
@@ -144,7 +148,7 @@ class Tool:
         for param_name, param_def in self.parameters.items():
             gemini_param = {
                 "type_": param_def.get("type", "string").upper(),
-                "description": param_def.get("description", "")
+                "description": param_def.get("description", ""),
             }
             gemini_properties[param_name] = gemini_param
 
@@ -154,8 +158,8 @@ class Tool:
             "parameters": {
                 "type_": "OBJECT",
                 "properties": gemini_properties,
-                "required": self.required
-            }
+                "required": self.required,
+            },
         }
 
     def __repr__(self) -> str:

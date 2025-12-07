@@ -21,7 +21,7 @@ from .workspace_integration import (
     save_comparison,
     list_workspaces,
     get_workspace,
-    get_workspace_stats
+    get_workspace_stats,
 )
 
 
@@ -36,33 +36,33 @@ def create_app(testing=False):
         Flask app instance
     """
     app = Flask(__name__)
-    app.config['TESTING'] = testing
+    app.config["TESTING"] = testing
 
     # Enable CORS
     CORS(app)
 
     # Get template path
-    template_path = Path(__file__).parent / 'templates' / 'index.html'
+    template_path = Path(__file__).parent / "templates" / "index.html"
 
     # Read template
     if template_path.exists():
-        with open(template_path, 'r') as f:
+        with open(template_path, "r") as f:
             INDEX_HTML = f.read()
     else:
         # Inline template as fallback
         INDEX_HTML = get_inline_template()
 
-    @app.route('/')
+    @app.route("/")
     def index():
         """Serve main page"""
         return render_template_string(INDEX_HTML)
 
-    @app.route('/health')
+    @app.route("/health")
     def health():
         """Health check endpoint"""
-        return jsonify({'status': 'ok'})
+        return jsonify({"status": "ok"})
 
-    @app.route('/compare', methods=['POST'])
+    @app.route("/compare", methods=["POST"])
     def compare():
         """
         Compare models endpoint.
@@ -78,96 +78,88 @@ def create_app(testing=False):
         data = request.get_json()
 
         if not data:
-            return jsonify({'error': 'No data provided'}), 400
+            return jsonify({"error": "No data provided"}), 400
 
-        prompt = data.get('prompt', '').strip()
-        models = data.get('models', [])
+        prompt = data.get("prompt", "").strip()
+        models = data.get("models", [])
 
         if not prompt:
-            return jsonify({'error': 'Prompt is required'}), 400
+            return jsonify({"error": "Prompt is required"}), 400
 
         if not models or len(models) == 0:
-            return jsonify({'error': 'At least one model is required'}), 400
+            return jsonify({"error": "At least one model is required"}), 400
 
         try:
             # Check if streaming is requested
-            accept_header = request.headers.get('Accept', '')
+            accept_header = request.headers.get("Accept", "")
 
-            if 'text/event-stream' in accept_header:
+            if "text/event-stream" in accept_header:
                 # Streaming response
                 return Response(
-                    stream_comparison(prompt, models),
-                    mimetype='text/event-stream'
+                    stream_comparison(prompt, models), mimetype="text/event-stream"
                 )
             else:
                 # Regular JSON response
                 from llmswap import LLMClient
+
                 client = LLMClient()
                 results = compare_models(prompt, models, client)
 
-                return jsonify({
-                    'prompt': prompt,
-                    'timestamp': datetime.now().isoformat(),
-                    'results': results
-                })
+                return jsonify(
+                    {
+                        "prompt": prompt,
+                        "timestamp": datetime.now().isoformat(),
+                        "results": results,
+                    }
+                )
 
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return jsonify({"error": str(e)}), 500
 
-    @app.route('/api/workspaces', methods=['GET'])
+    @app.route("/api/workspaces", methods=["GET"])
     def get_workspaces():
         """Get list of available workspaces"""
         try:
             workspaces = list_workspaces()
             return jsonify(workspaces)
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return jsonify({"error": str(e)}), 500
 
-    @app.route('/api/provider-status', methods=['GET'])
+    @app.route("/api/provider-status", methods=["GET"])
     def provider_status():
         """Get configured provider status"""
         import os
 
         providers = {
-            'OpenAI': {
-                'key': 'OPENAI_API_KEY',
-                'models': ['gpt-4', 'gpt-4o-mini', 'gpt-3.5-turbo']
+            "OpenAI": {
+                "key": "OPENAI_API_KEY",
+                "models": ["gpt-4", "gpt-4o-mini", "gpt-3.5-turbo"],
             },
-            'Anthropic': {
-                'key': 'ANTHROPIC_API_KEY',
-                'models': ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022']
+            "Anthropic": {
+                "key": "ANTHROPIC_API_KEY",
+                "models": ["claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"],
             },
-            'Google': {
-                'key': 'GEMINI_API_KEY',
-                'models': ['gemini-2.0-flash-exp', 'gemini-1.5-pro']
+            "Google": {
+                "key": "GEMINI_API_KEY",
+                "models": ["gemini-2.0-flash-exp", "gemini-1.5-pro"],
             },
-            'xAI': {
-                'key': 'XAI_API_KEY',
-                'models': ['grok-beta']
-            },
-            'Groq': {
-                'key': 'GROQ_API_KEY',
-                'models': ['llama-3.3-70b-versatile']
-            },
-            'Perplexity': {
-                'key': 'PERPLEXITY_API_KEY',
-                'models': ['sonar-pro']
-            },
-            'Cohere': {
-                'key': 'COHERE_API_KEY',
-                'models': ['command-r-plus-08-2024']
-            },
+            "xAI": {"key": "XAI_API_KEY", "models": ["grok-beta"]},
+            "Groq": {"key": "GROQ_API_KEY", "models": ["llama-3.3-70b-versatile"]},
+            "Perplexity": {"key": "PERPLEXITY_API_KEY", "models": ["sonar-pro"]},
+            "Cohere": {"key": "COHERE_API_KEY", "models": ["command-r-plus-08-2024"]},
         }
 
         status = []
         for name, info in providers.items():
-            configured = os.getenv(info['key']) is not None
-            status.append({
-                'provider': name,
-                'configured': configured,
-                'models': info['models'],
-                'env_var': info['key']
-            })
+            configured = os.getenv(info["key"]) is not None
+            status.append(
+                {
+                    "provider": name,
+                    "configured": configured,
+                    "models": info["models"],
+                    "env_var": info["key"],
+                }
+            )
 
         # Return as HTML for easy viewing
         html = """
@@ -194,9 +186,9 @@ def create_app(testing=False):
         """
 
         for item in status:
-            status_icon = "✅" if item['configured'] else "❌"
-            status_text = "Configured" if item['configured'] else "Not Configured"
-            status_color = "text-green-600" if item['configured'] else "text-red-600"
+            status_icon = "✅" if item["configured"] else "❌"
+            status_text = "Configured" if item["configured"] else "Not Configured"
+            status_color = "text-green-600" if item["configured"] else "text-red-600"
 
             html += f"""
                             <tr>
@@ -227,53 +219,47 @@ llmswap web</pre>
 
         return html
 
-    @app.route('/api/save-comparison', methods=['POST'])
+    @app.route("/api/save-comparison", methods=["POST"])
     def save_comparison_route():
         """Save comparison results to workspace"""
         data = request.get_json()
 
         if not data:
-            return jsonify({'error': 'No data provided'}), 400
+            return jsonify({"error": "No data provided"}), 400
 
-        workspace_name = data.get('workspace')
-        prompt = data.get('prompt')
-        results = data.get('results', [])
+        workspace_name = data.get("workspace")
+        prompt = data.get("prompt")
+        results = data.get("results", [])
 
         if not workspace_name:
-            return jsonify({'error': 'Workspace name is required'}), 400
+            return jsonify({"error": "Workspace name is required"}), 400
 
         try:
             workspace = get_workspace(workspace_name)
 
             if not workspace:
-                return jsonify({'error': 'Workspace not found'}), 404
+                return jsonify({"error": "Workspace not found"}), 404
 
             # Save comparison
             saved_path = save_comparison(workspace, data)
 
-            return jsonify({
-                'success': True,
-                'path': saved_path
-            }), 201
+            return jsonify({"success": True, "path": saved_path}), 201
 
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return jsonify({"error": str(e)}), 500
 
-    @app.route('/api/models', methods=['GET'])
+    @app.route("/api/models", methods=["GET"])
     def get_models():
         """Get available models from dynamic system"""
         try:
             from .models import get_available_models, get_featured_models
-            
+
             all_models = get_available_models()
             featured = get_featured_models()
-            
-            return jsonify({
-                'models': all_models,
-                'featured': featured
-            })
+
+            return jsonify({"models": all_models, "featured": featured})
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return jsonify({"error": str(e)}), 500
 
     return app
 
@@ -281,7 +267,7 @@ llmswap web</pre>
 def stream_comparison(prompt: str, models: list):
     """
     Stream comparison results as Server-Sent Events.
-    
+
     Streams token-by-token updates for real-time side-by-side comparison.
 
     Yields:
@@ -289,7 +275,7 @@ def stream_comparison(prompt: str, models: list):
     """
     from llmswap import LLMClient
     from .comparison import detect_winner
-    
+
     client = LLMClient()
     all_results = []
 
@@ -297,16 +283,16 @@ def stream_comparison(prompt: str, models: list):
         # Send each update immediately
         event_data = json.dumps(update)
         yield f"data: {event_data}\n\n"
-        
+
         # Track completed results for winner detection
-        if update.get('done') and not update.get('error'):
+        if update.get("done") and not update.get("error"):
             all_results.append(update)
-    
+
     # After all models complete, detect winner
     if all_results:
         winner_info = detect_winner(all_results)
         yield f"data: {json.dumps({'event': 'winner', 'data': winner_info})}\n\n"
-    
+
     # Send completion event
     yield f"data: {json.dumps({'event': 'complete'})}\n\n"
 
@@ -1031,7 +1017,7 @@ Examples:
 </html>"""
 
 
-def start_server(host='127.0.0.1', port=5005, debug=False, open_browser=True):
+def start_server(host="127.0.0.1", port=5005, debug=False, open_browser=True):
     """
     Start the Flask development server.
 
@@ -1046,10 +1032,12 @@ def start_server(host='127.0.0.1', port=5005, debug=False, open_browser=True):
     # Open browser after short delay
     if open_browser and not debug:
         import threading
+
         def open_browser_delayed():
             import time
+
             time.sleep(1.5)
-            webbrowser.open(f'http://{host}:{port}')
+            webbrowser.open(f"http://{host}:{port}")
 
         threading.Thread(target=open_browser_delayed, daemon=True).start()
 

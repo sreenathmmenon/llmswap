@@ -5,7 +5,7 @@ from .learnings_tracker import LearningsTracker
 
 __all__ = [
     "WorkspaceManager",
-    "WorkspaceDetector", 
+    "WorkspaceDetector",
     "WorkspaceRegistry",
-    "LearningsTracker"
+    "LearningsTracker",
 ]
