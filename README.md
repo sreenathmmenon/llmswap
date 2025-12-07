@@ -1,4 +1,9 @@
-# LLMSwap: Universal LLM SDK + MCP Client
+# LLMSwap
+
+[![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
+[![CI/CD](https://github.com/sreenathmmenon/llmswap/actions/workflows/comprehensive-ci.yml/badge.svg)](https://github.com/sreenathmmenon/llmswap/actions/workflows/comprehensive-ci.yml)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT): Universal LLM SDK + MCP Client
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
