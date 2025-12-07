@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -104,7 +104,7 @@ jobs:
             python-version: "3.8"
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -179,7 +179,7 @@ jobs:
     needs: [quality, test]
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -212,7 +212,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -255,7 +255,7 @@ jobs:
     needs: test
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -308,7 +308,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -335,7 +335,7 @@ jobs:
     needs: [quality, test, build, docs]
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Check version consistency
       run: |
