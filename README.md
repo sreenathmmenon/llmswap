@@ -13,7 +13,7 @@
 
 **Natural Language MCP + 11 LLM Providers. Latest Models Day-One.**
 
-Claude Opus 4.5 (Nov '25) • Gemini 3 Pro (Nov '25) • GPT-5.1 (Nov '25) • Grok 4.1 (#1 LMArena) + 7 more.  
+Claude Opus 4.5 (Nov '25) • Gemini 3 Pro (Nov '25) • GPT-5.1 (Nov '25) • Grok 4.1 (#1 LMArena) + 7 more.
 Universal tool calling • MCP protocol • Zero vendor lock-in • Production-ready SDK + CLI.
 
 One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
@@ -55,7 +55,10 @@ response = client.chat("What's the weather in Tokyo?", tools=[weather])
 ## ⚡ Quick Start (30 seconds)
 
 ```bash
-# Install
+# Recommended: Install with uv (fastest)
+uv tool install llmswap
+
+# Or install with pip
 pip install llmswap
 
 # or Homebrew
@@ -94,7 +97,7 @@ client = LLMClient(provider="anthropic", model="claude-opus-4-5")
 response = client.chat("Build a full-stack application with authentication...")
 print(response.content)
 ```
-**Latest flagship from Anthropic.** State-of-the-art for coding & software engineering. Pricing: $5/$25 per million tokens.  
+**Latest flagship from Anthropic.** State-of-the-art for coding & software engineering. Pricing: $5/$25 per million tokens.
 **Best for:** Complex coding, deep research, software engineering, spreadsheet management
 
 ### 🚀 Gemini 3 Pro (Released Nov 18, 2025)
@@ -105,7 +108,7 @@ client = LLMClient(provider="gemini", model="gemini-3-pro")
 response = client.chat("Analyze this video and extract key insights...")
 print(response.content)
 ```
-**Google's most advanced multimodal model.** Processes text, images, videos, audio, PDFs. 1M+ input tokens.  
+**Google's most advanced multimodal model.** Processes text, images, videos, audio, PDFs. 1M+ input tokens.
 **Best for:** Multimodal understanding, large document analysis, batch processing
 
 ### 🧠 GPT-5.1 (Released Nov 13, 2025)
@@ -116,7 +119,7 @@ client = LLMClient(provider="openai", model="gpt-5.1")
 response = client.chat("Design an algorithm for real-time fraud detection...")
 print(response.content)
 ```
-**OpenAI's latest.** 2-3x faster than GPT-5 with adaptive reasoning. Variants: Instant (speed) & Thinking (reasoning).  
+**OpenAI's latest.** 2-3x faster than GPT-5 with adaptive reasoning. Variants: Instant (speed) & Thinking (reasoning).
 **Best for:** Fast responses, adaptive reasoning, complex problem-solving
 
 ### 🏆 Grok 4.1 (Released Nov 17, 2025)
@@ -127,7 +130,7 @@ client = LLMClient(provider="xai", model="grok-4.1")
 response = client.chat("Help me understand this nuanced ethical dilemma...")
 print(response.content)
 ```
-**#1 on LMArena Text Leaderboard.** Enhanced emotional intelligence & creative collaboration. Preferred 64.78% in blind tests.  
+**#1 on LMArena Text Leaderboard.** Enhanced emotional intelligence & creative collaboration. Preferred 64.78% in blind tests.
 **Best for:** Emotional intelligence, creative writing, collaborative tasks, nuanced understanding
 
 **Plus 7 more providers:** Groq (5x faster LPU), Cohere (enterprise), Perplexity (search), IBM Watsonx (Granite 4.0), Ollama, Sarvam AI, local models.
@@ -396,11 +399,11 @@ for tool in tools:
 
 ### MCP Features
 
-✅ **Natural language interface** - No JSON, no manual tool calls  
-✅ **Multi-turn conversations** - Context preserved across queries  
-✅ **Beautiful UI** - Clean bordered interface like Claude/Factory Droids  
-✅ **Provider-specific formatting** - Optimized for each LLM  
-✅ **Connection management** - Automatic reconnection and health checks  
+✅ **Natural language interface** - No JSON, no manual tool calls
+✅ **Multi-turn conversations** - Context preserved across queries
+✅ **Beautiful UI** - Clean bordered interface like Claude/Factory Droids
+✅ **Provider-specific formatting** - Optimized for each LLM
+✅ **Connection management** - Automatic reconnection and health checks
 ✅ **Error handling** - Graceful degradation with circuit breaker
 
 ### Example Use Cases
@@ -457,7 +460,7 @@ response = client.chat("Query internal data", use_mcp=True)
 # Connect to MCP server via HTTP
 client.add_mcp_server(
     "crm-api",
-    transport="http", 
+    transport="http",
     url="https://api.yourcompany.com/mcp",
     headers={
         "X-API-Key": os.getenv('CRM_API_KEY')
@@ -573,7 +576,7 @@ from llmswap import LLMClient
 
 credential = DefaultAzureCredential()
 vault_client = SecretClient(
-    vault_url="https://your-vault.vault.azure.net", 
+    vault_url="https://your-vault.vault.azure.net",
     credential=credential
 )
 
@@ -1076,7 +1079,7 @@ llmswap ask "What is Docker?" --age 10
 llmswap ask "What is blockchain?" --audience "business owner"
 # Output: "Think of blockchain like your business ledger system..."
 
-# 🆕 NEW v5.0: Teaching Personas & Personalization  
+# 🆕 NEW v5.0: Teaching Personas & Personalization
 llmswap ask "Explain Python classes" --teach --mentor developer --alias "Sarah"
 # Output: "[Sarah - Senior Developer]: Here's how we handle classes in production..."
 
@@ -1128,7 +1131,7 @@ response = client.query("Hello")
 # Want Claude instead? Just change provider:
 client = LLMClient(provider="anthropic")  # That's it!
 
-# Want to try Gemini? 
+# Want to try Gemini?
 client = LLMClient(provider="gemini")  # Same code, different provider
 
 # Built-in cost optimization:
@@ -1337,8 +1340,8 @@ Watch how the SAME question gets tailored responses based on your role:
 # As a Developer: Implementation focus
 llmswap ask "Explain Model Context Protocol (MCP)" --audience developer
 
-Response: "MCP is a standardized protocol for connecting AI models to external 
-data sources and tools. Unlike traditional chatbots that bundle everything into 
+Response: "MCP is a standardized protocol for connecting AI models to external
+data sources and tools. Unlike traditional chatbots that bundle everything into
 one monolithic system, MCP uses a client-server architecture:
 
 - Server: Exposes tools, resources, and prompts via standard interface
@@ -1357,10 +1360,10 @@ def get_weather(city: str): ..."
 
 ---
 
-# As an Architect: System design focus  
+# As an Architect: System design focus
 llmswap ask "Explain Model Context Protocol (MCP)" --audience architect
 
-Response: "MCP introduces a service-oriented architecture for AI systems, 
+Response: "MCP introduces a service-oriented architecture for AI systems,
 addressing key architectural concerns:
 
 **System Architecture:**
@@ -1371,7 +1374,7 @@ addressing key architectural concerns:
 
 **Design Patterns:**
 - Service Discovery: Dynamic capability negotiation
-- Loose Coupling: Clients/servers evolve independently  
+- Loose Coupling: Clients/servers evolve independently
 - Extensibility: Add new tools without modifying core
 - Standardization: Uniform interface across tools
 
@@ -1387,7 +1390,7 @@ addressing key architectural concerns:
 # As a Business Leader: ROI and strategy focus
 llmswap ask "Explain Model Context Protocol (MCP)" --audience "business leader"
 
-Response: "Model Context Protocol (MCP) is like moving from custom-built 
+Response: "Model Context Protocol (MCP) is like moving from custom-built
 integrations to standardized APIs - but for AI systems.
 
 **Business Impact:**
@@ -1397,7 +1400,7 @@ integrations to standardized APIs - but for AI systems.
    - NEW: Plug-and-play tools, 80% cost reduction
    - Time to market: Weeks instead of months
 
-2. **Vendor Independence**  
+2. **Vendor Independence**
    - Not locked to one AI provider
    - Switch between Claude, GPT-4, Gemini seamlessly
    - Negotiating power with vendors
@@ -1412,11 +1415,11 @@ integrations to standardized APIs - but for AI systems.
    - Respond quickly to market changes
    - Lower total cost of ownership
 
-**vs Traditional Chatbots:** Traditional bots were closed systems requiring 
-custom development for each feature. MCP creates an open ecosystem where your 
+**vs Traditional Chatbots:** Traditional bots were closed systems requiring
+custom development for each feature. MCP creates an open ecosystem where your
 team (or partners) can extend capabilities without vendor dependencies.
 
-**ROI Example:** A company saved $200K in integration costs and reduced 
+**ROI Example:** A company saved $200K in integration costs and reduced
 deployment time from 6 months to 3 weeks using MCP architecture."
 ```
 
@@ -1583,7 +1586,7 @@ client = LLMClient()  # Import into any codebase
 response = client.query("Analyze this data")
 ```
 
-**⚡ 2. CLI Tools**  
+**⚡ 2. CLI Tools**
 ```bash
 llmswap generate "sort files by size"           # GitHub Copilot alternative
 llmswap generate "Python function to read JSON" # Multi-language code generation
@@ -1633,7 +1636,7 @@ comparison = client.get_provider_comparison()  # Compare costs
 from llmswap import LLMClient
 
 # Auto-detects available providers
-client = LLMClient()  
+client = LLMClient()
 
 # Or specify your preference
 client = LLMClient(provider="anthropic")  # Claude 3 Opus/Sonnet/Haiku
@@ -1711,7 +1714,7 @@ from llmswap import AsyncLLMClient
 async def main():
     async_client = AsyncLLMClient()
     response = await async_client.query_async("Process this data")
-    
+
 asyncio.run(main())
 ```
 
@@ -1838,7 +1841,7 @@ llmswap providers
 🤖 llmswap Provider Status Report
 ============================================================
 | Provider   | Default Model              | Status            | Issue                    |
-|============|============================|===================|==========================| 
+|============|============================|===================|==========================|
 | ANTHROPIC  | claude-3-5-sonnet-20241022 | ✅ CONFIGURED     |                          |
 | OPENAI     | gpt-4o                     | ❌ NOT CONFIGURED | OPENAI_API_KEY missing   |
 | GEMINI     | gemini-1.5-pro             | ✅ CONFIGURED     |                          |
@@ -1960,10 +1963,10 @@ from llmswap import AsyncLLMClient
 
 async def main():
     client = AsyncLLMClient()
-    
+
     # Async queries
     response = await client.query("Explain AI")
-    
+
     # Streaming responses
     async for chunk in client.stream("Write a story"):
         print(chunk, end="")
@@ -2035,7 +2038,7 @@ def ai_tutor(student_question, subject):
     # Use watsonx for STEM, Ollama for general subjects
     if subject in ["math", "science"]:
         client.set_provider("watsonx")
-    
+
     response = client.query(
         f"Explain {student_question} for a {subject} student",
         cache_context={"grade_level": student.grade}
@@ -2059,12 +2062,12 @@ async def handle_support_ticket(ticket):
         f"Help with: {ticket.issue}",
         cache_context={"type": ticket.category}
     )
-    
+
     # Auto-escalate complex issues
     if response.confidence < 0.8:
         client.set_provider("anthropic")  # Use best model
         response = await client.aquery(ticket.issue)
-    
+
     return response.content
 ```
 
@@ -2136,7 +2139,7 @@ llmswap generate "Gradio app for image classification with drag and drop" --save
 llmswap generate "Pinecone vector database setup for semantic search" --language python
 ```
 
-### 🔒 **Security Engineers: Vulnerability Scanning**  
+### 🔒 **Security Engineers: Vulnerability Scanning**
 **Security automation and compliance scripts:**
 ```bash
 # Security audit script

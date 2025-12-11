@@ -102,7 +102,7 @@ keywords = [
     "ai-learning",
     "coding-mentor",
     "ai-tutor",
-    "gemini-cli-alternative", 
+    "gemini-cli-alternative",
     "openai-cli-alternative",
     "multi-provider-cli",
     "universal-ai-cli",
@@ -288,7 +288,7 @@ keywords = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "Intended Audience :: Information Technology", 
+    "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Education",
     "License :: OSI Approved :: MIT License",
@@ -345,7 +345,7 @@ dev = [
 ]
 
 [project.scripts]
-llmswap = "llmswap.cli:main"
+llmswap = "llmswap.app:main"
 llmswap-mcp = "llmswap.cli.mcp_cli:main"
 
 [project.urls]
