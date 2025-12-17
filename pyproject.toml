@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.5.1"
-description = "Universal LLM SDK + MCP Client: Claude Opus 4.5, Gemini 3 Pro, GPT-5.1, Grok 4.1 (#1 LMArena) + 7 providers. Natural language tool calling. Zero vendor lock-in. Production SDK + beautiful CLI."
+version = "5.5.2"
+description = "Universal LLM SDK + MCP Client: Claude Opus 4.5, Gemini 3 Flash, GPT-5.1, Grok 4.1 (#1 LMArena) + 7 providers. Natural language tool calling. Zero vendor lock-in. Production SDK + beautiful CLI."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
@@ -26,6 +26,11 @@ keywords = [
     "anthropic",
     "claude",
     "gemini",
+    "gemini-3-flash",
+    "gemini-3",
+    "gemini-flash",
+    "google-gemini",
+    "google-gemini-3",
     "watsonx",
     "ibm-watsonx",
     "ibm-watson",
@@ -54,6 +59,12 @@ keywords = [
     "ai-pair-programming",
     "multi-llm-copilot",
     "gpt-4",
+    "gpt-5",
+    "gpt-5.1",
+    "claude-opus-4",
+    "claude-opus-4-5",
+    "grok-4",
+    "grok-4.1",
     "granite",
     "llama",
     "mistral",
@@ -275,9 +286,11 @@ keywords = [
     "xai-grok",
     "lmarena-top",
     "latest-llm-models",
-    "november-2025-models",
+    "december-2025-models",
     "newest-ai-models",
     "2025-models",
+    "gemini-3-flash-api",
+    "google-gemini-3-flash",
     "multi-provider-mcp",
     "universal-mcp-client",
     "mcp-natural-language",
