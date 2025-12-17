@@ -1004,7 +1004,7 @@ class LLMClient:
 
         try:
             # Create MCP client
-            mcp_client = MCPClient(client_name="llmswap", client_version="5.5.0")
+            mcp_client = MCPClient(client_name="llmswap", client_version="5.5.1")
 
             # Connect based on transport type
             if command:
