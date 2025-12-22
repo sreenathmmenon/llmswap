@@ -13,7 +13,7 @@
 
 **Natural Language MCP + 11 LLM Providers. Latest Models Day-One.**
 
-Claude Opus 4.5 (Nov '25) • Gemini 3 Pro (Nov '25) • GPT-5.1 (Nov '25) • Grok 4.1 (#1 LMArena) + 7 more.
+GPT-5.2 (Dec '25) • Claude Opus 4.5 • Gemini 3 Flash • Gemini 3 Pro • Grok 4.1 (#1 LMArena) • DeepSeek V3.2 + 10 providers.
 Universal tool calling • MCP protocol • Zero vendor lock-in • Production-ready SDK + CLI.
 
 One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
@@ -85,7 +85,7 @@ llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 
 ---
 
-## 🆕 Latest Models Supported (November 2025)
+## 🆕 Latest Models Supported (December 2025)
 
 **New models work the day they launch** - LLMSwap's pass-through architecture means no SDK updates needed.
 
@@ -111,16 +111,27 @@ print(response.content)
 **Google's most advanced multimodal model.** Processes text, images, videos, audio, PDFs. 1M+ input tokens.
 **Best for:** Multimodal understanding, large document analysis, batch processing
 
-### 🧠 GPT-5.1 (Released Nov 13, 2025)
+### 🧠 GPT-5.2 (Released Dec 11, 2025)
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="openai", model="gpt-5.1")
+client = LLMClient(provider="openai", model="gpt-5.2")
 response = client.chat("Design an algorithm for real-time fraud detection...")
 print(response.content)
 ```
-**OpenAI's latest.** 2-3x faster than GPT-5 with adaptive reasoning. Variants: Instant (speed) & Thinking (reasoning).
-**Best for:** Fast responses, adaptive reasoning, complex problem-solving
+**OpenAI's latest flagship.** Most capable model for professional knowledge work. Variants: Instant (speed) & Thinking (reasoning). Also: GPT-5.2-Codex for agentic coding.
+**Best for:** Professional tasks, complex reasoning, coding, science & math
+
+### ⚡ Gemini 3 Flash (Released Dec 17, 2025)
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="gemini", model="gemini-3-flash")
+response = client.chat("Analyze this codebase and suggest improvements...")
+print(response.content)
+```
+**Google's fastest frontier model.** Pro-level reasoning at 10x lower cost. 1M input tokens, 64k output. Multimodal: text, images, video, audio, PDF.
+**Best for:** High-speed inference, cost optimization, everyday tasks, agentic workflows
 
 ### 🏆 Grok 4.1 (Released Nov 17, 2025)
 ```python
@@ -133,7 +144,18 @@ print(response.content)
 **#1 on LMArena Text Leaderboard.** Enhanced emotional intelligence & creative collaboration. Preferred 64.78% in blind tests.
 **Best for:** Emotional intelligence, creative writing, collaborative tasks, nuanced understanding
 
-**Plus 7 more providers:** Groq (5x faster LPU), Cohere (enterprise), Perplexity (search), IBM Watsonx (Granite 4.0), Ollama, Sarvam AI, local models.
+### 💎 DeepSeek V3.2 (Released Dec 16, 2025)
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="deepseek", model="deepseek-v3.2")
+response = client.chat("Solve this complex mathematical problem...")
+print(response.content)
+```
+**Open-source powerhouse.** Matches GPT-5 & Gemini 3 at 10x lower cost ($0.028/1M tokens). 671B parameters, 96% on AIME 2025. MIT License.
+**Best for:** Cost-sensitive applications, open-source projects, math & reasoning, on-premise deployment
+
+**Plus 6 more providers:** Groq (5x faster LPU), Cohere (enterprise), Perplexity (search), IBM Watsonx (Granite 4.0), Ollama, Sarvam AI, local models.
 
 **Why it matters:** New models work day-one. Pass-through architecture means future models work immediately upon release.
 

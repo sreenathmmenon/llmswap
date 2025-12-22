@@ -58,7 +58,7 @@ class LLMSwapConfig:
                 ],
                 "models": {
                     "anthropic": "claude-opus-4-5",
-                    "openai": "gpt-5.1",
+                    "openai": "gpt-5.2",
                     "gemini": "gemini-3-flash",
                     "xai": "grok-4.1",
                     "groq": "llama-3.3-70b-versatile",

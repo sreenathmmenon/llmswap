@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.5.2"
-description = "Universal LLM SDK + MCP Client: Claude Opus 4.5, Gemini 3 Flash, GPT-5.1, Grok 4.1 (#1 LMArena) + 7 providers. Natural language tool calling. Zero vendor lock-in. Production SDK + beautiful CLI."
+version = "5.5.3"
+description = "Universal LLM SDK + MCP Client: GPT-5.2, Claude Opus 4.5, Gemini 3 Flash, Gemini 3 Pro, Grok 4.1, DeepSeek V3.2 + 10 providers. LMArena top models. Natural language tool calling. Zero vendor lock-in. Production SDK + beautiful CLI."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
@@ -61,10 +61,29 @@ keywords = [
     "gpt-4",
     "gpt-5",
     "gpt-5.1",
+    "gpt-5.2",
+    "gpt-5.2-codex",
+    "openai-gpt-5.2",
     "claude-opus-4",
     "claude-opus-4-5",
+    "claude-4.5",
+    "anthropic-claude-4.5",
     "grok-4",
     "grok-4.1",
+    "grok-4.1-thinking",
+    "grok-4.20",
+    "xai-grok-4.1",
+    "gemini-3-pro",
+    "gemini-pro-3",
+    "deepseek",
+    "deepseek-v3",
+    "deepseek-v3.2",
+    "deepseek-v3-2",
+    "open-source-llm",
+    "cheap-ai-api",
+    "lmarena",
+    "lmarena-top",
+    "llm-arena",
     "granite",
     "llama",
     "mistral",
@@ -278,6 +297,15 @@ keywords = [
     "gemini-3-pro",
     "gemini-3",
     "gemini-3-deep-think",
+    "gpt-5.2-python",
+    "gpt-5.2-sdk",
+    "gpt-5.2-api",
+    "deepseek-python",
+    "deepseek-api",
+    "cheapest-ai-model",
+    "fastest-ai-model",
+    "best-coding-model",
+    "ai-benchmarks",
     "gpt-5.1",
     "gpt-5-1",
     "openai-gpt-5.1",
