@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.5.4] - 2026-01-01
+
+### Security
+- **Added API key validation on initialization** - All providers now validate API keys before attempting API calls
+  - Rejects empty, null, or placeholder API keys immediately
+  - Validates minimum key length (20 characters)
+  - Detects common placeholder patterns (your_api_key, invalid, test_key, etc.)
+  - Provides clear error messages with provider-specific guidance
+  - Prevents wasted API calls and improves error detection
+
+### Fixed
+- API key validation now raises `AuthenticationError` for invalid keys across all 9 providers
+- Improved security by failing fast on invalid credentials
+
+### Changed
+- Enhanced error messages for missing or invalid API keys
+- All provider classes (Anthropic, OpenAI, Gemini, Groq, Cohere, Perplexity, Watsonx, XAI, Sarvam) now include early validation
+
 ## [5.5.0] - 2025-12-06
 
 ### Added - Complete Web UI Transformation 🎉

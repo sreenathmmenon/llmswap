@@ -36,6 +36,47 @@ def clean_api_key(api_key: Optional[str]) -> Optional[str]:
     return api_key
 
 
+def validate_api_key(api_key: Optional[str], provider_name: str) -> None:
+    """
+    Validate API key format and basic checks before making API calls.
+
+    Args:
+        api_key: The API key to validate
+        provider_name: Name of the provider (for error messages)
+
+    Raises:
+        AuthenticationError: If API key is invalid or improperly formatted
+    """
+    if not api_key:
+        raise AuthenticationError(
+            provider_name,
+            f"{provider_name.upper()}_API_KEY not found or empty. "
+            f"Set the environment variable or pass api_key parameter."
+        )
+
+    # Check minimum length (most API keys are at least 20 chars)
+    if len(api_key) < 20:
+        raise AuthenticationError(
+            provider_name,
+            f"API key appears invalid (too short: {len(api_key)} chars). "
+            f"Check your {provider_name.upper()}_API_KEY."
+        )
+
+    # Check for common placeholder/invalid values
+    invalid_patterns = [
+        "your_api_key", "invalid", "test_key", "placeholder",
+        "xxx", "abc123", "sk-test", "demo_key"
+    ]
+    api_key_lower = api_key.lower()
+    for pattern in invalid_patterns:
+        if pattern in api_key_lower:
+            raise AuthenticationError(
+                provider_name,
+                f"API key appears to be a placeholder or test value. "
+                f"Please set a valid {provider_name.upper()}_API_KEY."
+            )
+
+
 def classify_and_raise_error(
     provider_name: str, error: Exception, api_key: Optional[str] = None
 ):
@@ -151,10 +192,9 @@ class AnthropicProvider(BaseProvider):
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("ANTHROPIC_API_KEY"), model)
-        if not self.api_key:
-            raise ConfigurationError(
-                "ANTHROPIC_API_KEY not found in environment variables"
-            )
+
+        # Validate API key before attempting to use it
+        validate_api_key(self.api_key, "anthropic")
 
         try:
             import anthropic
@@ -272,10 +312,9 @@ class OpenAIProvider(BaseProvider):
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("OPENAI_API_KEY"), model)
-        if not self.api_key:
-            raise ConfigurationError(
-                "OPENAI_API_KEY not found in environment variables"
-            )
+
+        # Validate API key before attempting to use it
+        validate_api_key(self.api_key, "openai")
 
         try:
             import openai
@@ -392,10 +431,9 @@ class GeminiProvider(BaseProvider):
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("GEMINI_API_KEY"), model)
-        if not self.api_key:
-            raise ConfigurationError(
-                "GEMINI_API_KEY not found in environment variables"
-            )
+
+        # Validate API key before attempting to use it
+        validate_api_key(self.api_key, "gemini")
 
         self.model_instance = None
         self._genai = None
@@ -755,8 +793,9 @@ class GroqProvider(BaseProvider):
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("GROQ_API_KEY"), model)
-        if not self.api_key:
-            raise ConfigurationError("GROQ_API_KEY not found in environment variables")
+
+        # Validate API key before attempting to use it
+        validate_api_key(self.api_key, "groq")
 
         try:
             from groq import Groq
@@ -1376,10 +1415,9 @@ class SarvamProvider(BaseProvider):
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         super().__init__(api_key or os.getenv("SARVAM_API_KEY"), model)
-        if not self.api_key:
-            raise ConfigurationError(
-                "SARVAM_API_KEY not found in environment variables"
-            )
+
+        # Validate API key before attempting to use it
+        validate_api_key(self.api_key, "sarvam")
 
         self.base_url = "https://api.sarvam.ai/v1"
 
