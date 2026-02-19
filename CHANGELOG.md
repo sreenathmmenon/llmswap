@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.5.5] - 2026-02-19
+
+### Added
+- **Claude Sonnet 4.6 support** - Anthropic's new default model (released Feb 17, 2026). Improved coding, computer use, and design. Same pricing as Sonnet 4.5.
+- **Claude Opus 4.6 support** - Anthropic's most capable model (released Feb 5, 2026). Leads Finance Agent benchmark. Better at long-context research and document analysis. 1M token context window (beta).
+- New example file `examples/latest_models_feb_2026.py` showing Sonnet 4.6 and Opus 4.6 usage
+
+### Changed
+- Default Anthropic model updated from `claude-opus-4-5` to `claude-sonnet-4-6` (Anthropic's new default)
+- Updated pyproject.toml description and keywords to reflect Feb 2026 models
+- Updated web UI model list — Sonnet 4.6 and Opus 4.6 now shown as featured
+- Updated cost estimator with Sonnet 4.6 and Opus 4.6 pricing
+
 ## [5.5.4] - 2026-01-01
 
 ### Security

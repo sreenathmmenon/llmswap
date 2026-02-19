@@ -36,9 +36,9 @@ def test_ollama_provider_initialization():
 
 
 def test_anthropic_provider_custom_model():
-    """Test Anthropic provider with latest model (Nov 2025)"""
-    provider = AnthropicProvider(api_key="test-key", model="claude-opus-4-5")
-    assert provider.model == "claude-opus-4-5"
+    """Test Anthropic provider with latest model (Feb 2026)"""
+    provider = AnthropicProvider(api_key="test-key", model="claude-sonnet-4-6")
+    assert provider.model == "claude-sonnet-4-6"
 
 
 def test_openai_provider_custom_model():

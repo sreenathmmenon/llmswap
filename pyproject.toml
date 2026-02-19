@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.5.4"
-description = "Universal LLM SDK + MCP Client: GPT-5.2, Claude Opus 4.5, Gemini 3 Flash, Gemini 3 Pro, Grok 4.1, DeepSeek V3.2 + 10 providers. LMArena top models. Natural language tool calling. Zero vendor lock-in. Production SDK + beautiful CLI."
+version = "5.5.5"
+description = "Python SDK + CLI for 11 LLM providers: Claude Sonnet 4.6, Claude Opus 4.6, GPT-5.2, Gemini 3 Flash, Grok 4.1, DeepSeek V3.2. Universal tool calling, MCP protocol, automatic fallback, zero vendor lock-in."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
@@ -64,6 +64,10 @@ keywords = [
     "gpt-5.2",
     "gpt-5.2-codex",
     "openai-gpt-5.2",
+    "claude-sonnet-4-6",
+    "claude-opus-4-6",
+    "claude-4.6",
+    "anthropic-claude-4.6",
     "claude-opus-4",
     "claude-opus-4-5",
     "claude-4.5",
@@ -204,6 +208,8 @@ keywords = [
     "context-aware-ai",
     "persistent-context",
     "architecture-decisions",
+    "claude-sonnet-4-6",
+    "claude-4-6",
     "claude-sonnet-4-5",
     "claude-4-5",
     "cursor-alternative",
@@ -224,6 +230,9 @@ keywords = [
     "grok-4-0709",
     "grok-4-fast",
     "xai-grok",
+    "sonnet-4-6",
+    "sonnet-4.6",
+    "opus-4-6",
     "sonnet-4-5",
     "sonnet-4.5",
     "sarvam-ai",
@@ -314,6 +323,8 @@ keywords = [
     "xai-grok",
     "lmarena-top",
     "latest-llm-models",
+    "february-2026-models",
+    "2026-models",
     "december-2025-models",
     "newest-ai-models",
     "2025-models",
@@ -324,7 +335,13 @@ keywords = [
     "mcp-natural-language",
     "easy-mcp",
     "simple-mcp",
-    "mcp-wrapper"
+    "mcp-wrapper",
+    "llm-sdk-python",
+    "python-llm",
+    "claude-sonnet-4-6-api",
+    "claude-opus-4-6-api",
+    "ai-sdk-2026",
+    "llm-provider-abstraction"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -334,11 +351,11 @@ classifiers = [
     "Intended Audience :: Education",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
@@ -424,7 +441,7 @@ only-include = [
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py39']
 
 [tool.isort]
 profile = "black"

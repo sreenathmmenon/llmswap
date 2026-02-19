@@ -53,6 +53,8 @@ class CostEstimator:
                 "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
             },
             "anthropic": {
+                "claude-sonnet-4-6": {"input": 0.003, "output": 0.015},
+                "claude-opus-4-6": {"input": 0.015, "output": 0.075},
                 "claude-sonnet-4-5": {
                     "input": 0.003,
                     "output": 0.015,
@@ -312,7 +314,7 @@ class CostEstimator:
         if models is None:
             models = {
                 "openai": "gpt-4o-mini",  # Latest cost-effective model
-                "anthropic": "claude-sonnet-4-5",  # Latest: Best coding model
+                "anthropic": "claude-sonnet-4-6",  # Latest: Feb 2026
                 "gemini": "gemini-2.0-flash-exp",  # Latest experimental
                 "cohere": "command-r-plus-08-2024",  # Latest Command-R+
                 "perplexity": "sonar-pro",  # Main model

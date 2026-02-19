@@ -61,31 +61,36 @@ DEFAULT_MODELS = {
     ],
     "anthropic": [
         {
+            "id": "claude-sonnet-4-6",
+            "name": "Claude Sonnet 4.6",
+            "description": "Anthropic • Latest Default Feb 2026",
+            "featured": True,
+            "pricing": {"input": 3.0, "output": 15.0},
+        },
+        {
+            "id": "claude-opus-4-6",
+            "name": "Claude Opus 4.6",
+            "description": "Anthropic • Most Capable Feb 2026",
+            "featured": True,
+            "pricing": {"input": 15.0, "output": 75.0},
+        },
+        {
             "id": "claude-opus-4-5",
             "name": "Claude Opus 4.5",
-            "description": "Anthropic • Best Quality Dec 2025",
-            "featured": True,
+            "description": "Anthropic • Previous Flagship",
             "pricing": {"input": 15.0, "output": 75.0},
         },
         {
             "id": "claude-sonnet-4-5",
             "name": "Claude Sonnet 4.5",
-            "description": "Anthropic • Best for Coding",
-            "featured": True,
+            "description": "Anthropic • Previous Sonnet",
             "pricing": {"input": 3.0, "output": 15.0},
         },
         {
             "id": "claude-haiku-4-5",
             "name": "Claude Haiku 4.5",
             "description": "Anthropic • Fast & Cheap",
-            "featured": True,
             "pricing": {"input": 1.0, "output": 5.0},
-        },
-        {
-            "id": "claude-3-5-sonnet-20241022",
-            "name": "Claude Sonnet 3.5",
-            "description": "Anthropic • Previous Version",
-            "pricing": {"input": 3.0, "output": 15.0},
         },
     ],
     "google": [

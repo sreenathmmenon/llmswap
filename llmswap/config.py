@@ -57,7 +57,7 @@ class LLMSwapConfig:
                     "ollama",
                 ],
                 "models": {
-                    "anthropic": "claude-opus-4-5",
+                    "anthropic": "claude-sonnet-4-6",
                     "openai": "gpt-5.2",
                     "gemini": "gemini-3-flash",
                     "xai": "grok-4.1",

@@ -1,4 +1,4 @@
-# LLMSwap: Universal LLM SDK + MCP Client
+# LLMSwap: Python SDK + CLI for Any LLM Provider
 
 [![PyPI version](https://badge.fury.io/py/llmswap.svg)](https://badge.fury.io/py/llmswap)
 [![PyPI Downloads](https://static.pepy.tech/badge/llmswap)](https://pepy.tech/projects/llmswap)
@@ -11,9 +11,9 @@
 
 ## Ship AI Apps Faster
 
-**Natural Language MCP + 11 LLM Providers. Latest Models Day-One.**
+**11 LLM Providers. Latest Models. Zero Vendor Lock-in.**
 
-GPT-5.2 (Dec '25) • Claude Opus 4.5 • Gemini 3 Flash • Gemini 3 Pro • Grok 4.1 (#1 LMArena) • DeepSeek V3.2 + 10 providers.
+Claude Sonnet 4.6 (Feb '26) • Claude Opus 4.6 • GPT-5.2 • Gemini 3 Flash • Grok 4.1 • DeepSeek V3.2 + 11 providers.
 Universal tool calling • MCP protocol • Zero vendor lock-in • Production-ready SDK + CLI.
 
 One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
@@ -85,20 +85,31 @@ llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 
 ---
 
-## 🆕 Latest Models Supported (December 2025)
+## 🆕 Latest Models Supported (February 2026)
 
 **New models work the day they launch** - LLMSwap's pass-through architecture means no SDK updates needed.
 
-### ⚡ Claude Opus 4.5 (Released Nov 24, 2025)
+### ⚡ Claude Sonnet 4.6 (Released Feb 17, 2026)
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="anthropic", model="claude-opus-4-5")
+client = LLMClient(provider="anthropic", model="claude-sonnet-4-6")
 response = client.chat("Build a full-stack application with authentication...")
 print(response.content)
 ```
-**Latest flagship from Anthropic.** State-of-the-art for coding & software engineering. Pricing: $5/$25 per million tokens.
-**Best for:** Complex coding, deep research, software engineering, spreadsheet management
+**Anthropic's new default model.** Improved coding, computer use, and design. Same pricing as Sonnet 4.5 ($3/$15 per million tokens).
+**Best for:** Coding, everyday tasks, cost-effective quality work
+
+### 🧠 Claude Opus 4.6 (Released Feb 5, 2026)
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="anthropic", model="claude-opus-4-6")
+response = client.chat("Analyze this financial report and identify key risks...")
+print(response.content)
+```
+**Anthropic's most capable model.** Top on Finance Agent benchmark. Better at long-context research and complex document analysis. 1M token context window (beta). Pricing: $15/$75 per million tokens.
+**Best for:** Financial analysis, deep research, large document processing, complex coding
 
 ### 🚀 Gemini 3 Pro (Released Nov 18, 2025)
 ```python
@@ -163,7 +174,7 @@ print(response.content)
 
 > **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. LLMSwap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports **11 providers** (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, **xAI Grok**, **Sarvam AI**).
 
-> **✅ Battle-Tested with LMArena Top Models:** All 10 providers tested and validated with top-rated models from LMArena leaderboard. From Grok-4 (xAI's flagship) to Claude Sonnet 4.5 (best coding model) to Gemini 2.0 Flash Exp - every model in our defaults is production-validated and arena-tested for real-world use.
+> **✅ Battle-Tested with LMArena Top Models:** All 10 providers tested and validated with top-rated models from LMArena leaderboard. From Grok-4 (xAI's flagship) to Claude Sonnet 4.6 (latest default model) to Gemini 2.0 Flash Exp - every model in our defaults is production-validated and arena-tested for real-world use.
 
 **The First AI Tool with Project Memory & Learning Journals** - LLMSwap v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, xAI Grok, Sarvam AI (**10 providers**). **Use any model from your provider** - even ones released tomorrow. Pass-through architecture means GPT-5, Gemini 2.5 Pro, Claude Opus 4? They work the day they launch.
 
@@ -299,8 +310,8 @@ llmswap chat --mentor friend --alias "CodeBuddy"
 # Question-based learning for critical thinking
 llmswap ask "Explain REST APIs" --mentor socrates
 
-# 🆕 Use Claude Sonnet 4.5 - Best coding model
-llmswap chat --provider anthropic --model claude-sonnet-4-5
+# 🆕 Use Claude Sonnet 4.6 - Latest default model
+llmswap chat --provider anthropic --model claude-sonnet-4-6
 # Or set as default in config for all queries
 ```
 
@@ -957,7 +968,7 @@ All 10 providers ship with carefully selected default models based on LMArena ra
 
 | Provider | Default Model | Arena Status | Why We Chose It |
 |----------|---------------|--------------|-----------------|
-| **Anthropic** | claude-sonnet-4-5 | #1 Coding | Best coding model in the world (Sept 2025) |
+| **Anthropic** | claude-sonnet-4-6 | Default Feb 2026 | Latest Sonnet — improved coding & computer use |
 | **xAI** | grok-4-0709 | Top 5 Overall | Advanced reasoning, real-time data access |
 | **Gemini** | gemini-2.0-flash-exp | Top 10 | Lightning-fast, multimodal, cutting-edge |
 | **OpenAI** | gpt-4o-mini | Cost Leader | Best price/performance ratio |
@@ -990,8 +1001,8 @@ llmswap chat --provider openai --model gpt-5
 llmswap chat --provider openai --model o3-mini
 
 # Use any Anthropic model
-llmswap chat --provider anthropic --model claude-opus-4
-llmswap chat --provider anthropic --model claude-sonnet-4-5
+llmswap chat --provider anthropic --model claude-sonnet-4-6
+llmswap chat --provider anthropic --model claude-opus-4-6
 
 # Use any Gemini model
 llmswap chat --provider gemini --model gemini-2-5-pro
@@ -1846,7 +1857,7 @@ llmswap web --port 3000 --host 0.0.0.0 --no-browser
 - First-time user tips - gentle onboarding for new users
 - Better error messages - helpful setup instructions when API keys missing
 
-**Screenshot:** Compare GPT-4o, Claude Sonnet 4.5, Gemini 2.0 Flash, Grok-4, and 17 more models simultaneously. See speed badges update in real-time, cost bars visualize price differences, and code blocks with syntax highlighting.
+**Screenshot:** Compare GPT-5.2, Claude Sonnet 4.6, Gemini 3 Flash, Grok 4.1, and 17 more models simultaneously. See speed badges update in real-time, cost bars visualize price differences, and code blocks with syntax highlighting.
 
 ---
 
