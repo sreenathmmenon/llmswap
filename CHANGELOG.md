@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.5.6] - 2026-02-21
+
+### Changed
+- **Groq default model updated to Llama 4 Maverick** (`meta-llama/llama-4-maverick-17b-128e-instruct`) — 400B total parameters, 128K context window, multimodal vision support
+- Updated pyproject.toml description to feature Llama 4 Maverick
+
 ## [5.5.5] - 2026-02-19
 
 ### Added

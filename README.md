@@ -13,7 +13,7 @@
 
 **11 LLM Providers. Latest Models. Zero Vendor Lock-in.**
 
-Claude Sonnet 4.6 (Feb '26) • Claude Opus 4.6 • GPT-5.2 • Gemini 3 Flash • Grok 4.1 • DeepSeek V3.2 + 11 providers.
+Claude Sonnet 4.6 (Feb '26) • Claude Opus 4.6 • Llama 4 Maverick • GPT-5.2 • Gemini 3 Flash • Grok 4.1 + 11 providers.
 Universal tool calling • MCP protocol • Zero vendor lock-in • Production-ready SDK + CLI.
 
 One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wrestling with complex frameworks—build production AI in 10 lines of code.

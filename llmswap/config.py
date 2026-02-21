@@ -61,7 +61,7 @@ class LLMSwapConfig:
                     "openai": "gpt-5.2",
                     "gemini": "gemini-3-flash",
                     "xai": "grok-4.1",
-                    "groq": "llama-3.3-70b-versatile",
+                    "groq": "meta-llama/llama-4-maverick-17b-128e-instruct",
                     "cohere": "command-r-plus-08-2024",
                     "perplexity": "sonar-pro",
                     "watsonx": "granite-4.0-h-small",

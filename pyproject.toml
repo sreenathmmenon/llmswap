@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.5.5"
-description = "Python SDK + CLI for 11 LLM providers: Claude Sonnet 4.6, Claude Opus 4.6, GPT-5.2, Gemini 3 Flash, Grok 4.1, DeepSeek V3.2. Universal tool calling, MCP protocol, automatic fallback, zero vendor lock-in."
+version = "5.5.6"
+description = "Python SDK + CLI for 11 LLM providers: Claude Sonnet 4.6, Claude Opus 4.6, Llama 4 Maverick, GPT-5.2, Gemini 3 Flash, Grok 4.1. Universal tool calling, MCP protocol, automatic fallback, zero vendor lock-in."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
@@ -90,6 +90,9 @@ keywords = [
     "llm-arena",
     "granite",
     "llama",
+    "llama-4",
+    "llama-4-maverick",
+    "meta-llama-4",
     "mistral",
     "llm-api",
     "langchain-alternative",
