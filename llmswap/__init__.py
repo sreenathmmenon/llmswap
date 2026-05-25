@@ -19,7 +19,7 @@ Advanced usage:
     client.set_provider("openai")
 
     # With custom model
-    client = LLMClient(provider="anthropic", model="claude-3-opus-20240229")
+    client = LLMClient(provider="anthropic", model="claude-sonnet-4-20250514")
 """
 
 # Suppress gRPC ALTS warnings - must be set before any imports

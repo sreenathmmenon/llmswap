@@ -155,15 +155,15 @@ def batch_processing_example():
 
 
 def compare_gemini_models():
-    """Compare Gemini 3 Pro with previous versions"""
+    """Compare current Gemini models"""
     print("\n" + "="*60)
     print("📊 Gemini Evolution Comparison")
     print("="*60)
     
     models = [
-        ("gemini-3-pro", "Latest: Nov 18, 2025"),
-        ("gemini-2.5-pro", "Previous: 2024"),
-        ("gemini-1.5-pro", "Legacy: 2024"),
+        ("gemini-3-pro-preview", "Current flagship preview"),
+        ("gemini-3-deep-think", "Advanced reasoning"),
+        ("gemini-2.5-pro", "Stable Pro"),
     ]
     
     prompt = "Explain the transformer architecture in 50 words"

@@ -327,7 +327,7 @@ Examples:
   llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem /tmp
   
   # Use specific provider and model
-  llmswap-mcp --provider openai --model gpt-4 --command python server.py
+  llmswap-mcp --provider openai --model gpt-5.2 --command python server.py
   
   # Connect to remote server
   llmswap-mcp --url https://api.example.com/mcp

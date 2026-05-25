@@ -20,7 +20,7 @@ One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wr
 
 **📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html) | **🔧 MCP Guide:** [#mcp-integration](#-mcp-integration-new)
 
-## 🆕 NEW in v5.2.0: Universal Tool Calling
+## 🆕 Current in v5.5.7: Universal Tool Calling + LLMSwap Arena
 
 **Enable LLMs to access YOUR data and systems** - Define tools once, works across ALL providers.
 
@@ -80,7 +80,7 @@ llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
 
 # 🆕 Compare models visually (optional)
 pip install llmswap[web]
-llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
+llmswap web  # Opens browser - compare GPT-5.2 vs Claude vs Gemini
 ```
 
 ---
@@ -196,7 +196,7 @@ print(response.content)
 ✅ **Automatic Fallback** - Never down. Switches providers if one fails
 ✅ **50-90% Cost Savings** - Built-in caching. Same query = FREE
 ✅ **Workspace Memory** - Your AI remembers your project context
-✅ **Universal Tool Calling** - Define once, works everywhere (NEW v5.2.0)
+✅ **Universal Tool Calling** - Define once, works everywhere
 ✅ **CLI + SDK** - Code AND terminal. Your choice
 ✅ **Zero Lock-in** - Switch from OpenAI to Claude in 1 line
 
@@ -208,19 +208,17 @@ print(response.content)
 
 **v5.1.0**: Revolutionary AI mentorship with **project memory**, **workspace-aware context**, **auto-tracked learning journals**, and **persistent mentor relationships**. The first AI tool that truly remembers your learning journey across projects.
 
-**NEW in v5.2.0:**
+**v5.2.0:**
 - 🛠️ **Universal Tool Calling** - Enable LLMs to use YOUR custom functions across all providers
 - 🔧 **5 Providers Supported** - Anthropic, OpenAI, Groq, Gemini, xAI with automatic format conversion
 - 📖 **Complete Documentation** - Full guides, examples, and real-world use cases
 - ✅ **100% Backward Compatible** - All existing features work without changes
 
-**v5.1.6:**
-- 🌐 **Web UI** - Compare 20+ models side-by-side in beautiful browser interface & learn prompting techniques
-- 📊 **Visual Comparison** - Live streaming results with speed badges (⚡🥈🥉), cost charts, efficiency metrics
-- 💰 **Cost Optimizer** - See exact costs across providers, find cheapest model for your use case
-- 🎨 **Markdown + Code Highlighting** - Syntax-highlighted code blocks with individual copy buttons
-- 💾 **Smart Preferences** - Remembers your favorite models via localStorage
-- 📈 **Real-time Metrics** - Tokens/sec efficiency, response length indicators, actual API token counts
+**v5.5.7:**
+- 🌐 **LLMSwap Arena** - Compare current provider models in a focused browser interface
+- 📊 **Visual Comparison** - Ranking, speed, token usage, and together-view answer scanning
+- 🎨 **Markdown + Code Highlighting** - Syntax-highlighted responses with copy actions
+- 🧠 **Token Learning Layer** - Understand input, output, and total token usage while comparing
 
 **NEW in v5.1.0:**
 - 🧠 **Workspace Memory** - Per-project context that persists across sessions
@@ -1142,7 +1140,7 @@ llmswap debug --error "IndexError: list index out of range"
 import openai  # Locked to OpenAI forever
 client = openai.Client(api_key="YOUR_OPENAI_API_KEY")
 response = client.chat.completions.create(
-    model="gpt-4",
+    model="gpt-5.2",
     messages=[{"role": "user", "content": "Hello"}]
 )
 # To switch to Claude? Rewrite everything.
@@ -1797,12 +1795,15 @@ llmswap logs --analyze app.log --since "2h ago"
 llmswap web  # Opens browser at http://localhost:5005
 ```
 
-### 🌐 **Web UI for Model Comparison** (v5.1.6 NEW!)
+### 🌐 **LLMSwap Arena - Web UI for Model Comparison**
 
-Compare 20+ AI models side-by-side in a beautiful web interface with live streaming results:
+Compare AI model answers side-by-side in a focused browser interface with speed, token usage, ranking, and a combined answer view:
 
-![LLMSwap Web UI - Model Comparison](assets/web-ui-screenshot.png)
-*Compare responses from GPT-4, Claude, Gemini, Grok, and more - see speed rankings, costs, and quality side-by-side*
+![LLMSwap Arena - Prompt and model selection](assets/llmswap-arena-home.png)
+*Select providers and models, enter one prompt, and run a clean multi-model comparison.*
+
+![LLMSwap Arena - Results and together view](assets/llmswap-arena-results.png)
+*Review answers together, compare speed and token usage, then open full ranked responses below.*
 
 ```bash
 # Install web UI dependencies (one-time, optional)
@@ -2266,7 +2267,7 @@ client = LLMClient()
 response = client.chat("Write a Python function to sort a list")
 print(response.content)
 
-# Add tool calling (v5.2.0)
+# Add tool calling
 from llmswap import Tool
 
 weather = Tool(
@@ -2326,4 +2327,4 @@ response = client.chat("What's the weather in Tokyo?", tools=[weather])
 
 Built with ❤️ for developers who ship. Star us on [GitHub](https://github.com/sreenathmmenon/llmswap) if llmswap helps you build faster!
 
-**Latest:** v5.2.0 - Universal tool calling across all providers 🚀
+**Latest:** v5.5.7 - LLMSwap Arena, current provider defaults, and universal tool calling 🚀

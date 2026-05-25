@@ -41,6 +41,24 @@ DEFAULT_MODELS = {
             "pricing": {"input": 0.25, "output": 2.0},
         },
         {
+            "id": "gpt-5.1",
+            "name": "GPT-5.1",
+            "description": "OpenAI • Previous Frontier",
+            "pricing": {"input": 5.0, "output": 20.0},
+        },
+        {
+            "id": "gpt-4.1",
+            "name": "GPT-4.1",
+            "description": "OpenAI • Smart Non-Reasoning",
+            "pricing": {"input": 2.0, "output": 8.0},
+        },
+        {
+            "id": "gpt-4.1-mini",
+            "name": "GPT-4.1 Mini",
+            "description": "OpenAI • Fast Non-Reasoning",
+            "pricing": {"input": 0.40, "output": 1.60},
+        },
+        {
             "id": "gpt-4o",
             "name": "GPT-4o",
             "description": "OpenAI • Fast & Multimodal",
@@ -51,12 +69,6 @@ DEFAULT_MODELS = {
             "name": "GPT-4o Mini",
             "description": "OpenAI • Fast & Cheap",
             "pricing": {"input": 0.15, "output": 0.60},
-        },
-        {
-            "id": "o1-mini",
-            "name": "o1 Mini",
-            "description": "OpenAI • Fast Reasoning",
-            "pricing": {"input": 3.0, "output": 12.0},
         },
     ],
     "anthropic": [
@@ -116,15 +128,15 @@ DEFAULT_MODELS = {
             "pricing": {"input": 0.075, "output": 0.30},
         },
         {
-            "id": "gemini-1.5-pro",
-            "name": "Gemini 1.5 Pro",
-            "description": "Google • Previous Generation",
-            "pricing": {"input": 1.25, "output": 5.0},
+            "id": "gemini-2.5-pro",
+            "name": "Gemini 2.5 Pro",
+            "description": "Google • Stable Pro",
+            "pricing": {"input": 1.25, "output": 10.0},
         },
         {
-            "id": "gemini-1.5-flash",
-            "name": "Gemini 1.5 Flash",
-            "description": "Google • Fast",
+            "id": "gemini-2.5-flash-lite",
+            "name": "Gemini 2.5 Flash Lite",
+            "description": "Google • Low-Cost Fast",
             "pricing": {"input": 0.075, "output": 0.30},
         },
     ],
@@ -233,6 +245,36 @@ DEFAULT_MODELS = {
             "name": "DeepSeek R1 (Local)",
             "description": "Ollama • Reasoning Model",
             "pricing": {"input": 0, "output": 0},
+        },
+    ],
+    "watsonx": [
+        {
+            "id": "ibm/granite-3-3-8b-instruct",
+            "name": "Granite 3.3 8B Instruct",
+            "description": "IBM watsonx • Enterprise Instruct",
+            "featured": True,
+            "pricing": {"input": 0.10, "output": 0.10},
+        },
+        {
+            "id": "ibm/granite-3-8b-instruct",
+            "name": "Granite 3 8B Instruct",
+            "description": "IBM watsonx • Stable Granite",
+            "pricing": {"input": 0.10, "output": 0.10},
+        },
+    ],
+    "sarvam": [
+        {
+            "id": "sarvam-105b",
+            "name": "Sarvam 105B",
+            "description": "Sarvam AI • Indic Frontier",
+            "featured": True,
+            "pricing": {"input": 0.50, "output": 1.50},
+        },
+        {
+            "id": "sarvam-m",
+            "name": "Sarvam-M",
+            "description": "Sarvam AI • Indic Multilingual",
+            "pricing": {"input": 0.25, "output": 0.75},
         },
     ],
 }

@@ -133,20 +133,25 @@ def create_app(testing=False):
         providers = {
             "OpenAI": {
                 "key": "OPENAI_API_KEY",
-                "models": ["gpt-4", "gpt-4o-mini", "gpt-3.5-turbo"],
+                "models": ["gpt-5.2", "gpt-5.2-pro", "gpt-5-mini"],
             },
             "Anthropic": {
                 "key": "ANTHROPIC_API_KEY",
-                "models": ["claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"],
+                "models": ["claude-sonnet-4-20250514", "claude-opus-4-1-20250805"],
             },
             "Google": {
                 "key": "GEMINI_API_KEY",
-                "models": ["gemini-2.0-flash-exp", "gemini-1.5-pro"],
+                "models": ["gemini-3-pro-preview", "gemini-2.5-pro"],
             },
-            "xAI": {"key": "XAI_API_KEY", "models": ["grok-beta"]},
-            "Groq": {"key": "GROQ_API_KEY", "models": ["llama-3.3-70b-versatile"]},
+            "xAI": {"key": "XAI_API_KEY", "models": ["grok-4.3", "grok-4.3-latest"]},
+            "Groq": {"key": "GROQ_API_KEY", "models": ["openai/gpt-oss-120b"]},
             "Perplexity": {"key": "PERPLEXITY_API_KEY", "models": ["sonar-pro"]},
             "Cohere": {"key": "COHERE_API_KEY", "models": ["command-a-plus-05-2026"]},
+            "IBM watsonx": {
+                "key": "WATSONX_API_KEY",
+                "models": ["ibm/granite-3-3-8b-instruct"],
+            },
+            "Sarvam AI": {"key": "SARVAM_API_KEY", "models": ["sarvam-105b"]},
         }
 
         status = []
@@ -408,17 +413,17 @@ Examples:
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         <!-- OpenAI -->
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                            <input type="checkbox" name="models" value="gpt-4" class="mr-2">
+                            <input type="checkbox" name="models" value="gpt-5.2" class="mr-2">
                             <div>
-                                <div class="font-medium">GPT-4</div>
-                                <div class="text-xs text-gray-500">OpenAI</div>
+                                <div class="font-medium">GPT-5.2</div>
+                                <div class="text-xs text-gray-500">OpenAI • Frontier</div>
                             </div>
                         </label>
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                            <input type="checkbox" name="models" value="gpt-4o-mini" class="mr-2">
+                            <input type="checkbox" name="models" value="gpt-5-mini" class="mr-2">
                             <div>
-                                <div class="font-medium">GPT-4o Mini</div>
-                                <div class="text-xs text-gray-500">OpenAI • Fast & Cheap</div>
+                                <div class="font-medium">GPT-5 Mini</div>
+                                <div class="text-xs text-gray-500">OpenAI • Cost Efficient</div>
                             </div>
                         </label>
 
@@ -431,35 +436,35 @@ Examples:
                             </div>
                         </label>
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                            <input type="checkbox" name="models" value="claude-3-5-haiku-20241022" class="mr-2">
+                            <input type="checkbox" name="models" value="claude-haiku-4-5" class="mr-2">
                             <div>
-                                <div class="font-medium">Claude Haiku</div>
+                                <div class="font-medium">Claude Haiku 4.5</div>
                                 <div class="text-xs text-gray-500">Anthropic • Fast</div>
                             </div>
                         </label>
 
                         <!-- Google -->
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                            <input type="checkbox" name="models" value="gemini-2.0-flash-exp" class="mr-2">
+                            <input type="checkbox" name="models" value="gemini-3-pro-preview" class="mr-2">
                             <div>
-                                <div class="font-medium">Gemini 2.0 Flash</div>
-                                <div class="text-xs text-gray-500">Google • Experimental</div>
+                                <div class="font-medium">Gemini 3 Pro Preview</div>
+                                <div class="text-xs text-gray-500">Google • Multimodal Flagship</div>
                             </div>
                         </label>
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                            <input type="checkbox" name="models" value="gemini-1.5-pro" class="mr-2">
+                            <input type="checkbox" name="models" value="gemini-2.5-pro" class="mr-2">
                             <div>
-                                <div class="font-medium">Gemini 1.5 Pro</div>
-                                <div class="text-xs text-gray-500">Google</div>
+                                <div class="font-medium">Gemini 2.5 Pro</div>
+                                <div class="text-xs text-gray-500">Google • Stable Pro</div>
                             </div>
                         </label>
 
                         <!-- xAI -->
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                            <input type="checkbox" name="models" value="grok-beta" class="mr-2">
+                            <input type="checkbox" name="models" value="grok-4.3" class="mr-2">
                             <div>
-                                <div class="font-medium">Grok Beta</div>
-                                <div class="text-xs text-gray-500">xAI</div>
+                                <div class="font-medium">Grok 4.3</div>
+                                <div class="text-xs text-gray-500">xAI • Current Flagship</div>
                             </div>
                         </label>
 
@@ -494,42 +499,42 @@ Examples:
                                 </div>
                             </label>
                             <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                                <input type="checkbox" name="models" value="o1-preview" class="mr-2">
+                                <input type="checkbox" name="models" value="gpt-5.1" class="mr-2">
                                 <div>
-                                    <div class="font-medium">o1 Preview</div>
-                                    <div class="text-xs text-gray-500">OpenAI • Reasoning</div>
+                                    <div class="font-medium">GPT-5.1</div>
+                                    <div class="text-xs text-gray-500">OpenAI • Previous Frontier</div>
                                 </div>
                             </label>
                             <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                                <input type="checkbox" name="models" value="o1-mini" class="mr-2">
+                                <input type="checkbox" name="models" value="gpt-4.1" class="mr-2">
                                 <div>
-                                    <div class="font-medium">o1 Mini</div>
-                                    <div class="text-xs text-gray-500">OpenAI • Fast Reasoning</div>
+                                    <div class="font-medium">GPT-4.1</div>
+                                    <div class="text-xs text-gray-500">OpenAI • Smart Non-Reasoning</div>
                                 </div>
                             </label>
 
                             <!-- More Anthropic -->
                             <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                                <input type="checkbox" name="models" value="claude-3-opus-20240229" class="mr-2">
+                                <input type="checkbox" name="models" value="claude-opus-4-1-20250805" class="mr-2">
                                 <div>
-                                    <div class="font-medium">Claude Opus</div>
-                                    <div class="text-xs text-gray-500">Anthropic • Best Quality</div>
+                                    <div class="font-medium">Claude Opus 4.1</div>
+                                    <div class="text-xs text-gray-500">Anthropic • Most Capable</div>
                                 </div>
                             </label>
 
                             <!-- More Google -->
                             <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                                <input type="checkbox" name="models" value="gemini-1.5-flash" class="mr-2">
+                                <input type="checkbox" name="models" value="gemini-2.5-flash" class="mr-2">
                                 <div>
-                                    <div class="font-medium">Gemini 1.5 Flash</div>
-                                    <div class="text-xs text-gray-500">Google • Fast</div>
+                                    <div class="font-medium">Gemini 2.5 Flash</div>
+                                    <div class="text-xs text-gray-500">Google • Fast & Efficient</div>
                                 </div>
                             </label>
                             <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                                <input type="checkbox" name="models" value="gemini-1.0-pro" class="mr-2">
+                                <input type="checkbox" name="models" value="gemini-2.5-flash-lite" class="mr-2">
                                 <div>
-                                    <div class="font-medium">Gemini Pro</div>
-                                    <div class="text-xs text-gray-500">Google • Legacy</div>
+                                    <div class="font-medium">Gemini 2.5 Flash Lite</div>
+                                    <div class="text-xs text-gray-500">Google • Low-Cost Fast</div>
                                 </div>
                             </label>
 
@@ -551,10 +556,10 @@ Examples:
 
                             <!-- More Perplexity -->
                             <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                                <input type="checkbox" name="models" value="sonar" class="mr-2">
+                                <input type="checkbox" name="models" value="sonar-reasoning-pro" class="mr-2">
                                 <div>
-                                    <div class="font-medium">Sonar</div>
-                                    <div class="text-xs text-gray-500">Perplexity • Standard</div>
+                                    <div class="font-medium">Sonar Reasoning Pro</div>
+                                    <div class="text-xs text-gray-500">Perplexity • Reasoning</div>
                                 </div>
                             </label>
 
@@ -576,10 +581,10 @@ Examples:
 
                             <!-- Sarvam AI (Indian) -->
                             <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                                <input type="checkbox" name="models" value="sarvam-2b" class="mr-2">
+                                <input type="checkbox" name="models" value="sarvam-105b" class="mr-2">
                                 <div>
-                                    <div class="font-medium">Sarvam 2B</div>
-                                    <div class="text-xs text-gray-500">Sarvam AI • Indian Model</div>
+                                    <div class="font-medium">Sarvam 105B</div>
+                                    <div class="text-xs text-gray-500">Sarvam AI • Indic Frontier</div>
                                 </div>
                             </label>
                         </div>

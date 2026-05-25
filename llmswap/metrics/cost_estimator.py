@@ -56,39 +56,29 @@ class CostEstimator:
                 "claude-opus-4-20250514": {"input": 0.015, "output": 0.075},
                 "claude-sonnet-4-20250514": {"input": 0.003, "output": 0.015},
                 "claude-3-7-sonnet-20250219": {"input": 0.003, "output": 0.015},
-                "claude-3-5-haiku": {"input": 0.001, "output": 0.005},
+                "claude-haiku-4-5": {"input": 0.001, "output": 0.005},
                 "claude-3-haiku": {"input": 0.00025, "output": 0.00125},
             },
             "gemini": {
-                "gemini-1.5-pro": {
-                    "per_char": 0.0000003125
-                },  # Legacy char-based pricing
-                "gemini-1.5-flash": {
-                    "per_char": 0.00000015625
-                },  # Legacy char-based pricing
-                "gemini-1.5-pro-token": {
-                    "input": 0.00125,
-                    "output": 0.005,
-                },  # $1.25/$5.00 per million
-                "gemini-1.5-flash-token": {
-                    "input": 0.00015,
-                    "output": 0.0006,
-                },  # $0.15/$0.60 per million
-                "gemini-2.0-flash": {
-                    "input": 0.0001,
-                    "output": 0.0004,
-                },  # $0.10/$0.40 per million
-                "gemini-2.0-flash-exp": {
-                    "input": 0.0001,
-                    "output": 0.0004,
-                },  # Experimental model
+                "gemini-3-pro-preview": {
+                    "input": 0.002,
+                    "output": 0.012,
+                },
+                "gemini-3-deep-think": {
+                    "input": 0.0035,
+                    "output": 0.014,
+                },
                 "gemini-2.5-pro": {
                     "input": 0.00125,
                     "output": 0.01,
                 },  # $1.25/$10.00 per million
-                "gemini-3-pro-preview": {
-                    "input": 0.002,
-                    "output": 0.012,
+                "gemini-2.5-flash": {
+                    "input": 0.000075,
+                    "output": 0.0003,
+                },
+                "gemini-2.5-flash-lite": {
+                    "input": 0.000075,
+                    "output": 0.0003,
                 },
             },
             "watsonx": {
@@ -278,14 +268,19 @@ class CostEstimator:
     def _estimate_gemini_cost(
         self, input_tokens: int, output_tokens: int, model: str
     ) -> Dict[str, Any]:
-        """Estimate cost for Gemini (character-based pricing)."""
+        """Estimate cost for Gemini models."""
+        gemini_pricing = self.pricing["gemini"]
+        model_key = model if model in gemini_pricing else "gemini-3-pro-preview"
+
+        if "input" in gemini_pricing[model_key] and "output" in gemini_pricing[model_key]:
+            return self._estimate_token_based_cost(
+                input_tokens, output_tokens, "gemini", model_key
+            )
+
         # Convert tokens back to approximate character count
         input_chars = input_tokens * 4  # Rough conversion
         output_chars = output_tokens * 4
         total_chars = input_chars + output_chars
-
-        gemini_pricing = self.pricing["gemini"]
-        model_key = model if model in gemini_pricing else "gemini-1.5-pro"
 
         rate_per_char = gemini_pricing[model_key]["per_char"]
         total_cost = total_chars * rate_per_char

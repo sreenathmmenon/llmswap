@@ -91,7 +91,7 @@ class PriceManager:
 
         Args:
             provider: Provider name (e.g., 'openai')
-            model: Model name (e.g., 'gpt-4')
+            model: Model name (e.g., 'gpt-5.2')
             pricing: Price data (e.g., {'input': 0.03, 'output': 0.06})
             source: Source of the price data ('api', 'manual', 'scraped')
         """

@@ -162,6 +162,7 @@ def _format_error_message(model: str, error: str) -> str:
         "perplexity": 'export PERPLEXITY_API_KEY="your-key-here"',
         "watsonx": 'export WATSONX_API_KEY="your-key-here"',
         "groq": 'export GROQ_API_KEY="your-key-here"',
+        "sarvam": 'export SARVAM_API_KEY="your-key-here"',
         "ollama": "Make sure Ollama is running: ollama serve",
     }
 
@@ -218,6 +219,8 @@ def _get_provider_for_model(model: str) -> str:
         return "perplexity"
     elif "granite" in model_lower:
         return "watsonx"
+    elif "sarvam" in model_lower:
+        return "sarvam"
     else:
         # Default to openai for unknown models
         return "openai"

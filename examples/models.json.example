@@ -1,9 +1,9 @@
 {
   "openai": [
     {
-      "id": "gpt-4o-mini",
-      "name": "GPT-4o Mini",
-      "description": "OpenAI • Fast & Cheap",
+      "id": "gpt-5.2",
+      "name": "GPT-5.2",
+      "description": "OpenAI • Frontier Model",
       "featured": true,
       "pricing": {
         "input": 0.15,
@@ -11,8 +11,8 @@
       }
     },
     {
-      "id": "my-fine-tuned-gpt4",
-      "name": "My Fine-tuned GPT-4",
+      "id": "my-fine-tuned-gpt-5",
+      "name": "My Fine-tuned GPT-5",
       "description": "OpenAI • Custom Fine-tune",
       "pricing": {
         "input": 10.0,
@@ -22,9 +22,9 @@
   ],
   "anthropic": [
     {
-      "id": "claude-3-5-sonnet-20241022",
-      "name": "Claude Sonnet 3.5",
-      "description": "Anthropic • Best for Coding",
+      "id": "claude-sonnet-4-20250514",
+      "name": "Claude Sonnet 4",
+      "description": "Anthropic • Balanced Claude 4",
       "featured": true,
       "pricing": {
         "input": 3.0,
