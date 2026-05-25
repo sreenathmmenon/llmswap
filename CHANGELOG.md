@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.5.8] - 2026-05-25
+
+### Added
+- Introduced **LLMSwap Arena**, a simplified web UI for comparing model answers, speed, ranking, and token usage.
+- Added README-ready Arena screenshots for prompt/model selection and results/together-view workflows.
+
+### Changed
+- Reworked the web UI around selected models, a focused prompt area, run summary, ranking, token math, together view, and full ranked responses.
+- Removed stale picker pricing and primary cost display from the web UI to avoid presenting static estimates as authoritative.
+- Updated README, package keywords, examples, and fallback web template references to current model names.
+
+### Fixed
+- Removed deprecated model names from web UI fallback examples and cost estimator defaults.
+- Added Sarvam provider detection and setup messaging in the web comparison layer.
+
 ## [5.5.7] - 2026-05-25
 
 ### Fixed

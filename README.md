@@ -20,7 +20,7 @@ One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wr
 
 **📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html) | **🔧 MCP Guide:** [#mcp-integration](#-mcp-integration-new)
 
-## 🆕 Current in v5.5.7: Universal Tool Calling + LLMSwap Arena
+## 🆕 Current in v5.5.8: Universal Tool Calling + LLMSwap Arena
 
 **Enable LLMs to access YOUR data and systems** - Define tools once, works across ALL providers.
 
@@ -214,7 +214,7 @@ print(response.content)
 - 📖 **Complete Documentation** - Full guides, examples, and real-world use cases
 - ✅ **100% Backward Compatible** - All existing features work without changes
 
-**v5.5.7:**
+**v5.5.8:**
 - 🌐 **LLMSwap Arena** - Compare current provider models in a focused browser interface
 - 📊 **Visual Comparison** - Ranking, speed, token usage, and together-view answer scanning
 - 🎨 **Markdown + Code Highlighting** - Syntax-highlighted responses with copy actions
@@ -2301,7 +2301,7 @@ response = client.chat("What's the weather in Tokyo?", tools=[weather])
 ## 📊 Why Thousands Choose llmswap
 
 - ⚡ **12,000+ Downloads** - Trusted by developers worldwide
-- 🚀 **v5.5.7** - Current provider defaults, cleaner packaging, and universal tool calling
+- 🚀 **v5.5.8** - LLMSwap Arena, current provider defaults, cleaner packaging, and universal tool calling
 - 🔓 **MIT License** - 100% open source, free forever
 - 🐍 **Python 3.9+** - Works on all platforms
 - 🌍 **10 Providers** - Anthropic, OpenAI, Gemini, Groq, xAI, Cohere, Perplexity, Sarvam, IBM watsonx, Ollama
@@ -2327,4 +2327,4 @@ response = client.chat("What's the weather in Tokyo?", tools=[weather])
 
 Built with ❤️ for developers who ship. Star us on [GitHub](https://github.com/sreenathmmenon/llmswap) if llmswap helps you build faster!
 
-**Latest:** v5.5.7 - LLMSwap Arena, current provider defaults, and universal tool calling 🚀
+**Latest:** v5.5.8 - LLMSwap Arena, current provider defaults, and universal tool calling 🚀

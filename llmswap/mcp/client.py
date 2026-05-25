@@ -35,7 +35,7 @@ class MCPClient:
         client.close()
     """
 
-    def __init__(self, client_name: str = "llmswap", client_version: str = "5.5.7"):
+    def __init__(self, client_name: str = "llmswap", client_version: str = "5.5.8"):
         """
         Initialize MCP client
 

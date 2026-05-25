@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.5.7"
+version = "5.5.8"
 description = "Python SDK + CLI for 10 LLM providers: OpenAI GPT-5.2, Claude Sonnet 4, Gemini 3 Pro Preview, Grok 4.3, Cohere Command A+, Groq GPT-OSS, Perplexity Sonar, IBM watsonx, Sarvam, and Ollama. Universal tool calling, MCP protocol, automatic fallback, zero vendor lock-in."
 readme = "README.md"
 requires-python = ">=3.9"

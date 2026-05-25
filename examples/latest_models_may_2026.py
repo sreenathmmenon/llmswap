@@ -1,6 +1,6 @@
 """Current model examples - May 2026.
 
-Examples using provider defaults verified for llmswap 5.5.7.
+Examples using provider defaults verified for llmswap 5.5.8.
 
 Usage:
     pip install llmswap
