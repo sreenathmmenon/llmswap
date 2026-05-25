@@ -1425,7 +1425,8 @@ class SarvamProvider(BaseProvider):
         """Query Sarvam AI models.
 
         Supports:
-        - sarvam-m (Sarvam-M): Chat model (24B parameter)
+        - sarvam-105b: Flagship chat model
+        - sarvam-30b: Balanced chat model
         - mayura: Translation model
         - sarvam-translate: Translation service
         """
@@ -1446,7 +1447,7 @@ class SarvamProvider(BaseProvider):
                     "enable_preprocessing": kwargs.get("enable_preprocessing", True),
                 }
             else:
-                # Chat model (sarvam-2b / Sarvam-M)
+                # Chat model (Sarvam-30B / Sarvam-105B)
                 endpoint = f"{self.base_url}/chat/completions"
                 payload = {
                     "model": self.model,

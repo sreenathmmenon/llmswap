@@ -1,5 +1,22 @@
 # Changelog
 
+## [5.5.7] - 2026-05-25
+
+### Fixed
+- Added missing `PyYAML>=6.0` dependency required by CLI and configuration loading.
+- Added a real `web` optional extra and moved Flask dependencies out of the core install.
+- Fixed `LLMClient.export_analytics()` so analytics exports are reachable again.
+
+### Changed
+- Updated package metadata, README defaults, examples, web UI model list, and cost defaults against provider documentation reviewed on May 25, 2026.
+- Corrected provider count to the 10 providers implemented in code.
+- Centralized provider metadata in `llmswap.provider_registry` and wired sync client, async client, config defaults, and verification to it.
+- Updated default models to GPT-5.2, Claude Sonnet 4, Gemini 3 Pro Preview, Grok 4.3, Command A+, Groq GPT-OSS 120B, Sonar Pro, IBM Granite 3.3 8B, Sarvam-105B, and Ollama llama3.1.
+
+### Security
+- Rechecked package metadata and docs for placeholder secrets and removed misleading unsupported provider claims.
+- MCP tool-result roundtrip remains intentionally unchanged and is planned for a later release.
+
 ## [5.5.6] - 2026-02-21
 
 ### Changed

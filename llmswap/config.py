@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from .exceptions import ConfigurationError
+from .provider_registry import DEFAULT_PROVIDER_MODELS, get_provider_names
 
 
 class LLMSwapConfig:
@@ -47,26 +48,9 @@ class LLMSwapConfig:
             "provider": {
                 "default": "auto",
                 "fallback_order": [
-                    "anthropic",
-                    "openai",
-                    "gemini",
-                    "cohere",
-                    "perplexity",
-                    "watsonx",
-                    "groq",
-                    "ollama",
+                    *get_provider_names(),
                 ],
-                "models": {
-                    "anthropic": "claude-sonnet-4-6",
-                    "openai": "gpt-5.2",
-                    "gemini": "gemini-3-flash",
-                    "xai": "grok-4.1",
-                    "groq": "meta-llama/llama-4-maverick-17b-128e-instruct",
-                    "cohere": "command-r-plus-08-2024",
-                    "perplexity": "sonar-pro",
-                    "watsonx": "granite-4.0-h-small",
-                    "ollama": "llama3.1",
-                },
+                "models": dict(DEFAULT_PROVIDER_MODELS),
             },
             "output": {
                 "default_dir": "~/Documents/llmswap-generated",

@@ -1699,7 +1699,7 @@ Examples:
   llmswap ask "What is Python?"
   llmswap chat
   llmswap providers                                           # View all providers status
-  llmswap config set provider.models.cohere command-r-plus-08-2024
+  llmswap config set provider.models.cohere command-a-plus-05-2026
   llmswap review app.py --focus security
   llmswap debug --error "IndexError: list index out of range"
   llmswap logs --analyze /var/log/app.log --since "2h ago"

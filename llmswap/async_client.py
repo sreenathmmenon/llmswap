@@ -7,6 +7,7 @@ from .response import LLMResponse
 from .exceptions import ConfigurationError, AllProvidersFailedError
 from .logging_handler import LLMLogger
 from .cache import InMemoryCache
+from .provider_registry import get_provider_names
 
 
 class AsyncLLMClient:
@@ -50,16 +51,7 @@ class AsyncLLMClient:
         )
 
         # Provider priority order for auto-detection and fallback
-        self.provider_order = [
-            "anthropic",
-            "openai",
-            "gemini",
-            "cohere",
-            "perplexity",
-            "watsonx",
-            "groq",
-            "ollama",
-        ]
+        self.provider_order = get_provider_names()
 
         if provider == "auto":
             self.current_provider = self._detect_available_provider()

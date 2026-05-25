@@ -17,19 +17,19 @@ def mock_env_vars(monkeypatch):
 @pytest.fixture
 def setup_anthropic_env(monkeypatch):
     """Setup Anthropic environment"""
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-anthropic-key")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "a" * 32)
 
 
 @pytest.fixture
 def setup_openai_env(monkeypatch):
     """Setup OpenAI environment"""
-    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
+    monkeypatch.setenv("OPENAI_API_KEY", "o" * 32)
 
 
 @pytest.fixture
 def setup_gemini_env(monkeypatch):
     """Setup Gemini environment"""
-    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
+    monkeypatch.setenv("GEMINI_API_KEY", "g" * 32)
 
 
 # Web UI test fixtures

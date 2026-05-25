@@ -2,7 +2,7 @@
 Dynamic model configuration for LLMSwap Web UI.
 
 Allows users to customize available models via:
-1. Default models (built-in, December 2025)
+1. Default models (built-in, May 2026)
 2. Config file (~/.llmswap/models.json)
 3. Environment variable (LLMSWAP_CUSTOM_MODELS)
 
@@ -16,29 +16,29 @@ from pathlib import Path
 from typing import Dict, List, Any
 
 
-# December 2025 - Latest models across all providers
+# May 2026 - Current documented models across supported providers
 DEFAULT_MODELS = {
     "openai": [
         {
-            "id": "gpt-5.1",
-            "name": "GPT-5.1",
-            "description": "OpenAI • Latest Flagship Dec 2025",
+            "id": "gpt-5.2",
+            "name": "GPT-5.2",
+            "description": "OpenAI • Frontier Model",
             "featured": True,
             "pricing": {"input": 5.0, "output": 20.0},
         },
         {
-            "id": "gpt-4.5-turbo",
-            "name": "GPT-4.5 Turbo",
-            "description": "OpenAI • Fast & Smart",
+            "id": "gpt-5.2-pro",
+            "name": "GPT-5.2 Pro",
+            "description": "OpenAI • Highest Precision",
             "featured": True,
-            "pricing": {"input": 3.0, "output": 12.0},
+            "pricing": {"input": 15.0, "output": 120.0},
         },
         {
-            "id": "o1",
-            "name": "o1",
-            "description": "OpenAI • Advanced Reasoning",
+            "id": "gpt-5-mini",
+            "name": "GPT-5 Mini",
+            "description": "OpenAI • Cost Efficient",
             "featured": True,
-            "pricing": {"input": 15.0, "output": 60.0},
+            "pricing": {"input": 0.25, "output": 2.0},
         },
         {
             "id": "gpt-4o",
@@ -61,29 +61,29 @@ DEFAULT_MODELS = {
     ],
     "anthropic": [
         {
-            "id": "claude-sonnet-4-6",
-            "name": "Claude Sonnet 4.6",
-            "description": "Anthropic • Latest Default Feb 2026",
+            "id": "claude-sonnet-4-20250514",
+            "name": "Claude Sonnet 4",
+            "description": "Anthropic • Balanced Claude 4",
             "featured": True,
             "pricing": {"input": 3.0, "output": 15.0},
         },
         {
-            "id": "claude-opus-4-6",
-            "name": "Claude Opus 4.6",
-            "description": "Anthropic • Most Capable Feb 2026",
+            "id": "claude-opus-4-1-20250805",
+            "name": "Claude Opus 4.1",
+            "description": "Anthropic • Most Capable",
             "featured": True,
             "pricing": {"input": 15.0, "output": 75.0},
         },
         {
-            "id": "claude-opus-4-5",
-            "name": "Claude Opus 4.5",
+            "id": "claude-opus-4-20250514",
+            "name": "Claude Opus 4",
             "description": "Anthropic • Previous Flagship",
             "pricing": {"input": 15.0, "output": 75.0},
         },
         {
-            "id": "claude-sonnet-4-5",
-            "name": "Claude Sonnet 4.5",
-            "description": "Anthropic • Previous Sonnet",
+            "id": "claude-3-7-sonnet-20250219",
+            "name": "Claude Sonnet 3.7",
+            "description": "Anthropic • Extended Thinking",
             "pricing": {"input": 3.0, "output": 15.0},
         },
         {
@@ -95,9 +95,9 @@ DEFAULT_MODELS = {
     ],
     "google": [
         {
-            "id": "gemini-3-pro",
-            "name": "Gemini 3 Pro",
-            "description": "Google • Latest Flagship Dec 2025",
+            "id": "gemini-3-pro-preview",
+            "name": "Gemini 3 Pro Preview",
+            "description": "Google • Multimodal Flagship",
             "featured": True,
             "pricing": {"input": 2.5, "output": 10.0},
         },
@@ -130,18 +130,18 @@ DEFAULT_MODELS = {
     ],
     "xai": [
         {
-            "id": "grok-4.1",
-            "name": "Grok 4.1 🏆",
-            "description": "xAI • #1 LMArena Dec 2025",
+            "id": "grok-4.3",
+            "name": "Grok 4.3",
+            "description": "xAI • Current Flagship",
             "featured": True,
-            "pricing": {"input": 5.0, "output": 15.0},
+            "pricing": {"input": 1.25, "output": 2.50},
         },
         {
-            "id": "grok-4-fast",
-            "name": "Grok 4 Fast",
-            "description": "xAI • Ultra Speed",
+            "id": "grok-4.3-latest",
+            "name": "Grok 4.3 Latest",
+            "description": "xAI • Latest Alias",
             "featured": True,
-            "pricing": {"input": 2.5, "output": 10.0},
+            "pricing": {"input": 1.25, "output": 2.50},
         },
         {
             "id": "grok-4",
@@ -152,18 +152,18 @@ DEFAULT_MODELS = {
     ],
     "groq": [
         {
-            "id": "llama-4-70b",
-            "name": "Llama 4 70B",
-            "description": "Groq • Meta Latest Dec 2025",
+            "id": "openai/gpt-oss-120b",
+            "name": "GPT-OSS 120B",
+            "description": "Groq • Production Open-Weight",
             "featured": True,
-            "pricing": {"input": 0.10, "output": 0.10},
+            "pricing": {"input": 0.15, "output": 0.60},
         },
         {
-            "id": "deepseek-v3",
-            "name": "DeepSeek v3",
-            "description": "Groq • GPT-5 Competitor",
+            "id": "openai/gpt-oss-20b",
+            "name": "GPT-OSS 20B",
+            "description": "Groq • Fast Open-Weight",
             "featured": True,
-            "pricing": {"input": 0.10, "output": 0.10},
+            "pricing": {"input": 0.075, "output": 0.30},
         },
         {
             "id": "llama-3.3-70b-versatile",
@@ -193,17 +193,17 @@ DEFAULT_MODELS = {
             "pricing": {"input": 3.0, "output": 15.0},
         },
         {
-            "id": "sonar",
-            "name": "Sonar",
-            "description": "Perplexity • Standard",
+            "id": "sonar-reasoning-pro",
+            "name": "Sonar Reasoning Pro",
+            "description": "Perplexity • Reasoning",
             "pricing": {"input": 1.0, "output": 5.0},
         },
     ],
     "cohere": [
         {
-            "id": "command-r-plus",
-            "name": "Command R+",
-            "description": "Cohere • Latest Dec 2025",
+            "id": "command-a-plus-05-2026",
+            "name": "Command A+",
+            "description": "Cohere • Agentic Multimodal",
             "featured": True,
             "pricing": {"input": 3.0, "output": 15.0},
         },

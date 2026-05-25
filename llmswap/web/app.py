@@ -146,7 +146,7 @@ def create_app(testing=False):
             "xAI": {"key": "XAI_API_KEY", "models": ["grok-beta"]},
             "Groq": {"key": "GROQ_API_KEY", "models": ["llama-3.3-70b-versatile"]},
             "Perplexity": {"key": "PERPLEXITY_API_KEY", "models": ["sonar-pro"]},
-            "Cohere": {"key": "COHERE_API_KEY", "models": ["command-r-plus-08-2024"]},
+            "Cohere": {"key": "COHERE_API_KEY", "models": ["command-a-plus-05-2026"]},
         }
 
         status = []
@@ -424,10 +424,10 @@ Examples:
 
                         <!-- Anthropic -->
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">
-                            <input type="checkbox" name="models" value="claude-3-5-sonnet-20241022" class="mr-2">
+                            <input type="checkbox" name="models" value="claude-sonnet-4-20250514" class="mr-2">
                             <div>
-                                <div class="font-medium">Claude Sonnet 4.5</div>
-                                <div class="text-xs text-gray-500">Anthropic • Best Coding</div>
+                                <div class="font-medium">Claude Sonnet 4</div>
+                                <div class="text-xs text-gray-500">Anthropic • Balanced</div>
                             </div>
                         </label>
                         <label class="flex items-center p-2 border rounded hover:bg-gray-50">

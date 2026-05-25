@@ -1,29 +1,24 @@
-"""
-Latest Models - February 2026
-==============================
-Examples using the newest models available in llmswap as of February 2026.
+"""Current model examples - May 2026.
 
-New in Feb 2026:
-- Claude Sonnet 4.6 (Anthropic) - Feb 17, 2026 - New default
-- Claude Opus 4.6 (Anthropic) - Feb 5, 2026 - Most capable
+Examples using provider defaults verified for llmswap 5.5.7.
 
 Usage:
     pip install llmswap
     export ANTHROPIC_API_KEY="your-key"
-    python latest_models_feb_2026.py
+    python latest_models_may_2026.py
 """
 
 from llmswap import LLMClient
 
 
-def test_claude_sonnet_46():
-    """Claude Sonnet 4.6 - Anthropic's new default model (Feb 17, 2026)"""
+def test_claude_sonnet_4():
+    """Claude Sonnet 4 - Anthropic balanced production model."""
     print("\n" + "=" * 60)
-    print("Claude Sonnet 4.6 (Released Feb 17, 2026)")
-    print("Anthropic's new default | Improved coding & computer use")
+    print("Claude Sonnet 4")
+    print("Anthropic production model | Coding and everyday tasks")
     print("=" * 60)
 
-    client = LLMClient(provider="anthropic", model="claude-sonnet-4-6")
+    client = LLMClient(provider="anthropic", model="claude-sonnet-4-20250514")
 
     response = client.chat("Write a Python function that finds all prime numbers up to n using the Sieve of Eratosthenes.")
     print(f"\nResponse:\n{response.content}")
@@ -31,14 +26,14 @@ def test_claude_sonnet_46():
         print(f"\nTokens: {response.usage}")
 
 
-def test_claude_opus_46():
-    """Claude Opus 4.6 - Anthropic's most capable model (Feb 5, 2026)"""
+def test_claude_opus_41():
+    """Claude Opus 4.1 - Anthropic high-capability model."""
     print("\n" + "=" * 60)
-    print("Claude Opus 4.6 (Released Feb 5, 2026)")
-    print("Most capable | Finance Agent benchmark leader | 1M context")
+    print("Claude Opus 4.1")
+    print("Most capable Claude model | Complex reasoning and analysis")
     print("=" * 60)
 
-    client = LLMClient(provider="anthropic", model="claude-opus-4-6")
+    client = LLMClient(provider="anthropic", model="claude-opus-4-1-20250805")
 
     response = client.chat(
         "Summarize the key risks a startup should consider when raising a Series A round."
@@ -49,16 +44,16 @@ def test_claude_opus_46():
 
 
 def compare_claude_models():
-    """Compare Sonnet 4.6 vs Opus 4.6 on the same prompt"""
+    """Compare Sonnet 4 vs Opus 4.1 on the same prompt."""
     print("\n" + "=" * 60)
-    print("Comparing Claude Sonnet 4.6 vs Opus 4.6")
+    print("Comparing Claude Sonnet 4 vs Opus 4.1")
     print("=" * 60)
 
     prompt = "Explain the CAP theorem in two sentences."
 
     models = [
-        ("claude-sonnet-4-6", "Sonnet 4.6 (default, $3/$15 per M tokens)"),
-        ("claude-opus-4-6", "Opus 4.6 (most capable, $15/$75 per M tokens)"),
+        ("claude-sonnet-4-20250514", "Sonnet 4 (default, $3/$15 per M tokens)"),
+        ("claude-opus-4-1-20250805", "Opus 4.1 (most capable, $15/$75 per M tokens)"),
     ]
 
     for model_id, label in models:
@@ -72,12 +67,12 @@ def compare_claude_models():
 
 
 def test_with_default():
-    """Use default provider - will pick claude-sonnet-4-6 if ANTHROPIC_API_KEY is set"""
+    """Use default provider model from llmswap config."""
     print("\n" + "=" * 60)
-    print("Auto-detect with latest default (claude-sonnet-4-6)")
+    print("Auto-detect with current Anthropic default")
     print("=" * 60)
 
-    client = LLMClient(provider="anthropic")  # uses claude-sonnet-4-6 by default
+    client = LLMClient(provider="anthropic")
     response = client.chat("What is dependency injection? Give a Python example.")
     print(f"\nModel used: {client.get_current_model()}")
     print(f"\nResponse:\n{response.content}")
@@ -91,11 +86,11 @@ if __name__ == "__main__":
         print("  export ANTHROPIC_API_KEY='your-key-here'")
         exit(1)
 
-    print("llmswap - Latest Claude Models (February 2026)")
-    print("Models: claude-sonnet-4-6 | claude-opus-4-6")
+    print("llmswap - Current Claude Models (May 2026)")
+    print("Models: claude-sonnet-4-20250514 | claude-opus-4-1-20250805")
 
-    test_claude_sonnet_46()
-    test_claude_opus_46()
+    test_claude_sonnet_4()
+    test_claude_opus_41()
     compare_claude_models()
     test_with_default()
 

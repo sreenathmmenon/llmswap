@@ -40,32 +40,22 @@ class CostEstimator:
             self._initialize_default_pricing()
 
     def _initialize_default_pricing(self):
-        """Initialize with default pricing (as of January 2025)."""
+        """Initialize with default pricing (as of May 2026)."""
         # These prices will be automatically updated when online
         self.pricing = {
             "openai": {
-                "gpt-4": {"input": 0.03, "output": 0.06},
-                "gpt-4-turbo": {"input": 0.01, "output": 0.03},
+                "gpt-5.2": {"input": 0.005, "output": 0.02},
+                "gpt-5.2-pro": {"input": 0.015, "output": 0.12},
+                "gpt-5-mini": {"input": 0.00025, "output": 0.002},
+                "gpt-5-nano": {"input": 0.00005, "output": 0.0004},
                 "gpt-4o": {"input": 0.0025, "output": 0.01},
                 "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
-                "o1-preview": {"input": 0.015, "output": 0.06},
-                "o1-mini": {"input": 0.003, "output": 0.012},
-                "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
             },
             "anthropic": {
-                "claude-sonnet-4-6": {"input": 0.003, "output": 0.015},
-                "claude-opus-4-6": {"input": 0.015, "output": 0.075},
-                "claude-sonnet-4-5": {
-                    "input": 0.003,
-                    "output": 0.015,
-                },  # NEW: Best coding model
-                "claude-3-opus": {"input": 0.015, "output": 0.075},
-                "claude-3-5-sonnet": {"input": 0.003, "output": 0.015},
-                "claude-3-5-sonnet-20241220": {"input": 0.003, "output": 0.015},
-                "claude-3-5-sonnet-20241022": {
-                    "input": 0.003,
-                    "output": 0.015,
-                },  # Deprecated Oct 22, 2025
+                "claude-opus-4-1-20250805": {"input": 0.015, "output": 0.075},
+                "claude-opus-4-20250514": {"input": 0.015, "output": 0.075},
+                "claude-sonnet-4-20250514": {"input": 0.003, "output": 0.015},
+                "claude-3-7-sonnet-20250219": {"input": 0.003, "output": 0.015},
                 "claude-3-5-haiku": {"input": 0.001, "output": 0.005},
                 "claude-3-haiku": {"input": 0.00025, "output": 0.00125},
             },
@@ -96,8 +86,16 @@ class CostEstimator:
                     "input": 0.00125,
                     "output": 0.01,
                 },  # $1.25/$10.00 per million
+                "gemini-3-pro-preview": {
+                    "input": 0.002,
+                    "output": 0.012,
+                },
             },
             "watsonx": {
+                "ibm/granite-3-3-8b-instruct": {
+                    "input": 0.0002,
+                    "output": 0.0002,
+                },
                 "granite-3.1-8b-instruct": {
                     "input": 0.0002,
                     "output": 0.0002,
@@ -110,6 +108,14 @@ class CostEstimator:
                 "granite-7b": {"input": 0.0002, "output": 0.0002},  # Updated pricing
             },
             "groq": {
+                "openai/gpt-oss-120b": {
+                    "input": 0.00015,
+                    "output": 0.0006,
+                },
+                "openai/gpt-oss-20b": {
+                    "input": 0.000075,
+                    "output": 0.0003,
+                },
                 "llama-3.1-8b-instant": {
                     "input": 0.00005,
                     "output": 0.00008,
@@ -118,21 +124,16 @@ class CostEstimator:
                     "input": 0.00059,
                     "output": 0.00079,
                 },  # $0.59/$0.79 per M
-                "gpt-oss-20b": {"input": 0.0001, "output": 0.0005},  # $0.10/$0.50 per M
             },
             "cohere": {
+                "command-a-plus-05-2026": {
+                    "input": 0.0025,
+                    "output": 0.01,
+                },
                 "command-r-03-2024": {
                     "input": 0.0005,
                     "output": 0.0015,
                 },  # $0.50/$1.50 per million
-                "command-r-plus-04-2024": {
-                    "input": 0.003,
-                    "output": 0.015,
-                },  # $3.00/$15.00 per million
-                "command-r-plus-08-2024": {
-                    "input": 0.0025,
-                    "output": 0.01,
-                },  # $2.50/$10.00 per million
                 "aya-expanse-8b": {
                     "input": 0.0005,
                     "output": 0.0015,
@@ -147,6 +148,14 @@ class CostEstimator:
                     "input": 0.001,
                     "output": 0.003,
                 },  # Estimated $1/$3 per million
+                "sonar-reasoning-pro": {
+                    "input": 0.002,
+                    "output": 0.008,
+                },
+                "sonar-deep-research": {
+                    "input": 0.002,
+                    "output": 0.008,
+                },
                 "pplx-7b-online": {
                     "input": 0.0002,
                     "output": 0.0008,
@@ -313,13 +322,13 @@ class CostEstimator:
         """
         if models is None:
             models = {
-                "openai": "gpt-4o-mini",  # Latest cost-effective model
-                "anthropic": "claude-sonnet-4-6",  # Latest: Feb 2026
-                "gemini": "gemini-2.0-flash-exp",  # Latest experimental
-                "cohere": "command-r-plus-08-2024",  # Latest Command-R+
+                "openai": "gpt-5.2",
+                "anthropic": "claude-sonnet-4-20250514",
+                "gemini": "gemini-3-pro-preview",
+                "cohere": "command-a-plus-05-2026",
                 "perplexity": "sonar-pro",  # Main model
-                "watsonx": "granite-13b",  # Use existing model name
-                "groq": "llama-3.1-8b-instant",  # Fast and cost-effective
+                "watsonx": "ibm/granite-3-3-8b-instruct",
+                "groq": "openai/gpt-oss-120b",
                 "ollama": "llama3",  # Free local
             }
 

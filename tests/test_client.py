@@ -20,7 +20,7 @@ def test_client_initialization():
 
 def test_client_with_specific_provider():
     """Test client with specific provider"""
-    client = LLMClient(provider="openai", api_key="test-key")
+    client = LLMClient(provider="openai", api_key="o" * 32)
     assert client.get_current_provider() == "openai"
 
 
@@ -32,10 +32,10 @@ def test_client_provider_detection(setup_anthropic_env):
 
 def test_client_provider_switching():
     """Test switching between providers"""
-    client = LLMClient(provider="openai", api_key="test-key")
+    client = LLMClient(provider="openai", api_key="o" * 32)
     assert client.get_current_provider() == "openai"
 
-    client.set_provider("gemini", api_key="test-gemini-key")
+    client.set_provider("gemini", api_key="g" * 32)
     assert client.get_current_provider() == "gemini"
 
 
@@ -71,7 +71,7 @@ def test_is_provider_available():
         ]
     ):
         pytest.skip("No API keys available")
-    client = LLMClient(provider="openai", api_key="test-key")
+    client = LLMClient(provider="openai", api_key="o" * 32)
     assert client.is_provider_available("openai") == True
 
 
@@ -86,6 +86,6 @@ def test_client_with_custom_model():
     """Test client with custom model"""
     if not os.getenv("OPENAI_API_KEY"):
         pytest.skip("OpenAI API key not available")
-    client = LLMClient(provider="openai", api_key="test-key", model="gpt-4")
+    client = LLMClient(provider="openai", api_key="o" * 32, model="gpt-4")
     # Client created successfully with custom model
     assert client is not None

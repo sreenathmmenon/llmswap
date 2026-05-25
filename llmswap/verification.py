@@ -10,6 +10,7 @@ import concurrent.futures
 from typing import Dict, List, Optional, Any
 from .client import LLMClient
 from .exceptions import ProviderError, ConfigurationError
+from .provider_registry import PROVIDER_SPECS
 
 
 def verify_provider(provider_name: str, timeout: int = 10) -> Dict[str, Any]:
@@ -44,15 +45,7 @@ def verify_provider(provider_name: str, timeout: int = 10) -> Dict[str, Any]:
 
     # Check API key configuration first
     api_key_map = {
-        "anthropic": "ANTHROPIC_API_KEY",
-        "openai": "OPENAI_API_KEY",
-        "gemini": "GEMINI_API_KEY",
-        "groq": "GROQ_API_KEY",
-        "cohere": "COHERE_API_KEY",
-        "perplexity": "PERPLEXITY_API_KEY",
-        "watsonx": "WATSONX_API_KEY",
-        "xai": "XAI_API_KEY",
-        "sarvam": "SARVAM_API_KEY",
+        name: spec.env_key for name, spec in PROVIDER_SPECS.items() if spec.env_key
     }
 
     # Special case for Ollama (local, no API key)

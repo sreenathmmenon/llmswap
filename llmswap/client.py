@@ -5,8 +5,9 @@ import time
 from typing import Optional, List, Dict, Any
 
 from .response import LLMResponse
-from .exceptions import ConfigurationError, AllProvidersFailedError
+from .exceptions import ConfigurationError, AllProvidersFailedError, ProviderError
 from .cache import InMemoryCache
+from .provider_registry import get_provider_names
 from .security import safe_error_string
 
 
@@ -42,18 +43,7 @@ class LLMClient:
         self.current_provider = None
 
         # Provider priority order for auto-detection and fallback
-        self.provider_order = [
-            "anthropic",
-            "openai",
-            "gemini",
-            "cohere",
-            "perplexity",
-            "watsonx",
-            "groq",
-            "ollama",
-            "xai",
-            "sarvam",
-        ]
+        self.provider_order = get_provider_names()
 
         # Initialize cache if enabled
         self._cache = (
@@ -134,7 +124,7 @@ class LLMClient:
                 provider = self._initialize_provider(provider_name)
                 if provider.is_available():
                     return provider
-            except ConfigurationError:
+            except (ConfigurationError, ProviderError):
                 continue
 
         raise ConfigurationError(
@@ -911,6 +901,11 @@ class LLMClient:
         if not self._analytics_enabled or not self._usage_tracker:
             return None
 
+        try:
+            return self._usage_tracker.export_data(output_file, format, days)
+        except Exception:
+            return None
+
     # ========================================================================
     # MCP Integration (v5.3.0)
     # ========================================================================
@@ -980,7 +975,7 @@ class LLMClient:
             client.add_mcp_server(
                 "github",
                 url="https://api.github.com/mcp",
-                headers={"Authorization": "Bearer token"}
+                headers={"Authorization": "Bearer <token>"}
             )
 
             # Local MCP server
@@ -1004,7 +999,7 @@ class LLMClient:
 
         try:
             # Create MCP client
-            mcp_client = MCPClient(client_name="llmswap", client_version="5.5.4")
+            mcp_client = MCPClient(client_name="llmswap", client_version="5.5.7")
 
             # Connect based on transport type
             if command:
@@ -1451,8 +1446,3 @@ class LLMClient:
                 )
 
         return messages
-
-        try:
-            return self._usage_tracker.export_data(output_file, format, days)
-        except Exception:
-            return None

@@ -100,14 +100,14 @@ def test_gpt_51():
         print("💡 Set OPENAI_API_KEY environment variable")
 
 
-def test_grok_41():
-    """Test xAI's Grok 4.1 - #1 on LMArena Text Leaderboard"""
+def test_grok_43():
+    """Test xAI's current Grok 4.3 model."""
     print("\n" + "="*60)
-    print("🏆 Grok 4.1 (Released Nov 17, 2025) - #1 LMArena")
+    print("🏆 Grok 4.3")
     print("="*60)
     
     try:
-        client = LLMClient(provider="xai", model="grok-4.1")
+        client = LLMClient(provider="xai", model="grok-4.3")
         
         # Emotional intelligence / creative task
         prompt = """Write a thoughtful letter from a senior developer to a junior
@@ -144,7 +144,7 @@ def compare_coding_task():
         ("anthropic", "claude-opus-4-5", "Claude Opus 4.5"),
         ("gemini", "gemini-3-pro", "Gemini 3 Pro"),
         ("openai", "gpt-5.1", "GPT-5.1"),
-        ("xai", "grok-4.1", "Grok 4.1"),
+        ("xai", "grok-4.3", "Grok 4.3"),
     ]
     
     print(f"\nTask: {prompt[:60]}...")
@@ -176,7 +176,7 @@ def compare_creative_task():
         ("anthropic", "claude-opus-4-5", "Claude Opus 4.5"),
         ("gemini", "gemini-3-pro", "Gemini 3 Pro"),
         ("openai", "gpt-5.1", "GPT-5.1"),
-        ("xai", "grok-4.1", "Grok 4.1"),
+        ("xai", "grok-4.3", "Grok 4.3"),
     ]
     
     print(f"\nTask: {prompt[:60]}...")
@@ -208,7 +208,7 @@ def speed_comparison():
         ("anthropic", "claude-opus-4-5", "Claude Opus 4.5"),
         ("gemini", "gemini-3-pro", "Gemini 3 Pro"),
         ("openai", "gpt-5.1", "GPT-5.1"),
-        ("xai", "grok-4.1", "Grok 4.1"),
+        ("xai", "grok-4.3", "Grok 4.3"),
     ]
     
     print(f"\nQuery: '{prompt}'\n")
@@ -262,7 +262,7 @@ def main():
     test_claude_opus_45()
     test_gemini_3_pro()
     test_gpt_51()
-    test_grok_41()
+    test_grok_43()
     
     # Comparisons
     compare_coding_task()

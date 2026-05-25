@@ -8,6 +8,7 @@ from typing import Optional, AsyncIterator
 
 from .response import LLMResponse
 from .exceptions import ProviderError, ConfigurationError
+from .provider_registry import DEFAULT_PROVIDER_MODELS
 from .security import safe_error_string
 
 
@@ -41,7 +42,7 @@ class AsyncOpenAIProvider(AsyncBaseProvider):
     """Async provider for OpenAI models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "gpt-4o-mini"
+        self.default_model = DEFAULT_PROVIDER_MODELS["openai"]
 
         # Use provided key or get from environment
         if not api_key:
@@ -608,7 +609,7 @@ class AsyncXAIProvider(AsyncBaseProvider):
     """Async provider for xAI Grok models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "grok-4-0709"
+        self.default_model = DEFAULT_PROVIDER_MODELS["xai"]
 
         if not api_key:
             api_key = os.getenv("XAI_API_KEY")
@@ -683,7 +684,7 @@ class AsyncSarvamProvider(AsyncBaseProvider):
     """Async provider for Sarvam AI models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "sarvam-m"
+        self.default_model = DEFAULT_PROVIDER_MODELS["sarvam"]
 
         if not api_key:
             api_key = os.getenv("SARVAM_API_KEY")
@@ -700,7 +701,8 @@ class AsyncSarvamProvider(AsyncBaseProvider):
         """Query Sarvam AI models asynchronously.
 
         Supports:
-        - sarvam-m (Sarvam-M): Chat model (24B parameter)
+        - sarvam-105b: Flagship chat model
+        - sarvam-30b: Balanced chat model
         - mayura: Translation model
         - sarvam-translate: Translation service
         """
@@ -721,7 +723,7 @@ class AsyncSarvamProvider(AsyncBaseProvider):
                     "enable_preprocessing": kwargs.get("enable_preprocessing", True),
                 }
             else:
-                # Chat model (sarvam-2b / Sarvam-M)
+                # Chat model (Sarvam-30B / Sarvam-105B)
                 endpoint = f"{self.base_url}/chat/completions"
                 payload = {
                     "model": self.model,

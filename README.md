@@ -11,9 +11,9 @@
 
 ## Ship AI Apps Faster
 
-**11 LLM Providers. Latest Models. Zero Vendor Lock-in.**
+**10 LLM Providers. Current Defaults. Zero Vendor Lock-in.**
 
-Claude Sonnet 4.6 (Feb '26) • Claude Opus 4.6 • Llama 4 Maverick • GPT-5.2 • Gemini 3 Flash • Grok 4.1 + 11 providers.
+GPT-5.2 • Claude Sonnet 4 • Gemini 3 Pro Preview • Grok 4.3 • Command A+ • Groq GPT-OSS • Perplexity Sonar + 10 implemented providers.
 Universal tool calling • MCP protocol • Zero vendor lock-in • Production-ready SDK + CLI.
 
 One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
@@ -85,44 +85,11 @@ llmswap web  # Opens browser - compare GPT-4 vs Claude vs Gemini
 
 ---
 
-## 🆕 Latest Models Supported (February 2026)
+## 🆕 Current Default Models (Verified May 25, 2026)
 
 **New models work the day they launch** - LLMSwap's pass-through architecture means no SDK updates needed.
 
-### ⚡ Claude Sonnet 4.6 (Released Feb 17, 2026)
-```python
-from llmswap import LLMClient
-
-client = LLMClient(provider="anthropic", model="claude-sonnet-4-6")
-response = client.chat("Build a full-stack application with authentication...")
-print(response.content)
-```
-**Anthropic's new default model.** Improved coding, computer use, and design. Same pricing as Sonnet 4.5 ($3/$15 per million tokens).
-**Best for:** Coding, everyday tasks, cost-effective quality work
-
-### 🧠 Claude Opus 4.6 (Released Feb 5, 2026)
-```python
-from llmswap import LLMClient
-
-client = LLMClient(provider="anthropic", model="claude-opus-4-6")
-response = client.chat("Analyze this financial report and identify key risks...")
-print(response.content)
-```
-**Anthropic's most capable model.** Top on Finance Agent benchmark. Better at long-context research and complex document analysis. 1M token context window (beta). Pricing: $15/$75 per million tokens.
-**Best for:** Financial analysis, deep research, large document processing, complex coding
-
-### 🚀 Gemini 3 Pro (Released Nov 18, 2025)
-```python
-from llmswap import LLMClient
-
-client = LLMClient(provider="gemini", model="gemini-3-pro")
-response = client.chat("Analyze this video and extract key insights...")
-print(response.content)
-```
-**Google's most advanced multimodal model.** Processes text, images, videos, audio, PDFs. 1M+ input tokens.
-**Best for:** Multimodal understanding, large document analysis, batch processing
-
-### 🧠 GPT-5.2 (Released Dec 11, 2025)
+### 🧠 GPT-5.2
 ```python
 from llmswap import LLMClient
 
@@ -130,51 +97,77 @@ client = LLMClient(provider="openai", model="gpt-5.2")
 response = client.chat("Design an algorithm for real-time fraud detection...")
 print(response.content)
 ```
-**OpenAI's latest flagship.** Most capable model for professional knowledge work. Variants: Instant (speed) & Thinking (reasoning). Also: GPT-5.2-Codex for agentic coding.
-**Best for:** Professional tasks, complex reasoning, coding, science & math
+**Best for:** Professional tasks, coding, reasoning, science, and math
 
-### ⚡ Gemini 3 Flash (Released Dec 17, 2025)
+### ⚡ Claude Sonnet 4
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="gemini", model="gemini-3-flash")
-response = client.chat("Analyze this codebase and suggest improvements...")
+client = LLMClient(provider="anthropic", model="claude-sonnet-4-20250514")
+response = client.chat("Build a full-stack application with authentication...")
 print(response.content)
 ```
-**Google's fastest frontier model.** Pro-level reasoning at 10x lower cost. 1M input tokens, 64k output. Multimodal: text, images, video, audio, PDF.
-**Best for:** High-speed inference, cost optimization, everyday tasks, agentic workflows
+**Best for:** Coding, everyday tasks, balanced quality and cost
 
-### 🏆 Grok 4.1 (Released Nov 17, 2025)
+### 🚀 Gemini 3 Pro Preview
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="xai", model="grok-4.1")
+client = LLMClient(provider="gemini", model="gemini-3-pro-preview")
+response = client.chat("Analyze this video and extract key insights...")
+print(response.content)
+```
+**Best for:** Multimodal understanding, large document analysis, batch processing
+
+### 🏆 Grok 4.3
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="xai", model="grok-4.3")
 response = client.chat("Help me understand this nuanced ethical dilemma...")
 print(response.content)
 ```
-**#1 on LMArena Text Leaderboard.** Enhanced emotional intelligence & creative collaboration. Preferred 64.78% in blind tests.
-**Best for:** Emotional intelligence, creative writing, collaborative tasks, nuanced understanding
+**Best for:** Agentic tool use, reasoning, and low-hallucination answers
 
-### 💎 DeepSeek V3.2 (Released Dec 16, 2025)
+### ⚙️ Cohere Command A+
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="deepseek", model="deepseek-v3.2")
-response = client.chat("Solve this complex mathematical problem...")
+client = LLMClient(provider="cohere", model="command-a-plus-05-2026")
+response = client.chat("Summarize this customer feedback and identify actions...")
 print(response.content)
 ```
-**Open-source powerhouse.** Matches GPT-5 & Gemini 3 at 10x lower cost ($0.028/1M tokens). 671B parameters, 96% on AIME 2025. MIT License.
-**Best for:** Cost-sensitive applications, open-source projects, math & reasoning, on-premise deployment
+**Best for:** Enterprise multilingual, agentic, and retrieval workflows
 
-**Plus 6 more providers:** Groq (5x faster LPU), Cohere (enterprise), Perplexity (search), IBM Watsonx (Granite 4.0), Ollama, Sarvam AI, local models.
+### ⚡ Groq GPT-OSS 120B
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="groq", model="openai/gpt-oss-120b")
+response = client.chat("Generate a latency-sensitive API handler...")
+print(response.content)
+```
+**Best for:** High-throughput inference on open-weight models
+
+### 🇮🇳 Sarvam-105B
+```python
+from llmswap import LLMClient
+
+client = LLMClient(provider="sarvam", model="sarvam-105b")
+response = client.chat("Explain this in Hindi and English...")
+print(response.content)
+```
+**Best for:** Indian language chat, reasoning, and multilingual applications
+
+**Plus:** Perplexity Sonar for search-grounded answers, IBM watsonx Granite for enterprise deployments, and Ollama for local models.
 
 **Why it matters:** New models work day-one. Pass-through architecture means future models work immediately upon release.
 
 ---
 
-> **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. LLMSwap's pass-through architecture means GPT-5, Claude Opus 4, Gemini 2.5 Pro work the day they release. Currently supports **11 providers** (OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, **xAI Grok**, **Sarvam AI**).
+> **🆕 Use Any Model from Any Provider!** New model just launched? Use it immediately. LLMSwap's pass-through architecture sends model names directly to the provider API. Currently supports **10 implemented providers**: OpenAI, Anthropic, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, xAI Grok, and Sarvam AI.
 
-> **✅ Battle-Tested with LMArena Top Models:** All 10 providers tested and validated with top-rated models from LMArena leaderboard. From Grok-4 (xAI's flagship) to Claude Sonnet 4.6 (latest default model) to Gemini 2.0 Flash Exp - every model in our defaults is production-validated and arena-tested for real-world use.
+> **✅ Current defaults:** Defaults are aligned with provider documentation as of May 25, 2026. You can still override any model name at runtime.
 
 **The First AI Tool with Project Memory & Learning Journals** - LLMSwap v5.1.0 introduces revolutionary workspace system that remembers your learning journey across projects. Build apps without vendor lock-in (SDK) or use from terminal (CLI). Works with your existing subscriptions: Claude, OpenAI, Gemini, Cohere, Perplexity, IBM watsonx, Groq, Ollama, xAI Grok, Sarvam AI (**10 providers**). **Use any model from your provider** - even ones released tomorrow. Pass-through architecture means GPT-5, Gemini 2.5 Pro, Claude Opus 4? They work the day they launch.
 
@@ -310,8 +303,8 @@ llmswap chat --mentor friend --alias "CodeBuddy"
 # Question-based learning for critical thinking
 llmswap ask "Explain REST APIs" --mentor socrates
 
-# 🆕 Use Claude Sonnet 4.6 - Latest default model
-llmswap chat --provider anthropic --model claude-sonnet-4-6
+# Use Claude Sonnet 4 - current default model
+llmswap chat --provider anthropic --model claude-sonnet-4-20250514
 # Or set as default in config for all queries
 ```
 
@@ -962,55 +955,55 @@ with llm_latency.labels(provider="anthropic").time():
 
 ## 🏆 Production-Validated with LMArena Top Models
 
-**Every model in LLMSwap's defaults comes from LMArena's top performers:**
+**Every default model is selected from current provider documentation and production-ready availability:**
 
-All 10 providers ship with carefully selected default models based on LMArena rankings and real-world production testing. We track arena performance and update defaults to ensure you're always using validated, battle-tested models.
+All 10 providers ship with carefully selected default models based on provider documentation, API availability, and practical production use.
 
-| Provider | Default Model | Arena Status | Why We Chose It |
+| Provider | Default Model | Status | Why We Chose It |
 |----------|---------------|--------------|-----------------|
-| **Anthropic** | claude-sonnet-4-6 | Default Feb 2026 | Latest Sonnet — improved coding & computer use |
-| **xAI** | grok-4-0709 | Top 5 Overall | Advanced reasoning, real-time data access |
-| **Gemini** | gemini-2.0-flash-exp | Top 10 | Lightning-fast, multimodal, cutting-edge |
-| **OpenAI** | gpt-4o-mini | Cost Leader | Best price/performance ratio |
-| **Cohere** | command-r-08-2024 | Top RAG | Enterprise-grade retrieval-augmented generation |
-| **Perplexity** | sonar | Web Search | Real-time web-connected AI with citations |
-| **Groq** | llama-3.1-8b-instant | Speed King | 840+ tokens/second ultra-fast inference |
-| **Sarvam** | sarvam-m | Multilingual | 24B params, best for 10 Indian languages |
-| **Watsonx** | granite-3-8b-instruct | Enterprise | IBM's production-grade AI for business |
-| **Ollama** | granite-code:8b | Local AI | Privacy-first, runs on your hardware |
+| **OpenAI** | gpt-5.2 | Frontier | Strong general-purpose coding and reasoning |
+| **Anthropic** | claude-sonnet-4-20250514 | Production | Balanced Claude 4 quality, speed, and cost |
+| **Gemini** | gemini-3-pro-preview | Preview | Multimodal long-context analysis |
+| **xAI** | grok-4.3 | Production | Agentic tool use and reasoning |
+| **Cohere** | command-a-plus-05-2026 | Production | Enterprise multilingual and agentic workflows |
+| **Perplexity** | sonar-pro | Search | Web-grounded answers with citations |
+| **Groq** | openai/gpt-oss-120b | Production | Fast open-weight inference on GroqCloud |
+| **Sarvam** | sarvam-105b | Production | Flagship Indian-language chat model |
+| **Watsonx** | ibm/granite-3-3-8b-instruct | Production | IBM enterprise Granite model |
+| **Ollama** | llama3.1 | Local | Privacy-first, runs on your hardware |
 
 **✅ Battle-tested with real API calls** - Every provider validated in production, not simulated tests.
 
-**✅ Weekly model updates** - We monitor LMArena rankings and deprecation notices to keep defaults current.
+**✅ Model updates** - We monitor provider model lists and deprecation notices to keep defaults current.
 
-**✅ Zero lock-in** - Don't like our defaults? Override with any model: `LLMClient(model="gpt-5")` or `llmswap config set provider.models.openai gpt-5`
+**✅ Zero lock-in** - Don't like our defaults? Override with any model: `LLMClient(model="gpt-5.2-pro")` or `llmswap config set provider.models.openai gpt-5.2-pro`
 
 ---
 
 ## 🔓 Use Any Model Your Provider Supports (Zero-Wait Model Support)
 
-Here's something cool: LLMSwap doesn't restrict which models you can use. When GPT-5 or Gemini 2.5 Pro drops tomorrow, you can start using it immediately. No waiting for us to update anything.
+LLMSwap doesn't restrict which models you can use. When a provider releases a new model, you can pass the model ID immediately. No waiting for a package update.
 
 **How?** We use pass-through architecture. Whatever model name you pass goes directly to your provider's API. We don't gatekeep.
 
 ### CLI Examples:
 
 ```bash
-# Use any OpenAI model (even ones that don't exist yet)
-llmswap chat --provider openai --model gpt-5
-llmswap chat --provider openai --model o3-mini
+# Use any OpenAI model
+llmswap chat --provider openai --model gpt-5.2
+llmswap chat --provider openai --model gpt-5.2-pro
 
 # Use any Anthropic model
-llmswap chat --provider anthropic --model claude-sonnet-4-6
-llmswap chat --provider anthropic --model claude-opus-4-6
+llmswap chat --provider anthropic --model claude-sonnet-4-20250514
+llmswap chat --provider anthropic --model claude-opus-4-1-20250805
 
 # Use any Gemini model
-llmswap chat --provider gemini --model gemini-2-5-pro
-llmswap chat --provider gemini --model gemini-ultra-2
+llmswap chat --provider gemini --model gemini-3-pro-preview
+llmswap chat --provider gemini --model gemini-2.5-pro
 
 # Set as default so you don't have to type it every time
-llmswap config set provider.models.openai gpt-5
-llmswap config set provider.models.anthropic claude-opus-4
+llmswap config set provider.models.openai gpt-5.2
+llmswap config set provider.models.anthropic claude-sonnet-4-20250514
 ```
 
 ### Python SDK:
@@ -1067,8 +1060,8 @@ client = LLMClient(provider="openai", model="gpt-6")  # works!
 | Feature | LLMSwap | langchain-mcp-tools | mcp-use | Anthropic SDK |
 |---------|---------|---------------------|---------|---------------|
 | **Natural Language** | ✅ Ask in plain English | ❌ Manual JSON | ❌ Manual JSON | ❌ Manual JSON |
-| **Multi-Provider MCP** | ✅ 11 providers | ❌ LangChain only | ⚠️ Limited | ❌ Claude only |
-| **Latest Models** | ✅ Day-one support (Dec '24) | ⚠️ Delayed updates | ⚠️ Delayed updates | ✅ Claude only |
+| **Multi-Provider MCP** | ✅ 10 providers | ❌ LangChain only | ⚠️ Limited | ❌ Claude only |
+| **Latest Models** | ✅ Pass-through support | ⚠️ Delayed updates | ⚠️ Delayed updates | ✅ Claude only |
 | **Beautiful CLI** | ✅ Bordered UI | ❌ No CLI | ❌ Basic | ❌ No CLI |
 | **Setup Time** | 🟢 30 seconds | 🔴 Hours (LangChain) | 🟡 Medium | 🟢 Fast |
 | **Production Ready** | ✅ Circuit breakers | ❌ DIY | ❌ DIY | ⚠️ Limited |
@@ -1079,9 +1072,9 @@ client = LLMClient(provider="openai", model="gpt-6")  # works!
 
 **Why LLMSwap for MCP?**
 - **Natural language**: Just ask "List all PDFs" - no JSON schemas
-- **Universal**: Works with 11 providers, not just one
+- **Universal**: Works with 10 implemented providers, not just one
 - **Production-ready**: Circuit breakers, health checks, monitoring built-in
-- **Latest models**: Claude 3.5 Haiku, Gemini 2.0, o1 work day-one
+- **Latest models**: Provider pass-through lets you use new model IDs as soon as your provider enables them
 
 ---
 
@@ -1124,7 +1117,7 @@ llmswap chat --age 25 --mentor tutor
 
 # 🆕 NEW v5.0: Provider Management & Configuration
 llmswap providers                    # View all providers and their status
-llmswap config set provider.models.cohere command-r-plus-08-2024
+llmswap config set provider.models.cohere command-a-plus-05-2026
 llmswap config set provider.default anthropic
 llmswap config show
 
@@ -1147,7 +1140,7 @@ llmswap debug --error "IndexError: list index out of range"
 ```python
 # ❌ Problem: Vendor Lock-in
 import openai  # Locked to OpenAI forever
-client = openai.Client(api_key="sk-...")
+client = openai.Client(api_key="YOUR_OPENAI_API_KEY")
 response = client.chat.completions.create(
     model="gpt-4",
     messages=[{"role": "user", "content": "Hello"}]
@@ -1553,7 +1546,7 @@ llmswap generate "Python function to read CSV"
 | Command | Description | Example |
 |---------|-------------|---------|
 | `llmswap providers` | View all providers and their status | Shows configured/missing API keys |
-| `llmswap config set provider.models.<provider> <model>` | Update default model for any provider | `llmswap config set provider.models.cohere command-r-plus-08-2024` |
+| `llmswap config set provider.models.<provider> <model>` | Update default model for any provider | `llmswap config set provider.models.cohere command-a-plus-05-2026` |
 | `llmswap config list` | View current configuration | Shows all settings and models |
 | `/switch` (in chat) | Switch providers mid-conversation | Privacy-compliant provider switching |
 | `/provider` (in chat) | Show current provider and available options | Quick status check |
@@ -1857,7 +1850,7 @@ llmswap web --port 3000 --host 0.0.0.0 --no-browser
 - First-time user tips - gentle onboarding for new users
 - Better error messages - helpful setup instructions when API keys missing
 
-**Screenshot:** Compare GPT-5.2, Claude Sonnet 4.6, Gemini 3 Flash, Grok 4.1, and 17 more models simultaneously. See speed badges update in real-time, cost bars visualize price differences, and code blocks with syntax highlighting.
+**Screenshot:** Compare GPT-5.2, Claude Sonnet 4, Gemini 3 Pro Preview, Grok 4.3, and other configured models simultaneously. See speed badges update in real-time, cost bars visualize price differences, and code blocks with syntax highlighting.
 
 ---
 
@@ -1875,13 +1868,13 @@ llmswap providers
 ============================================================
 | Provider   | Default Model              | Status            | Issue                    |
 |============|============================|===================|==========================|
-| ANTHROPIC  | claude-3-5-sonnet-20241022 | ✅ CONFIGURED     |                          |
-| OPENAI     | gpt-4o                     | ❌ NOT CONFIGURED | OPENAI_API_KEY missing   |
-| GEMINI     | gemini-1.5-pro             | ✅ CONFIGURED     |                          |
-| COHERE     | command-r-plus-08-2024     | ❌ NOT CONFIGURED | COHERE_API_KEY missing   |
+| ANTHROPIC  | claude-sonnet-4-20250514   | ✅ CONFIGURED     |                          |
+| OPENAI     | gpt-5.2                    | ❌ NOT CONFIGURED | OPENAI_API_KEY missing   |
+| GEMINI     | gemini-3-pro-preview       | ✅ CONFIGURED     |                          |
+| COHERE     | command-a-plus-05-2026     | ❌ NOT CONFIGURED | COHERE_API_KEY missing   |
 | PERPLEXITY | sonar-pro                  | ✅ CONFIGURED     |                          |
-| WATSONX    | granite-13b-chat           | ✅ CONFIGURED     |                          |
-| GROQ       | llama-3.3-70b-versatile    | ✅ CONFIGURED     |                          |
+| WATSONX    | ibm/granite-3-3-8b-instruct | ✅ CONFIGURED    |                          |
+| GROQ       | openai/gpt-oss-120b        | ✅ CONFIGURED     |                          |
 | OLLAMA     | llama3.1                   | ⚠️ NOT RUNNING   | Local server not running |
 
 📊 Summary: 5/8 providers available
@@ -1890,9 +1883,9 @@ llmswap providers
 **🔧 Model Configuration:**
 ```bash
 # Update any provider's default model
-llmswap config set provider.models.openai gpt-4o-mini
-llmswap config set provider.models.cohere command-r-plus-08-2024
-llmswap config set provider.models.anthropic claude-3-5-haiku-20241022
+llmswap config set provider.models.openai gpt-5.2
+llmswap config set provider.models.cohere command-a-plus-05-2026
+llmswap config set provider.models.anthropic claude-sonnet-4-20250514
 
 # Set default provider
 llmswap config set provider.default anthropic
@@ -1906,10 +1899,10 @@ llmswap config import team-config.yaml --merge
 ```
 
 **🚀 Handle Model Deprecations:**
-When providers deprecate models (like Cohere's `command-r-plus` → `command-r-plus-08-2024`):
+When providers deprecate models, update your config and keep the rest of your code unchanged:
 ```bash
 # Simply update your config - no code changes needed!
-llmswap config set provider.models.cohere command-r-plus-08-2024
+llmswap config set provider.models.cohere command-a-plus-05-2026
 llmswap providers  # Verify the change
 ```
 
@@ -2307,10 +2300,10 @@ response = client.chat("What's the weather in Tokyo?", tools=[weather])
 ## 📊 Why Thousands Choose llmswap
 
 - ⚡ **12,000+ Downloads** - Trusted by developers worldwide
-- 🚀 **v5.2.0** - Now with universal tool calling
+- 🚀 **v5.5.7** - Current provider defaults, cleaner packaging, and universal tool calling
 - 🔓 **MIT License** - 100% open source, free forever
-- 🐍 **Python 3.8+** - Works on all platforms
-- 🌍 **11 Providers** - Anthropic, OpenAI, Gemini, Groq, xAI, Cohere, Perplexity, Sarvam, IBM watsonx, Ollama
+- 🐍 **Python 3.9+** - Works on all platforms
+- 🌍 **10 Providers** - Anthropic, OpenAI, Gemini, Groq, xAI, Cohere, Perplexity, Sarvam, IBM watsonx, Ollama
 - 📦 **pip & Homebrew** - Install in seconds
 - 🎯 **Production Ready** - Used in real products
 
