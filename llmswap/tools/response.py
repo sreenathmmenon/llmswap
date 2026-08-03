@@ -200,7 +200,7 @@ def extract_gemini_tool_calls(response: Any) -> List[ToolCall]:
 
                     tool_calls.append(
                         ToolCall(
-                            id=func_call.name,  # Gemini doesn't have separate ID
+                            id=getattr(func_call, "id", None) or func_call.name,
                             name=func_call.name,
                             arguments=args,
                         )

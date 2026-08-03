@@ -35,7 +35,7 @@ class MCPClient:
         client.close()
     """
 
-    def __init__(self, client_name: str = "llmswap", client_version: str = "5.5.8"):
+    def __init__(self, client_name: str = "llmswap", client_version: str = "5.6.0"):
         """
         Initialize MCP client
 
@@ -93,16 +93,22 @@ class MCPClient:
         self.transport.send_message(init_request.to_dict())
 
         # Wait for response
-        response_data = self.transport.receive_message()
-        response = JSONRPCResponse.from_dict(response_data)
+        response = self._receive_response(init_request.id)
 
         if response.is_error():
             raise MCPConnectionError(
                 f"Initialize failed: {response.error}", details=response.error
             )
 
+        if not isinstance(response.result, dict):
+            raise MCPProtocolError("Initialize response did not contain a result")
+
         self._initialized = True
         self._server_info = response.result
+
+        # The MCP lifecycle requires this notification before normal requests.
+        initialized = MCPProtocol.initialized()
+        self.transport.send_message(initialized.to_dict())
 
         logger.info(
             f"MCP session initialized: {self._server_info.get('serverInfo', {}).get('name', 'unknown')}"
@@ -122,8 +128,7 @@ class MCPClient:
         self.transport.send_message(request.to_dict())
 
         # Wait for response
-        response_data = self.transport.receive_message()
-        response = JSONRPCResponse.from_dict(response_data)
+        response = self._receive_response(request.id)
 
         if response.is_error():
             raise MCPError(
@@ -158,8 +163,7 @@ class MCPClient:
         self.transport.send_message(request.to_dict())
 
         # Wait for response
-        response_data = self.transport.receive_message(timeout=timeout)
-        response = JSONRPCResponse.from_dict(response_data)
+        response = self._receive_response(request.id, timeout=timeout)
 
         if response.is_error():
             raise MCPError(
@@ -183,8 +187,7 @@ class MCPClient:
         request = MCPProtocol.list_resources()
         self.transport.send_message(request.to_dict())
 
-        response_data = self.transport.receive_message()
-        response = JSONRPCResponse.from_dict(response_data)
+        response = self._receive_response(request.id)
 
         if response.is_error():
             raise MCPError(
@@ -217,6 +220,32 @@ class MCPClient:
 
         if not self.transport:
             raise MCPError("No transport connected")
+
+    def _receive_response(
+        self, request_id: str, timeout: Optional[float] = None
+    ) -> JSONRPCResponse:
+        """Wait for the response matching a request, skipping notifications."""
+        if not self.transport:
+            raise MCPError("No transport connected")
+
+        while True:
+            message = self.transport.receive_message(timeout=timeout)
+            if message.get("id") == request_id:
+                return JSONRPCResponse.from_dict(message)
+
+            # This synchronous client does not implement server-initiated
+            # requests. Reply explicitly instead of treating one as a result.
+            if message.get("method") and message.get("id") is not None:
+                self.transport.send_message(
+                    {
+                        "jsonrpc": "2.0",
+                        "id": message["id"],
+                        "error": {
+                            "code": -32601,
+                            "message": "Server-initiated requests are not supported",
+                        },
+                    }
+                )
 
     def __enter__(self):
         """Context manager entry"""

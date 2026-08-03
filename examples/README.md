@@ -7,6 +7,10 @@ Comprehensive examples demonstrating LLMSwap's capabilities across different use
 ```
 examples/
 ├── README.md (this file)
+├── customer_demos/           # Three complete, real-customer mini-products
+│   ├── support_triage/       # Synchronous query + structured output + cache
+│   ├── product_feedback/     # Async streaming product brief
+│   └── mcp_account_agent/    # OpenAI-driven filesystem MCP agent
 ├── basic/                    # Getting started
 │   ├── simple_query.py       # Basic LLM query
 │   ├── provider_switching.py # Switch providers
@@ -72,6 +76,12 @@ for chunk in client.stream("Write a story"):
 ```
 
 ## 📚 Example Categories
+
+### Real Customer Demos
+
+The [`customer_demos/`](customer_demos/) directory contains three complete
+mini-products with sample inputs and saved output artifacts: a support copilot,
+a streaming feedback analyst, and an MCP account agent.
 
 ### Basic Examples
 

@@ -161,7 +161,7 @@ def compare_gemini_models():
     print("="*60)
     
     models = [
-        ("gemini-3-pro-preview", "Current flagship preview"),
+        ("gemini-3.6-flash", "Current recommended stable model"),
         ("gemini-3-deep-think", "Advanced reasoning"),
         ("gemini-2.5-pro", "Stable Pro"),
     ]

@@ -21,7 +21,7 @@ class ProviderSpec:
 PROVIDER_SPECS: Dict[str, ProviderSpec] = {
     "anthropic": ProviderSpec(
         name="anthropic",
-        default_model="claude-sonnet-4-20250514",
+        default_model="claude-sonnet-5",
         env_key="ANTHROPIC_API_KEY",
         sync_class="AnthropicProvider",
         async_class="AsyncAnthropicProvider",
@@ -29,7 +29,7 @@ PROVIDER_SPECS: Dict[str, ProviderSpec] = {
     ),
     "openai": ProviderSpec(
         name="openai",
-        default_model="gpt-5.2",
+        default_model="gpt-5.6",
         env_key="OPENAI_API_KEY",
         sync_class="OpenAIProvider",
         async_class="AsyncOpenAIProvider",
@@ -37,7 +37,7 @@ PROVIDER_SPECS: Dict[str, ProviderSpec] = {
     ),
     "gemini": ProviderSpec(
         name="gemini",
-        default_model="gemini-3-pro-preview",
+        default_model="gemini-3.6-flash",
         env_key="GEMINI_API_KEY",
         sync_class="GeminiProvider",
         async_class="AsyncGeminiProvider",
@@ -59,7 +59,7 @@ PROVIDER_SPECS: Dict[str, ProviderSpec] = {
     ),
     "watsonx": ProviderSpec(
         name="watsonx",
-        default_model="ibm/granite-3-3-8b-instruct",
+        default_model="ibm/granite-4-h-small",
         env_key="WATSONX_API_KEY",
         sync_class="WatsonxProvider",
         async_class="AsyncWatsonxProvider",
@@ -75,14 +75,14 @@ PROVIDER_SPECS: Dict[str, ProviderSpec] = {
     ),
     "ollama": ProviderSpec(
         name="ollama",
-        default_model="llama3.1",
+        default_model="qwen3.5:9b",
         env_key=None,
         sync_class="OllamaProvider",
         async_class="AsyncOllamaProvider",
     ),
     "xai": ProviderSpec(
         name="xai",
-        default_model="grok-4.3",
+        default_model="grok-4.5",
         env_key="XAI_API_KEY",
         sync_class="XAIProvider",
         async_class="AsyncXAIProvider",

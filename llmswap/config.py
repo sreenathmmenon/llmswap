@@ -5,6 +5,7 @@ Provides git-like configuration commands and user preference management.
 """
 
 import os
+import shutil
 import yaml
 import json
 from pathlib import Path
@@ -15,6 +16,8 @@ from .provider_registry import DEFAULT_PROVIDER_MODELS, get_provider_names
 
 class LLMSwapConfig:
     """Configuration manager for llmswap settings."""
+
+    CONFIG_VERSION = 2
 
     def __init__(self, config_path: Optional[str] = None):
         """Initialize configuration manager.
@@ -45,6 +48,7 @@ class LLMSwapConfig:
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default configuration values."""
         return {
+            "config_version": self.CONFIG_VERSION,
             "provider": {
                 "default": "auto",
                 "fallback_order": [
@@ -110,10 +114,14 @@ class LLMSwapConfig:
 
     def _load_config(self):
         """Load configuration from file, creating with defaults if not exists."""
+        migrated = False
         try:
             if os.path.exists(self.config_path):
                 with open(self.config_path, "r") as f:
                     self._config_data = yaml.safe_load(f) or {}
+                self._config_data, migrated = self._migrate_config(
+                    self._config_data
+                )
             else:
                 # First run - create config file with defaults
                 print(f"🔧 Creating config file at {self.config_path}")
@@ -125,6 +133,70 @@ class LLMSwapConfig:
 
         # Always merge with defaults to handle new settings
         self._config_data = self._merge_with_defaults(self._config_data)
+        if migrated:
+            self._save_config()
+
+    def _migrate_config(self, config: Dict[str, Any]):
+        """Upgrade known package defaults without rewriting custom model choices."""
+        try:
+            version = int(config.get("config_version", 0))
+        except (TypeError, ValueError):
+            version = 0
+
+        if version >= self.CONFIG_VERSION:
+            return config, False
+
+        # These values were shipped as LLMSwap defaults and are now retired,
+        # withdrawn, or superseded. Unknown values are user choices and remain.
+        legacy_models = {
+            "anthropic": {
+                "claude-sonnet-4-5",
+                "claude-sonnet-4-20250514",
+                "claude-opus-4-20250514",
+                "claude-3-7-sonnet-20250219",
+            },
+            "openai": {"gpt-4o-mini", "gpt-5.2"},
+            "gemini": {
+                "gemini-2.0-flash-exp",
+                "gemini-2.5-flash",
+                "gemini-2.5-pro",
+                "gemini-3-pro-preview",
+            },
+            "cohere": {"command-r", "command-r-08-2024"},
+            "watsonx": {
+                "ibm/granite-3-8b-instruct",
+                "ibm/granite-3-3-8b-instruct",
+            },
+            "groq": {
+                "llama-3.1-8b-instant",
+                "llama-3.3-70b-versatile",
+                "mixtral-8x7b-32768",
+            },
+            "xai": {"grok-4-0709", "grok-4.3", "grok-4.3-latest"},
+            "sarvam": {"sarvam-m"},
+        }
+
+        provider_config = config.setdefault("provider", {})
+        models = provider_config.setdefault("models", {})
+        for provider, retired_defaults in legacy_models.items():
+            if models.get(provider) in retired_defaults:
+                models[provider] = DEFAULT_PROVIDER_MODELS[provider]
+
+        # Older generated configs predate xAI and Sarvam in fallback_order.
+        fallback_order = provider_config.setdefault("fallback_order", [])
+        for provider in get_provider_names():
+            if provider not in fallback_order:
+                fallback_order.append(provider)
+
+        config["config_version"] = self.CONFIG_VERSION
+
+        # Preserve the exact pre-migration file once for recovery.
+        if os.path.exists(self.config_path):
+            backup_path = f"{self.config_path}.pre-v{self.CONFIG_VERSION}.bak"
+            if not os.path.exists(backup_path):
+                shutil.copy2(self.config_path, backup_path)
+
+        return config, True
 
     def _merge_with_defaults(self, user_config: Dict[str, Any]) -> Dict[str, Any]:
         """Merge user configuration with defaults."""

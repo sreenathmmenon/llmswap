@@ -10,7 +10,7 @@ import concurrent.futures
 from typing import Dict, List, Optional, Any
 from .client import LLMClient
 from .exceptions import ProviderError, ConfigurationError
-from .provider_registry import PROVIDER_SPECS
+from .provider_registry import PROVIDER_SPECS, get_provider_names
 
 
 def verify_provider(provider_name: str, timeout: int = 10) -> Dict[str, Any]:
@@ -76,13 +76,20 @@ def verify_provider(provider_name: str, timeout: int = 10) -> Dict[str, Any]:
 
     # Verify with real API call
     try:
-        client = LLMClient(provider=provider_name, cache_enabled=False)
+        # A provider health check must exercise only the requested provider;
+        # fallback would create a dangerous false-positive verification.
+        client = LLMClient(
+            provider=provider_name,
+            fallback=False,
+            cache_enabled=False,
+            workspace_enabled=False,
+        )
 
         # Minimal test query (costs ~$0.00001)
         test_query = "Say 'OK'"
 
         start_time = time.time()
-        response = client.query(test_query, timeout=timeout)
+        response = client.query(test_query)
         latency = int((time.time() - start_time) * 1000)  # Convert to ms
 
         result["latency_ms"] = latency
@@ -195,10 +202,7 @@ def verify_all_providers(
     Returns:
         Dictionary with verification results and summary
     """
-    from .config import get_config
-
-    config = get_config()
-    all_providers = config.get("provider.fallback_order", [])
+    all_providers = get_provider_names()
 
     # Filter to specific provider if requested
     if provider_filter:

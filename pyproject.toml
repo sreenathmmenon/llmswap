@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.5.8"
-description = "Python SDK + CLI for 10 LLM providers: OpenAI GPT-5.2, Claude Sonnet 4, Gemini 3 Pro Preview, Grok 4.3, Cohere Command A+, Groq GPT-OSS, Perplexity Sonar, IBM watsonx, Sarvam, and Ollama. Universal tool calling, MCP protocol, automatic fallback, zero vendor lock-in."
+version = "5.6.0"
+description = "Python SDK + CLI for 10 LLM providers: OpenAI GPT-5.6, Claude Sonnet 5, Gemini 3.6 Flash, Grok 4.5, Cohere Command A+, Groq GPT-OSS, Perplexity Sonar, IBM watsonx, Sarvam, and Ollama. Universal tool calling, MCP protocol, automatic fallback, zero vendor lock-in."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
@@ -26,7 +26,7 @@ keywords = [
     "anthropic",
     "claude",
     "gemini",
-    "gemini-3-pro-preview",
+    "gemini-3.6-flash",
     "gemini-3",
     "gemini-flash",
     "google-gemini",
@@ -60,9 +60,9 @@ keywords = [
     "multi-llm-copilot",
     "gpt-5",
     "gpt-5.1",
-    "gpt-5.2",
-    "gpt-5.2-codex",
-    "openai-gpt-5.2",
+    "gpt-5.6",
+    "gpt-5.6-sol",
+    "openai-gpt-5.6",
     "claude-sonnet-4",
     "claude-opus-4-1",
     "claude-4",
@@ -304,9 +304,9 @@ keywords = [
     "gemini-3-pro",
     "gemini-3",
     "gemini-3-deep-think",
-    "gpt-5.2-python",
-    "gpt-5.2-sdk",
-    "gpt-5.2-api",
+    "gpt-5.6-python",
+    "gpt-5.6-sdk",
+    "gpt-5.6-api",
     "perplexity-sonar",
     "sarvam-105b",
     "cheapest-ai-model",
@@ -326,8 +326,8 @@ keywords = [
     "december-2025-models",
     "newest-ai-models",
     "2025-models",
-    "gemini-3-pro-preview",
-    "google-gemini-3-pro-preview",
+    "gemini-3.6-flash",
+    "google-gemini-3.6-flash",
     "multi-provider-mcp",
     "universal-mcp-client",
     "mcp-natural-language",
@@ -368,7 +368,7 @@ classifiers = [
 dependencies = [
     "anthropic>=0.3.0",
     "openai>=1.0.0",
-    "google-generativeai>=0.3.0",
+    "google-genai>=1.0.0",
     "requests>=2.25.0",
     "python-dotenv>=0.19.0",
     "httpx>=0.24.0",
@@ -377,6 +377,7 @@ dependencies = [
     "PyYAML>=6.0",
     "groq>=0.4.0",
     "cohere>=5.16.0",
+    "tabulate>=0.9.0",
 ]
 
 [project.optional-dependencies]
@@ -388,7 +389,7 @@ web = [
 all = [
     "anthropic>=0.3.0",
     "openai>=1.0.0",
-    "google-generativeai>=0.3.0",
+    "google-genai>=1.0.0",
     "PyYAML>=6.0",
     "ibm-watsonx-ai>=0.0.5",
     "groq>=0.4.0",
@@ -437,6 +438,7 @@ only-include = [
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
+    "MODEL_SUPPORT.md",
     "CONTRIBUTORS.md",
     "examples",
 ]

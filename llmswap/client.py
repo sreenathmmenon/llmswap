@@ -782,22 +782,28 @@ class LLMClient:
         # Update session-specific analytics
         if self._chat_session_active and hasattr(response, "usage") and response.usage:
             # Track tokens for this session
-            tokens = response.usage.get("total_tokens", 0)
+            input_tokens = response.usage.get("input_tokens") or response.usage.get(
+                "prompt_tokens", 0
+            )
+            output_tokens = response.usage.get(
+                "output_tokens"
+            ) or response.usage.get("completion_tokens", 0)
+            tokens = response.usage.get("total_tokens") or (
+                input_tokens + output_tokens
+            )
             self._session_tokens += tokens
 
             # Calculate and track cost for this session
             if self._analytics_enabled and self._cost_estimator:
                 provider = self.get_current_provider()
                 model = self.get_current_model()
-                input_tokens = response.usage.get("prompt_tokens", 0)
-                output_tokens = response.usage.get("completion_tokens", 0)
 
                 if input_tokens and output_tokens:
                     cost_info = self._cost_estimator.estimate_cost(
-                        provider, model, input_tokens, output_tokens
+                        input_tokens, output_tokens, provider, model
                     )
-                    if cost_info and "total" in cost_info:
-                        self._session_cost += cost_info["total"]
+                    if cost_info:
+                        self._session_cost += cost_info.get("total_cost", 0)
 
         # No local conversation storage - provider handles everything
         return response
@@ -999,7 +1005,7 @@ class LLMClient:
 
         try:
             # Create MCP client
-            mcp_client = MCPClient(client_name="llmswap", client_version="5.5.8")
+            mcp_client = MCPClient(client_name="llmswap", client_version="5.6.0")
 
             # Connect based on transport type
             if command:
@@ -1337,37 +1343,47 @@ class LLMClient:
                 )
 
         elif provider == "gemini":
-            # Gemini format: function role with parts
-            # 1. Add model message with function_call
-            function_calls = []
-            for tool_call in tool_calls:
-                if isinstance(tool_call, dict):
-                    function_calls.append(
-                        {
-                            "function_call": {
-                                "name": tool_call.get("name", "unknown"),
-                                "args": tool_call.get("arguments", {}),
-                            }
-                        }
-                    )
-                else:
-                    function_calls.append(
-                        {
-                            "function_call": {
-                                "name": getattr(tool_call, "name", "unknown"),
-                                "args": getattr(tool_call, "arguments", {}),
-                            }
-                        }
-                    )
-
-            messages.append({"role": "model", "parts": function_calls})
+            # Preserve the SDK response parts. Gemini 3 thought signatures are
+            # attached to these parts and must survive a tool round-trip.
+            raw_response = None
+            if original_response and getattr(original_response, "metadata", None):
+                raw_response = original_response.metadata.get("raw_response")
+            if (
+                raw_response
+                and getattr(raw_response, "candidates", None)
+                and getattr(raw_response.candidates[0], "content", None)
+            ):
+                messages.append(
+                    {
+                        "role": "model",
+                        "parts": raw_response.candidates[0].content.parts,
+                    }
+                )
+            else:
+                function_calls = []
+                for tool_call in tool_calls:
+                    if isinstance(tool_call, dict):
+                        name = tool_call.get("name", "unknown")
+                        arguments = tool_call.get("arguments", {})
+                        call_id = tool_call.get("id")
+                    else:
+                        name = getattr(tool_call, "name", "unknown")
+                        arguments = getattr(tool_call, "arguments", {})
+                        call_id = getattr(tool_call, "id", None)
+                    function_call = {"name": name, "args": arguments}
+                    if call_id:
+                        function_call["id"] = call_id
+                    function_calls.append({"function_call": function_call})
+                messages.append({"role": "model", "parts": function_calls})
 
             # 2. Add function messages with results
             for tool_call, result in zip(tool_calls, tool_results):
                 if isinstance(tool_call, dict):
                     tool_name = tool_call.get("name", "unknown")
+                    tool_id = tool_call.get("id")
                 else:
                     tool_name = getattr(tool_call, "name", "unknown")
+                    tool_id = getattr(tool_call, "id", None)
 
                 result_content = (
                     result.get("content", result)
@@ -1386,17 +1402,13 @@ class LLMClient:
                 else:
                     result_obj = result_content
 
+                function_response = {"name": tool_name, "response": result_obj}
+                if tool_id:
+                    function_response["id"] = tool_id
                 messages.append(
                     {
-                        "role": "function",
-                        "parts": [
-                            {
-                                "function_response": {
-                                    "name": tool_name,
-                                    "response": result_obj,
-                                }
-                            }
-                        ],
+                        "role": "user",
+                        "parts": [{"function_response": function_response}],
                     }
                 )
 

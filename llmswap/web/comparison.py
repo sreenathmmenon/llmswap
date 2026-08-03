@@ -33,13 +33,6 @@ def compare_models(prompt: str, models: List[str], client=None) -> List[Dict[str
     if not models or len(models) == 0:
         raise ValueError("Models list cannot be empty")
 
-    # Import here to avoid circular dependency
-    if client is None:
-        from llmswap import LLMClient
-
-        # Disable fallback so we get real errors when API keys are missing
-        client = LLMClient(fallback=False)
-
     results = []
 
     # Use ThreadPoolExecutor for concurrent queries
@@ -90,15 +83,22 @@ def _query_model(client, model: str, prompt: str) -> Dict[str, Any]:
     start_time = time.time()
 
     try:
-        # Detect provider from model name
         provider = _get_provider_for_model(model)
 
-        # Set provider and model explicitly (no fallback)
-        client.set_provider(provider)
-        client.model = model
+        if client is None:
+            # Each worker owns its client; provider switching mutates a client and
+            # is therefore unsafe to share across concurrent comparisons.
+            from llmswap import LLMClient
+
+            active_client = LLMClient(
+                provider=provider, model=model, fallback=False
+            )
+        else:
+            active_client = client
+            active_client.set_provider(provider, model=model)
 
         # Query the model
-        response = client.query(prompt)
+        response = active_client.query(prompt)
 
         # Extract text from LLMResponse object
         if hasattr(response, "content"):
@@ -201,36 +201,16 @@ def _get_provider_for_model(model: str) -> str:
     Returns:
         Provider name
     """
-    model_lower = model.lower()
+    from .models import get_model_provider
 
-    if "gpt" in model_lower or "o1" in model_lower:
-        return "openai"
-    elif "claude" in model_lower:
-        return "anthropic"
-    elif "gemini" in model_lower:
-        return "gemini"
-    elif "grok" in model_lower:
-        return "xai"
-    elif "command" in model_lower or "cohere" in model_lower:
-        return "cohere"
-    elif "llama" in model_lower or "mistral" in model_lower:
-        return "ollama"
-    elif "sonar" in model_lower:
-        return "perplexity"
-    elif "granite" in model_lower:
-        return "watsonx"
-    elif "sarvam" in model_lower:
-        return "sarvam"
-    else:
-        # Default to openai for unknown models
-        return "openai"
+    return get_model_provider(model)
 
 
 def _estimate_cost(model: str, prompt_tokens: int, response_tokens: int) -> float:
     """
     Estimate cost based on model and token counts.
 
-    Uses dynamic pricing from models.py (December 2025 latest).
+    Uses dynamic pricing from the August 2026 model catalog.
 
     Args:
         model: Model ID
@@ -273,11 +253,6 @@ def compare_models_streaming(prompt: str, models: List[str], client=None):
     if not models or len(models) == 0:
         raise ValueError("Models list cannot be empty")
 
-    if client is None:
-        from llmswap import LLMClient
-
-        client = LLMClient()
-
     # Track per-model state
     model_states = {
         model: {"chunks": [], "start_time": None, "tokens": 0, "done": False}
@@ -288,13 +263,20 @@ def compare_models_streaming(prompt: str, models: List[str], client=None):
         """Stream a single model and yield chunks."""
         try:
             provider = _get_provider_for_model(model)
-            client.set_provider(provider)
-            client.model = model
+            if client is None:
+                from llmswap import LLMClient
+
+                active_client = LLMClient(
+                    provider=provider, model=model, fallback=False
+                )
+            else:
+                active_client = client
+                active_client.set_provider(provider, model=model)
 
             model_states[model]["start_time"] = time.time()
 
             # Stream from provider
-            for chunk in client.stream(prompt):
+            for chunk in active_client.stream(prompt):
                 # Extract text from chunk
                 if hasattr(chunk, "content"):
                     text = chunk.content

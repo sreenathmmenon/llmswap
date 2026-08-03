@@ -1,0 +1,27 @@
+[
+  {
+    "rating": 5,
+    "segment": "Enterprise",
+    "feedback": "The comparison view saves our evaluation team hours each week."
+  },
+  {
+    "rating": 2,
+    "segment": "Growth",
+    "feedback": "CSV exports sometimes download with headings but no rows."
+  },
+  {
+    "rating": 3,
+    "segment": "Starter",
+    "feedback": "Setup was simple, but provider errors need clearer recovery steps."
+  },
+  {
+    "rating": 4,
+    "segment": "Enterprise",
+    "feedback": "We need an audit log showing which model handled each fallback request."
+  },
+  {
+    "rating": 5,
+    "segment": "Growth",
+    "feedback": "Streaming responses make the app feel much faster."
+  }
+]

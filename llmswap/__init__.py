@@ -19,7 +19,7 @@ Advanced usage:
     client.set_provider("openai")
 
     # With custom model
-    client = LLMClient(provider="anthropic", model="claude-sonnet-4-20250514")
+    client = LLMClient(provider="anthropic", model="claude-sonnet-5")
 """
 
 # Suppress gRPC ALTS warnings - must be set before any imports
@@ -28,7 +28,7 @@ import os
 os.environ.setdefault("GRPC_VERBOSITY", "NONE")
 os.environ.setdefault("GLOG_minloglevel", "2")
 
-__version__ = "5.5.8"
+__version__ = "5.6.0"
 __author__ = "Sreenath Menon"
 __description__ = "Universal AI Platform: CLI + Python SDK | Multi-Provider LLM Interface for Any Use Case"
 

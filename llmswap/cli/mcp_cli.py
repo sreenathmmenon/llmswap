@@ -44,7 +44,7 @@ class NaturalLanguageMCPSession:
         Initialize natural language MCP session
 
         Args:
-            url: URL for remote MCP server
+            url: Legacy remote MCP server URL (experimental)
             command: Command for local MCP server
             provider: LLM provider (auto, anthropic, openai, gemini, groq, xai)
             model: Model name (optional)
@@ -170,21 +170,25 @@ class NaturalLanguageMCPSession:
                 if not user_input:
                     continue
 
+                # Accept the slash-prefixed convention from ``llmswap chat``
+                # as well as the MCP CLI's original bare commands.
+                command = user_input.lower().lstrip("/")
+
                 # Handle special commands
-                if user_input.lower() == "help":
+                if command == "help":
                     self.ui.help_message()
                     continue
 
-                if user_input.lower() == "tools":
+                if command == "tools":
                     self.ui.tools_list(self.tools)
                     continue
 
-                if user_input.lower() == "clear":
+                if command == "clear":
                     self.conversation_history = []
                     self.ui.info("Conversation history cleared")
                     continue
 
-                if user_input.lower() == "status":
+                if command == "status":
                     self.ui.connection_status(
                         self.server_type,
                         len(self.tools),
@@ -193,7 +197,7 @@ class NaturalLanguageMCPSession:
                     continue
 
                 # Check for exit commands
-                if user_input.lower() in ["exit", "quit", "bye", "goodbye"]:
+                if command in ["exit", "quit", "bye", "goodbye"]:
                     self.ui.goodbye()
                     break
 
@@ -309,8 +313,15 @@ class NaturalLanguageMCPSession:
 
     def close(self):
         """Close connections"""
-        # LLMClient handles cleanup automatically
-        pass
+        if not self.llm_client:
+            return
+
+        for server_name in list(self.llm_client.list_mcp_servers()):
+            try:
+                self.llm_client.remove_mcp_server(server_name)
+            except Exception:
+                # Best-effort cleanup during CLI shutdown.
+                continue
 
 
 def main():
@@ -327,7 +338,7 @@ Examples:
   llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem /tmp
   
   # Use specific provider and model
-  llmswap-mcp --provider openai --model gpt-5.2 --command python server.py
+  llmswap-mcp --provider openai --model gpt-5.6 --command python server.py
   
   # Connect to remote server
   llmswap-mcp --url https://api.example.com/mcp
@@ -345,7 +356,9 @@ Environment Variables:
     )
 
     # MCP connection arguments
-    parser.add_argument("--url", help="URL of remote MCP server")
+    parser.add_argument(
+        "--url", help="Legacy remote MCP URL (experimental; not Streamable HTTP)"
+    )
 
     parser.add_argument(
         "--command",

@@ -138,26 +138,17 @@ class Tool:
         """
         Convert to Gemini tool format.
 
-        Gemini uses FunctionDeclaration with specific type mappings.
+        google-genai accepts standard JSON Schema for function declarations.
 
         Returns:
             Tool in Gemini format
         """
-        # Gemini requires type conversion for parameters
-        gemini_properties = {}
-        for param_name, param_def in self.parameters.items():
-            gemini_param = {
-                "type_": param_def.get("type", "string").upper(),
-                "description": param_def.get("description", ""),
-            }
-            gemini_properties[param_name] = gemini_param
-
         return {
             "name": self.name,
             "description": self.description,
             "parameters": {
-                "type_": "OBJECT",
-                "properties": gemini_properties,
+                "type": "object",
+                "properties": self.parameters,
                 "required": self.required,
             },
         }

@@ -1,5 +1,39 @@
 # Changelog
 
+## [5.6.0] - 2026-08-03
+
+### Changed
+- Audited all 10 provider adapters against official model and lifecycle documentation.
+- Updated defaults to GPT-5.6, Claude Sonnet 5, Gemini 3.6 Flash, Grok 4.5, Granite 4 H Small, and Qwen 3.5 9B where applicable.
+- Migrated Gemini from the discontinued `google-generativeai` package to `google-genai`, including async generation and tool schemas.
+- Refreshed the Arena catalog and pricing metadata; preview and local models now carry explicit status metadata.
+- Corrected Arena routing for provider-hosted IDs such as Groq's `openai/gpt-oss-120b` and isolated concurrent clients per model.
+
+### Removed
+- Removed retired or shut-down built-in entries for Claude Sonnet/Opus 4, Claude 3.7 Sonnet, Gemini 3 Pro Preview, IBM Granite 3.x, Groq Mixtral, Cohere Command R, and Sarvam-M.
+- Removed Groq Llama 3.1/3.3 and Gemini 2.5 entries ahead of their announced shutdown dates.
+
+### Fixed
+- Updated OpenAI Chat Completions calls to use `max_completion_tokens` for GPT-5.6 compatibility.
+- Corrected chat-session cost-estimator argument ordering and session cost accumulation.
+- Added `llmswap mcp` as an alias for the standalone `llmswap-mcp` workflow.
+- Clarified MCP maturity: local stdio is verified; the legacy remote transport is experimental and does not yet implement modern Streamable HTTP.
+- Close local MCP subprocesses when an interactive MCP session exits.
+- Updated MCP initialization to protocol version 2025-11-25 and send the required `notifications/initialized` lifecycle event.
+- Accept both `tools` and `/tools`-style commands in the MCP CLI, and render the provider name correctly in authentication help.
+- Report an Ollama provider as unavailable when its configured model is not installed, with the exact `ollama pull` recovery command.
+- Normalize chat-session token totals from either total, input/output, or prompt/completion usage fields.
+- Declare the `tabulate` runtime dependency required by workspace and provider table commands.
+- Disable fallback during provider verification so another provider cannot create a false-positive health check.
+- Fixed GPT-5 tool calling through OpenAI Chat Completions by disabling reasoning
+  for those requests, as required by the API.
+- Fixed HTTP 400 `invalid_request_error` responses being reported as API-key
+  authentication failures.
+- Made provider status and verification cover all 10 registered providers instead of the configured fallback subset.
+- Added a backed-up, one-time migration for retired defaults in persisted user configuration while preserving custom and local model choices.
+- Added missing async-provider defaults and aligned async Groq and Perplexity defaults with the central registry.
+- Preserved Gemini function-call IDs and response parts for Gemini 3 tool-result round trips.
+
 ## [5.5.8] - 2026-05-25
 
 ### Added

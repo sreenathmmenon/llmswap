@@ -70,7 +70,7 @@ class AsyncOpenAIProvider(AsyncBaseProvider):
             response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=4000,
+                max_completion_tokens=4000,
             )
 
             latency = time.time() - start_time
@@ -97,7 +97,7 @@ class AsyncOpenAIProvider(AsyncBaseProvider):
             stream = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=4000,
+                max_completion_tokens=4000,
                 stream=True,
             )
 
@@ -116,6 +116,7 @@ class AsyncAnthropicProvider(AsyncBaseProvider):
     """Async provider for Anthropic Claude models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = DEFAULT_PROVIDER_MODELS["anthropic"]
 
         # Use provided key or get from environment
         if not api_key:
@@ -186,6 +187,7 @@ class AsyncGeminiProvider(AsyncBaseProvider):
     """Async provider for Google Gemini models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = DEFAULT_PROVIDER_MODELS["gemini"]
 
         if not api_key:
             api_key = os.getenv("GEMINI_API_KEY")
@@ -198,22 +200,19 @@ class AsyncGeminiProvider(AsyncBaseProvider):
         super().__init__(api_key, model)
 
         try:
-            import google.generativeai as genai
+            from google import genai
 
-            genai.configure(api_key=self.api_key)
-            self.model_instance = genai.GenerativeModel(self.model)
+            self.client = genai.Client(api_key=self.api_key)
         except ImportError:
             raise ConfigurationError(
-                "google-generativeai package not installed. Run: pip install google-generativeai"
+                "google-genai package not installed. Run: pip install google-genai"
             )
 
     async def query(self, prompt: str) -> LLMResponse:
         start_time = time.time()
         try:
-            # Run in executor since Gemini doesn't have native async support
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, self.model_instance.generate_content, prompt
+            response = await self.client.aio.models.generate_content(
+                model=self.model, contents=prompt
             )
 
             latency = time.time() - start_time
@@ -246,6 +245,7 @@ class AsyncOllamaProvider(AsyncBaseProvider):
     def __init__(
         self, model: Optional[str] = None, url: str = "http://localhost:11434"
     ):
+        self.default_model = DEFAULT_PROVIDER_MODELS["ollama"]
         super().__init__(None, model)
         self.url = url
 
@@ -329,6 +329,7 @@ class AsyncCoherProvider(AsyncBaseProvider):
     """Async provider for Cohere Command models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.default_model = DEFAULT_PROVIDER_MODELS["cohere"]
 
         if not api_key:
             api_key = os.getenv("COHERE_API_KEY")
@@ -404,7 +405,7 @@ class AsyncGroqProvider(AsyncBaseProvider):
     """Async provider for Groq high-performance inference models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "llama-3.1-8b-instant"
+        self.default_model = DEFAULT_PROVIDER_MODELS["groq"]
 
         if not api_key:
             api_key = os.getenv("GROQ_API_KEY")
@@ -472,7 +473,7 @@ class AsyncPerplexityProvider(AsyncBaseProvider):
     """Async provider for Perplexity online models."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.default_model = "sonar"
+        self.default_model = DEFAULT_PROVIDER_MODELS["perplexity"]
 
         if not api_key:
             api_key = os.getenv("PERPLEXITY_API_KEY")
@@ -548,6 +549,7 @@ class AsyncWatsonxProvider(AsyncBaseProvider):
         project_id: str = None,
         url: str = "https://eu-de.ml.cloud.ibm.com",
     ):
+        self.default_model = DEFAULT_PROVIDER_MODELS["watsonx"]
         super().__init__(api_key, model)
         self.project_id = project_id
         self.url = url

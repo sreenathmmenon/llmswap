@@ -1,13 +1,13 @@
 {
   "openai": [
     {
-      "id": "gpt-5.2",
-      "name": "GPT-5.2",
+      "id": "gpt-5.6",
+      "name": "GPT-5.6 Sol",
       "description": "OpenAI • Frontier Model",
       "featured": true,
       "pricing": {
-        "input": 0.15,
-        "output": 0.60
+        "input": 5.0,
+        "output": 30.0
       }
     },
     {
@@ -22,9 +22,9 @@
   ],
   "anthropic": [
     {
-      "id": "claude-sonnet-4-20250514",
-      "name": "Claude Sonnet 4",
-      "description": "Anthropic • Balanced Claude 4",
+      "id": "claude-sonnet-5",
+      "name": "Claude Sonnet 5",
+      "description": "Anthropic • Balanced frontier model",
       "featured": true,
       "pricing": {
         "input": 3.0,
@@ -34,17 +34,17 @@
   ],
   "ollama": [
     {
-      "id": "llama3.3:70b",
-      "name": "Llama 3.3 70B (Local)",
-      "description": "Meta • Self-hosted via Ollama",
+      "id": "qwen3.5:9b",
+      "name": "Qwen 3.5 9B (Local)",
+      "description": "Qwen • Self-hosted via Ollama",
       "pricing": {
         "input": 0.0,
         "output": 0.0
       }
     },
     {
-      "id": "deepseek-r1:latest",
-      "name": "DeepSeek R1 (Local)",
+      "id": "deepseek-r1:8b",
+      "name": "DeepSeek R1 8B (Local)",
       "description": "DeepSeek • Reasoning Model",
       "pricing": {
         "input": 0.0,

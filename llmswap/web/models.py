@@ -2,7 +2,7 @@
 Dynamic model configuration for LLMSwap Web UI.
 
 Allows users to customize available models via:
-1. Default models (built-in, May 2026)
+1. Default models (built-in, August 2026)
 2. Config file (~/.llmswap/models.json)
 3. Environment variable (LLMSWAP_CUSTOM_MODELS)
 
@@ -16,150 +16,150 @@ from pathlib import Path
 from typing import Dict, List, Any
 
 
-# May 2026 - Current documented models across supported providers
+# Audited against provider documentation on 2026-08-03. Prices are USD per
+# million input/output tokens and exclude provider-specific search/tool fees.
 DEFAULT_MODELS = {
     "openai": [
         {
-            "id": "gpt-5.2",
-            "name": "GPT-5.2",
-            "description": "OpenAI • Frontier Model",
+            "id": "gpt-5.6",
+            "name": "GPT-5.6 Sol",
+            "description": "OpenAI • Frontier model",
             "featured": True,
-            "pricing": {"input": 5.0, "output": 20.0},
+            "pricing": {"input": 5.0, "output": 30.0},
+            "status": "stable",
         },
         {
-            "id": "gpt-5.2-pro",
-            "name": "GPT-5.2 Pro",
-            "description": "OpenAI • Highest Precision",
+            "id": "gpt-5.6-terra",
+            "name": "GPT-5.6 Terra",
+            "description": "OpenAI • Balanced frontier model",
             "featured": True,
-            "pricing": {"input": 15.0, "output": 120.0},
+            "pricing": {"input": 2.5, "output": 15.0},
+            "status": "stable",
         },
         {
-            "id": "gpt-5-mini",
-            "name": "GPT-5 Mini",
-            "description": "OpenAI • Cost Efficient",
+            "id": "gpt-5.6-luna",
+            "name": "GPT-5.6 Luna",
+            "description": "OpenAI • Fast and economical",
             "featured": True,
-            "pricing": {"input": 0.25, "output": 2.0},
+            "pricing": {"input": 1.0, "output": 6.0},
+            "status": "stable",
         },
         {
-            "id": "gpt-5.1",
-            "name": "GPT-5.1",
-            "description": "OpenAI • Previous Frontier",
-            "pricing": {"input": 5.0, "output": 20.0},
+            "id": "gpt-5.5",
+            "name": "GPT-5.5",
+            "description": "OpenAI • Previous frontier generation",
+            "pricing": {"input": 5.0, "output": 30.0},
+            "status": "stable",
+        },
+        {
+            "id": "gpt-5.4",
+            "name": "GPT-5.4",
+            "description": "OpenAI • General-purpose reasoning",
+            "pricing": {"input": 2.5, "output": 15.0},
+            "status": "stable",
+        },
+        {
+            "id": "gpt-5.4-mini",
+            "name": "GPT-5.4 Mini",
+            "description": "OpenAI • Efficient reasoning",
+            "pricing": {"input": 0.75, "output": 4.50},
+            "status": "stable",
         },
         {
             "id": "gpt-4.1",
             "name": "GPT-4.1",
-            "description": "OpenAI • Smart Non-Reasoning",
+            "description": "OpenAI • Non-reasoning model",
             "pricing": {"input": 2.0, "output": 8.0},
-        },
-        {
-            "id": "gpt-4.1-mini",
-            "name": "GPT-4.1 Mini",
-            "description": "OpenAI • Fast Non-Reasoning",
-            "pricing": {"input": 0.40, "output": 1.60},
-        },
-        {
-            "id": "gpt-4o",
-            "name": "GPT-4o",
-            "description": "OpenAI • Fast & Multimodal",
-            "pricing": {"input": 2.5, "output": 10.0},
-        },
-        {
-            "id": "gpt-4o-mini",
-            "name": "GPT-4o Mini",
-            "description": "OpenAI • Fast & Cheap",
-            "pricing": {"input": 0.15, "output": 0.60},
+            "status": "stable",
         },
     ],
     "anthropic": [
         {
-            "id": "claude-sonnet-4-20250514",
-            "name": "Claude Sonnet 4",
-            "description": "Anthropic • Balanced Claude 4",
+            "id": "claude-sonnet-5",
+            "name": "Claude Sonnet 5",
+            "description": "Anthropic • Balanced frontier model",
             "featured": True,
             "pricing": {"input": 3.0, "output": 15.0},
+            "status": "stable",
         },
         {
-            "id": "claude-opus-4-1-20250805",
-            "name": "Claude Opus 4.1",
-            "description": "Anthropic • Most Capable",
+            "id": "claude-opus-5",
+            "name": "Claude Opus 5",
+            "description": "Anthropic • Most capable",
             "featured": True,
-            "pricing": {"input": 15.0, "output": 75.0},
+            "pricing": {"input": 5.0, "output": 25.0},
+            "status": "stable",
         },
         {
-            "id": "claude-opus-4-20250514",
-            "name": "Claude Opus 4",
-            "description": "Anthropic • Previous Flagship",
-            "pricing": {"input": 15.0, "output": 75.0},
+            "id": "claude-fable-5",
+            "name": "Claude Fable 5",
+            "description": "Anthropic • Premium model",
+            "pricing": {"input": 10.0, "output": 50.0},
+            "status": "stable",
         },
         {
-            "id": "claude-3-7-sonnet-20250219",
-            "name": "Claude Sonnet 3.7",
-            "description": "Anthropic • Extended Thinking",
+            "id": "claude-sonnet-4-6",
+            "name": "Claude Sonnet 4.6",
+            "description": "Anthropic • Previous Sonnet generation",
             "pricing": {"input": 3.0, "output": 15.0},
+            "status": "stable",
         },
         {
             "id": "claude-haiku-4-5",
             "name": "Claude Haiku 4.5",
-            "description": "Anthropic • Fast & Cheap",
+            "description": "Anthropic • Fast and economical",
             "pricing": {"input": 1.0, "output": 5.0},
+            "status": "stable",
         },
     ],
     "google": [
         {
-            "id": "gemini-3-pro-preview",
-            "name": "Gemini 3 Pro Preview",
-            "description": "Google • Multimodal Flagship",
+            "id": "gemini-3.6-flash",
+            "name": "Gemini 3.6 Flash",
+            "description": "Google • Recommended multimodal model",
             "featured": True,
-            "pricing": {"input": 2.5, "output": 10.0},
+            "pricing": {"input": 1.50, "output": 7.50},
+            "status": "stable",
         },
         {
-            "id": "gemini-3-deep-think",
-            "name": "Gemini 3 Deep Think",
-            "description": "Google • Advanced Reasoning",
+            "id": "gemini-3.5-flash",
+            "name": "Gemini 3.5 Flash",
+            "description": "Google • General-purpose multimodal",
             "featured": True,
-            "pricing": {"input": 3.5, "output": 14.0},
+            "pricing": {"input": 1.50, "output": 9.0},
+            "status": "stable",
         },
         {
-            "id": "gemini-2.5-flash",
-            "name": "Gemini 2.5 Flash",
-            "description": "Google • Fast & Efficient",
+            "id": "gemini-3.5-flash-lite",
+            "name": "Gemini 3.5 Flash-Lite",
+            "description": "Google • Low-cost multimodal",
             "featured": True,
-            "pricing": {"input": 0.075, "output": 0.30},
+            "pricing": {"input": 0.30, "output": 2.50},
+            "status": "stable",
         },
         {
-            "id": "gemini-2.5-pro",
-            "name": "Gemini 2.5 Pro",
-            "description": "Google • Stable Pro",
-            "pricing": {"input": 1.25, "output": 10.0},
-        },
-        {
-            "id": "gemini-2.5-flash-lite",
-            "name": "Gemini 2.5 Flash Lite",
-            "description": "Google • Low-Cost Fast",
-            "pricing": {"input": 0.075, "output": 0.30},
+            "id": "gemini-3.1-pro-preview",
+            "name": "Gemini 3.1 Pro Preview",
+            "description": "Google • Advanced reasoning preview",
+            "pricing": {"input": 2.0, "output": 12.0},
+            "status": "preview",
         },
     ],
     "xai": [
         {
+            "id": "grok-4.5",
+            "name": "Grok 4.5",
+            "description": "xAI • Current flagship",
+            "featured": True,
+            "pricing": {"input": 2.0, "output": 6.0},
+            "status": "stable",
+        },
+        {
             "id": "grok-4.3",
             "name": "Grok 4.3",
-            "description": "xAI • Current Flagship",
-            "featured": True,
+            "description": "xAI • Previous generation",
             "pricing": {"input": 1.25, "output": 2.50},
-        },
-        {
-            "id": "grok-4.3-latest",
-            "name": "Grok 4.3 Latest",
-            "description": "xAI • Latest Alias",
-            "featured": True,
-            "pricing": {"input": 1.25, "output": 2.50},
-        },
-        {
-            "id": "grok-4",
-            "name": "Grok 4",
-            "description": "xAI • Balanced",
-            "pricing": {"input": 5.0, "output": 15.0},
+            "status": "stable",
         },
     ],
     "groq": [
@@ -169,6 +169,7 @@ DEFAULT_MODELS = {
             "description": "Groq • Production Open-Weight",
             "featured": True,
             "pricing": {"input": 0.15, "output": 0.60},
+            "status": "stable",
         },
         {
             "id": "openai/gpt-oss-20b",
@@ -176,39 +177,45 @@ DEFAULT_MODELS = {
             "description": "Groq • Fast Open-Weight",
             "featured": True,
             "pricing": {"input": 0.075, "output": 0.30},
+            "status": "stable",
         },
         {
-            "id": "llama-3.3-70b-versatile",
-            "name": "Llama 3.3 70B",
-            "description": "Groq • Ultra Fast",
-            "pricing": {"input": 0.10, "output": 0.10},
-        },
-        {
-            "id": "llama-3.1-8b-instant",
-            "name": "Llama 3.1 8B",
-            "description": "Groq • Fastest",
-            "pricing": {"input": 0.05, "output": 0.05},
-        },
-        {
-            "id": "mixtral-8x7b-32768",
-            "name": "Mixtral 8x7B",
-            "description": "Groq • Balanced",
-            "pricing": {"input": 0.10, "output": 0.10},
+            "id": "qwen/qwen3.6-27b",
+            "name": "Qwen 3.6 27B",
+            "description": "Groq • Fast preview model",
+            "pricing": {"input": 0.60, "output": 3.0},
+            "status": "preview",
         },
     ],
     "perplexity": [
         {
+            "id": "sonar",
+            "name": "Sonar",
+            "description": "Perplexity • Search-enhanced",
+            "pricing": {"input": 1.0, "output": 1.0},
+            "status": "stable",
+        },
+        {
             "id": "sonar-pro",
             "name": "Sonar Pro",
-            "description": "Perplexity • Search-Enhanced",
+            "description": "Perplexity • Advanced search",
             "featured": True,
             "pricing": {"input": 3.0, "output": 15.0},
+            "status": "stable",
         },
         {
             "id": "sonar-reasoning-pro",
             "name": "Sonar Reasoning Pro",
-            "description": "Perplexity • Reasoning",
-            "pricing": {"input": 1.0, "output": 5.0},
+            "description": "Perplexity • Search with reasoning",
+            "pricing": {"input": 2.0, "output": 8.0},
+            "status": "stable",
+        },
+        {
+            "id": "sonar-deep-research",
+            "name": "Sonar Deep Research",
+            "description": "Perplexity • Multi-step research",
+            "pricing": {"input": 2.0, "output": 8.0},
+            "status": "stable",
         },
     ],
     "cohere": [
@@ -217,49 +224,56 @@ DEFAULT_MODELS = {
             "name": "Command A+",
             "description": "Cohere • Agentic Multimodal",
             "featured": True,
-            "pricing": {"input": 3.0, "output": 15.0},
+            "pricing": {"input": 0, "output": 0},
+            "status": "stable",
         },
         {
-            "id": "command-r",
-            "name": "Command R",
-            "description": "Cohere • Balanced",
-            "pricing": {"input": 0.50, "output": 1.50},
+            "id": "command-a-03-2025",
+            "name": "Command A",
+            "description": "Cohere • Enterprise agentic model",
+            "pricing": {"input": 2.5, "output": 10.0},
+            "status": "stable",
+        },
+        {
+            "id": "command-a-reasoning-08-2025",
+            "name": "Command A Reasoning",
+            "description": "Cohere • Reasoning model",
+            "pricing": {"input": 2.5, "output": 10.0},
+            "status": "stable",
         },
     ],
     "ollama": [
         {
-            "id": "llama3.3",
-            "name": "Llama 3.3 (Local)",
+            "id": "qwen3.5:9b",
+            "name": "Qwen 3.5 9B (Local)",
             "description": "Ollama • Free, Self-hosted",
             "featured": True,
             "pricing": {"input": 0, "output": 0},
+            "status": "local",
         },
         {
-            "id": "mistral",
-            "name": "Mistral (Local)",
-            "description": "Ollama • Free, Fast",
+            "id": "gpt-oss:20b",
+            "name": "GPT-OSS 20B (Local)",
+            "description": "Ollama • Local open-weight model",
             "pricing": {"input": 0, "output": 0},
+            "status": "local",
         },
         {
-            "id": "deepseek-r1",
-            "name": "DeepSeek R1 (Local)",
+            "id": "deepseek-r1:8b",
+            "name": "DeepSeek R1 8B (Local)",
             "description": "Ollama • Reasoning Model",
             "pricing": {"input": 0, "output": 0},
+            "status": "local",
         },
     ],
     "watsonx": [
         {
-            "id": "ibm/granite-3-3-8b-instruct",
-            "name": "Granite 3.3 8B Instruct",
-            "description": "IBM watsonx • Enterprise Instruct",
+            "id": "ibm/granite-4-h-small",
+            "name": "Granite 4 H Small",
+            "description": "IBM watsonx • Current IBM model",
             "featured": True,
-            "pricing": {"input": 0.10, "output": 0.10},
-        },
-        {
-            "id": "ibm/granite-3-8b-instruct",
-            "name": "Granite 3 8B Instruct",
-            "description": "IBM watsonx • Stable Granite",
-            "pricing": {"input": 0.10, "output": 0.10},
+            "pricing": {"input": 0.0636, "output": 0.265},
+            "status": "stable",
         },
     ],
     "sarvam": [
@@ -269,15 +283,56 @@ DEFAULT_MODELS = {
             "description": "Sarvam AI • Indic Frontier",
             "featured": True,
             "pricing": {"input": 0.50, "output": 1.50},
+            "status": "stable",
         },
         {
-            "id": "sarvam-m",
-            "name": "Sarvam-M",
-            "description": "Sarvam AI • Indic Multilingual",
+            "id": "sarvam-30b",
+            "name": "Sarvam 30B",
+            "description": "Sarvam AI • Efficient Indic model",
             "pricing": {"input": 0.25, "output": 0.75},
+            "status": "stable",
         },
     ],
 }
+
+
+def get_model_provider(model_id: str) -> str:
+    """Resolve a built-in model ID to the llmswap provider name.
+
+    Exact catalog lookup is important for IDs such as ``openai/gpt-oss-120b``:
+    the same model family can be served by Groq or watsonx, so substring-based
+    routing alone is ambiguous. Custom models should be passed with an explicit
+    provider.
+    """
+    matches = []
+    for provider, models in DEFAULT_MODELS.items():
+        if any(model["id"] == model_id for model in models):
+            matches.append("gemini" if provider == "google" else provider)
+
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        # Groq is the established default host for the shared GPT-OSS ID.
+        return "groq" if "groq" in matches else matches[0]
+
+    lowered = model_id.lower()
+    prefixes = {
+        "claude": "anthropic",
+        "gemini": "gemini",
+        "grok": "xai",
+        "sonar": "perplexity",
+        "command": "cohere",
+        "sarvam": "sarvam",
+        "ibm/": "watsonx",
+        "gpt": "openai",
+        "o1": "openai",
+        "o3": "openai",
+        "o4": "openai",
+    }
+    for prefix, provider in prefixes.items():
+        if lowered.startswith(prefix):
+            return provider
+    return "ollama"
 
 
 def get_config_path() -> Path:
@@ -337,7 +392,7 @@ def get_available_models() -> Dict[str, List[Dict]]:
     Get all available models.
 
     Priority:
-    1. Start with DEFAULT_MODELS (December 2025 latest)
+    1. Start with DEFAULT_MODELS (August 2026 audit)
     2. Load custom models from ~/.llmswap/models.json
     3. Load custom models from LLMSWAP_CUSTOM_MODELS env var
     4. Merge all together

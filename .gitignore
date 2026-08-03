@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+examples/customer_demos/**/outputs/
 *.py[cod]
 *$py.class
 
@@ -162,6 +163,9 @@ research_notes.md
 !README.md
 !CONTRIBUTORS.md
 !CHANGELOG.md
+!MODEL_SUPPORT.md
+!examples/customer_demos/mcp_account_agent/sample_data/open_issues.md
+!examples/customer_demos/mcp_account_agent/sample_data/release_notes.md
 
 # Exclude any new documentation folders
 docs/

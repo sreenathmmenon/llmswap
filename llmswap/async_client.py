@@ -128,7 +128,7 @@ class AsyncLLMClient:
         elif provider_name == "ollama":
             from .async_providers import AsyncOllamaProvider
 
-            return AsyncOllamaProvider(model or "llama3")
+            return AsyncOllamaProvider(model)
         elif provider_name == "watsonx":
             from .async_providers import AsyncWatsonxProvider
             import os

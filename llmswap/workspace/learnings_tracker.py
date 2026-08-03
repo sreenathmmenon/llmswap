@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Optional
 
+from llmswap.provider_registry import DEFAULT_PROVIDER_MODELS
+
 
 class LearningsTracker:
 
@@ -35,7 +37,9 @@ If the conversation is just casual chat or doesn't have educational content, ret
 
             # Disable workspace to prevent recursion
             client = LLMClient(
-                provider="groq", model="llama-3.1-8b-instant", workspace_enabled=False
+                provider="groq",
+                model=DEFAULT_PROVIDER_MODELS["groq"],
+                workspace_enabled=False,
             )
             result = client.query(extraction_prompt)
 

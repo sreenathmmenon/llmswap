@@ -1,0 +1,7 @@
+Customer: Acme Retail
+Plan: Growth
+Status: Active
+Renewal date: 2026-09-15
+Primary contact: Priya, VP Operations
+Monthly API volume: 1.8 million requests
+Primary use case: daily finance reconciliation and store-level reporting

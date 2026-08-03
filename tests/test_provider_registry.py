@@ -22,8 +22,10 @@ def test_registry_contains_all_supported_providers():
 
 def test_default_models_are_defined_for_every_provider():
     assert set(DEFAULT_PROVIDER_MODELS) == set(PROVIDER_SPECS)
-    assert DEFAULT_PROVIDER_MODELS["anthropic"] == "claude-sonnet-4-20250514"
-    assert DEFAULT_PROVIDER_MODELS["openai"] == "gpt-5.2"
-    assert DEFAULT_PROVIDER_MODELS["gemini"] == "gemini-3-pro-preview"
-    assert DEFAULT_PROVIDER_MODELS["xai"] == "grok-4.3"
+    assert DEFAULT_PROVIDER_MODELS["anthropic"] == "claude-sonnet-5"
+    assert DEFAULT_PROVIDER_MODELS["openai"] == "gpt-5.6"
+    assert DEFAULT_PROVIDER_MODELS["gemini"] == "gemini-3.6-flash"
+    assert DEFAULT_PROVIDER_MODELS["watsonx"] == "ibm/granite-4-h-small"
+    assert DEFAULT_PROVIDER_MODELS["ollama"] == "qwen3.5:9b"
+    assert DEFAULT_PROVIDER_MODELS["xai"] == "grok-4.5"
     assert DEFAULT_PROVIDER_MODELS["sarvam"] == "sarvam-105b"

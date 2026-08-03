@@ -56,7 +56,7 @@ def custom_model_example():
     # Use specific provider and latest model
     try:
         # Claude Sonnet 4 - current Anthropic default
-        client = LLMClient(provider="anthropic", model="claude-sonnet-4-20250514")
+        client = LLMClient(provider="anthropic", model="claude-sonnet-5")
         
         response = client.query("Explain machine learning in one sentence")
         

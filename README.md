@@ -13,14 +13,14 @@
 
 **10 LLM Providers. Current Defaults. Zero Vendor Lock-in.**
 
-GPT-5.2 • Claude Sonnet 4 • Gemini 3 Pro Preview • Grok 4.3 • Command A+ • Groq GPT-OSS • Perplexity Sonar + 10 implemented providers.
+GPT-5.6 • Claude Sonnet 5 • Gemini 3.6 Flash • Grok 4.5 • Command A+ • Groq GPT-OSS • Perplexity Sonar + 10 implemented providers.
 Universal tool calling • MCP protocol • Zero vendor lock-in • Production-ready SDK + CLI.
 
 One simple interface for Anthropic, OpenAI, Gemini, Groq, X.AI and more. Stop wrestling with complex frameworks—build production AI in 10 lines of code.
 
-**📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html) | **🔧 MCP Guide:** [#mcp-integration](#-mcp-integration-new)
+**📚 Documentation:** [llmswap.org](https://llmswap.org) | **⚡ CLI Reference:** [CLI Docs](https://llmswap.org/docs/cli.html) | **🐍 SDK Guide:** [SDK Docs](https://llmswap.org/docs/sdk.html) | **🔧 MCP Guide:** [#mcp-integration](#-mcp-integration-beta)
 
-## 🆕 Current in v5.5.8: Universal Tool Calling + LLMSwap Arena
+## 🆕 Current in v5.6.0: Audited Models + Current Gemini SDK
 
 **Enable LLMs to access YOUR data and systems** - Define tools once, works across ALL providers.
 
@@ -73,57 +73,59 @@ llmswap chat "Help me with Flask routing"
 # AI has full project context + all past learnings!
 
 # 🆕 NEW: Connect to MCP servers with natural language
-llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
+llmswap mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
 # Ask: "List all PDF files"
 # Ask: "Read the contents of README.md"
 # AI uses filesystem tools automatically!
 
 # 🆕 Compare models visually (optional)
 pip install llmswap[web]
-llmswap web  # Opens browser - compare GPT-5.2 vs Claude vs Gemini
+llmswap web  # Opens browser - compare GPT-5.6 vs Claude vs Gemini
 ```
 
 ---
 
-## 🆕 Current Default Models (Verified May 25, 2026)
+## 🆕 Current Default Models (Verified August 3, 2026)
 
-**New models work the day they launch** - LLMSwap's pass-through architecture means no SDK updates needed.
+See the audited catalog, retirement migrations, and official source links in [MODEL_SUPPORT.md](MODEL_SUPPORT.md).
 
-### 🧠 GPT-5.2
+**New model IDs usually work the day they launch** - LLMSwap passes explicit model IDs through; provider API or SDK breaking changes may still require an LLMSwap update.
+
+### 🧠 GPT-5.6 Sol
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="openai", model="gpt-5.2")
+client = LLMClient(provider="openai", model="gpt-5.6")
 response = client.chat("Design an algorithm for real-time fraud detection...")
 print(response.content)
 ```
 **Best for:** Professional tasks, coding, reasoning, science, and math
 
-### ⚡ Claude Sonnet 4
+### ⚡ Claude Sonnet 5
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="anthropic", model="claude-sonnet-4-20250514")
+client = LLMClient(provider="anthropic", model="claude-sonnet-5")
 response = client.chat("Build a full-stack application with authentication...")
 print(response.content)
 ```
 **Best for:** Coding, everyday tasks, balanced quality and cost
 
-### 🚀 Gemini 3 Pro Preview
+### 🚀 Gemini 3.6 Flash
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="gemini", model="gemini-3-pro-preview")
+client = LLMClient(provider="gemini", model="gemini-3.6-flash")
 response = client.chat("Analyze this video and extract key insights...")
 print(response.content)
 ```
 **Best for:** Multimodal understanding, large document analysis, batch processing
 
-### 🏆 Grok 4.3
+### 🏆 Grok 4.5
 ```python
 from llmswap import LLMClient
 
-client = LLMClient(provider="xai", model="grok-4.3")
+client = LLMClient(provider="xai", model="grok-4.5")
 response = client.chat("Help me understand this nuanced ethical dilemma...")
 print(response.content)
 ```
@@ -161,7 +163,7 @@ print(response.content)
 
 **Plus:** Perplexity Sonar for search-grounded answers, IBM watsonx Granite for enterprise deployments, and Ollama for local models.
 
-**Why it matters:** New models work day-one. Pass-through architecture means future models work immediately upon release.
+**Why it matters:** Pass-through model IDs avoid waiting for a catalog update in most cases, while LLMSwap releases keep provider SDK integrations and defaults current.
 
 ---
 
@@ -192,7 +194,7 @@ print(response.content)
 ## Why Developers Choose llmswap
 
 ✅ **10 Lines to Production** - Not 1000 like LangChain
-✅ **MCP Protocol Support** - Connect to any MCP server with natural language 🆕
+✅ **MCP Protocol Support** - Use local stdio MCP tools with natural language
 ✅ **Automatic Fallback** - Never down. Switches providers if one fails
 ✅ **50-90% Cost Savings** - Built-in caching. Same query = FREE
 ✅ **Workspace Memory** - Your AI remembers your project context
@@ -219,6 +221,12 @@ print(response.content)
 - 📊 **Visual Comparison** - Ranking, speed, token usage, and together-view answer scanning
 - 🎨 **Markdown + Code Highlighting** - Syntax-highlighted responses with copy actions
 - 🧠 **Token Learning Layer** - Understand input, output, and total token usage while comparing
+
+**v5.6.0:**
+- 🔄 **Current Defaults** - OpenAI GPT-5.6, Claude Sonnet 5, Gemini 3.6 Flash, Grok 4.5, and Granite 4 H Small
+- 🧹 **Retirement Cleanup** - Retired and shut-down models removed from the built-in Arena catalog
+- 💎 **Gemini SDK Migration** - Replaced the discontinued `google-generativeai` package with `google-genai`
+- 🎯 **Correct Arena Routing** - Provider-aware routing for hosted models with shared IDs
 
 **NEW in v5.1.0:**
 - 🧠 **Workspace Memory** - Per-project context that persists across sessions
@@ -302,7 +310,7 @@ llmswap chat --mentor friend --alias "CodeBuddy"
 llmswap ask "Explain REST APIs" --mentor socrates
 
 # Use Claude Sonnet 4 - current default model
-llmswap chat --provider anthropic --model claude-sonnet-4-20250514
+llmswap chat --provider anthropic --model claude-sonnet-5
 # Or set as default in config for all queries
 ```
 
@@ -342,17 +350,22 @@ llmswap chat --mentor coach "What's the fastest path to v1?"
 
 ---
 
-## 🔧 MCP Integration (NEW)
+## 🔧 MCP Integration (Beta)
 
-**The Model Context Protocol (MCP)** lets LLMs connect to external tools and data sources. llmswap provides the **best MCP client experience** - just talk naturally, and AI handles the tools.
+**The Model Context Protocol (MCP)** lets LLMs connect to external tools and data sources. LLMSwap provides a natural-language client for local stdio MCP servers: talk naturally and the selected LLM chooses and invokes tools.
+
+Local stdio operation is verified in v5.6.0 using the current MCP lifecycle. The existing `--url` remote mode predates modern MCP Streamable HTTP and remains experimental; do not rely on it for production deployments yet.
 
 ### Natural Language MCP CLI
 
-Connect to any MCP server and interact with tools using plain English:
+Connect to a local stdio MCP server and interact with its tools using plain English:
+
+`llmswap mcp` is the primary unified command. The original `llmswap-mcp`
+executable remains available for backward compatibility.
 
 ```bash
 # Filesystem access
-llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
+llmswap mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
 
 # Then ask naturally:
 > "What files are in this directory?"
@@ -360,13 +373,13 @@ llmswap-mcp --command npx -y @modelcontextprotocol/server-filesystem ~/Documents
 > "Find all files modified in the last week"
 
 # Database queries
-llmswap-mcp --command npx -y @modelcontextprotocol/server-sqlite ./mydb.sqlite
+llmswap mcp --command npx -y @modelcontextprotocol/server-sqlite ./mydb.sqlite
 
 > "Show me all users in the database"
 > "What are the top 10 products by sales?"
 
 # GitHub integration
-llmswap-mcp --command npx -y @modelcontextprotocol/server-github --owner anthropics --repo anthropic-sdk-python
+llmswap mcp --command npx -y @modelcontextprotocol/server-github --owner anthropics --repo anthropic-sdk-python
 
 > "Show me recent issues"
 > "What pull requests are open?"
@@ -374,19 +387,18 @@ llmswap-mcp --command npx -y @modelcontextprotocol/server-github --owner anthrop
 
 ### Supported MCP Transports
 
-- **stdio** - Local command-line tools (most common)
-- **SSE** - Server-Sent Events for remote servers
-- **HTTP** - REST API endpoints
+- **stdio** - Verified for local command-line MCP servers
+- **Legacy SSE/HTTP** - Experimental compatibility code; not modern Streamable HTTP
 
 ### Works With All 5 Providers
 
 ```bash
 # Use your preferred LLM provider
-llmswap-mcp --provider anthropic --command <mcp-server>
-llmswap-mcp --provider openai --command <mcp-server>
-llmswap-mcp --provider gemini --command <mcp-server>
-llmswap-mcp --provider groq --command <mcp-server>    # Fastest!
-llmswap-mcp --provider xai --command <mcp-server>     # Grok
+llmswap mcp --provider anthropic --command <mcp-server>
+llmswap mcp --provider openai --command <mcp-server>
+llmswap mcp --provider gemini --command <mcp-server>
+llmswap mcp --provider groq --command <mcp-server>    # Fastest!
+llmswap mcp --provider xai --command <mcp-server>     # Grok
 ```
 
 ### Python SDK Integration
@@ -427,28 +439,28 @@ for tool in tools:
 ✅ **Multi-turn conversations** - Context preserved across queries
 ✅ **Beautiful UI** - Clean bordered interface like Claude/Factory Droids
 ✅ **Provider-specific formatting** - Optimized for each LLM
-✅ **Connection management** - Automatic reconnection and health checks
-✅ **Error handling** - Graceful degradation with circuit breaker
+✅ **Tool discovery** - MCP tool schemas are registered with the selected LLM
+✅ **Clean shutdown** - Local server processes are closed when the CLI exits
 
 ### Example Use Cases
 
 **For Data Analysis:**
 ```bash
-llmswap-mcp --command npx -y @modelcontextprotocol/server-sqlite ./sales.db
+llmswap mcp --command npx -y @modelcontextprotocol/server-sqlite ./sales.db
 > "What were our top 5 products last quarter?"
 > "Show me revenue trends by region"
 ```
 
 **For Development:**
 ```bash
-llmswap-mcp --command npx -y @modelcontextprotocol/server-github --owner myorg --repo myapp
+llmswap mcp --command npx -y @modelcontextprotocol/server-github --owner myorg --repo myapp
 > "What issues are labeled as bugs?"
 > "Summarize recent commits"
 ```
 
 **For Research:**
 ```bash
-llmswap-mcp --command npx -y @modelcontextprotocol/server-brave-search
+llmswap mcp --command npx -y @modelcontextprotocol/server-brave-search
 > "Find recent papers on transformer architectures"
 > "What are the latest developments in quantum computing?"
 ```
@@ -959,22 +971,22 @@ All 10 providers ship with carefully selected default models based on provider d
 
 | Provider | Default Model | Status | Why We Chose It |
 |----------|---------------|--------------|-----------------|
-| **OpenAI** | gpt-5.2 | Frontier | Strong general-purpose coding and reasoning |
-| **Anthropic** | claude-sonnet-4-20250514 | Production | Balanced Claude 4 quality, speed, and cost |
-| **Gemini** | gemini-3-pro-preview | Preview | Multimodal long-context analysis |
-| **xAI** | grok-4.3 | Production | Agentic tool use and reasoning |
+| **OpenAI** | gpt-5.6 | Production | Current flagship family and broad API support |
+| **Anthropic** | claude-sonnet-5 | Production | Balanced frontier quality, speed, and cost |
+| **Gemini** | gemini-3.6-flash | Production | Recommended stable multimodal model |
+| **xAI** | grok-4.5 | Production | Current flagship with tool use and reasoning |
 | **Cohere** | command-a-plus-05-2026 | Production | Enterprise multilingual and agentic workflows |
 | **Perplexity** | sonar-pro | Search | Web-grounded answers with citations |
 | **Groq** | openai/gpt-oss-120b | Production | Fast open-weight inference on GroqCloud |
 | **Sarvam** | sarvam-105b | Production | Flagship Indian-language chat model |
-| **Watsonx** | ibm/granite-3-3-8b-instruct | Production | IBM enterprise Granite model |
-| **Ollama** | llama3.1 | Local | Privacy-first, runs on your hardware |
+| **Watsonx** | ibm/granite-4-h-small | Production | Current IBM Granite model |
+| **Ollama** | qwen3.5:9b | Local | Current practical local default |
 
 **✅ Battle-tested with real API calls** - Every provider validated in production, not simulated tests.
 
 **✅ Model updates** - We monitor provider model lists and deprecation notices to keep defaults current.
 
-**✅ Zero lock-in** - Don't like our defaults? Override with any model: `LLMClient(model="gpt-5.2-pro")` or `llmswap config set provider.models.openai gpt-5.2-pro`
+**✅ Zero lock-in** - Don't like our defaults? Override with any model your provider exposes: `LLMClient(model="gpt-5.6-terra")` or `llmswap config set provider.models.openai gpt-5.6-terra`
 
 ---
 
@@ -988,20 +1000,20 @@ LLMSwap doesn't restrict which models you can use. When a provider releases a ne
 
 ```bash
 # Use any OpenAI model
-llmswap chat --provider openai --model gpt-5.2
-llmswap chat --provider openai --model gpt-5.2-pro
+llmswap chat --provider openai --model gpt-5.6
+llmswap chat --provider openai --model gpt-5.6-luna
 
 # Use any Anthropic model
-llmswap chat --provider anthropic --model claude-sonnet-4-20250514
-llmswap chat --provider anthropic --model claude-opus-4-1-20250805
+llmswap chat --provider anthropic --model claude-sonnet-5
+llmswap chat --provider anthropic --model claude-opus-5
 
 # Use any Gemini model
-llmswap chat --provider gemini --model gemini-3-pro-preview
-llmswap chat --provider gemini --model gemini-2.5-pro
+llmswap chat --provider gemini --model gemini-3.6-flash
+llmswap chat --provider gemini --model gemini-3.5-flash
 
 # Set as default so you don't have to type it every time
-llmswap config set provider.models.openai gpt-5.2
-llmswap config set provider.models.anthropic claude-sonnet-4-20250514
+llmswap config set provider.models.openai gpt-5.6
+llmswap config set provider.models.anthropic claude-sonnet-5
 ```
 
 ### Python SDK:
@@ -1053,25 +1065,25 @@ client = LLMClient(provider="openai", model="gpt-6")  # works!
 
 ## 🔧 LLMSwap vs MCP Alternatives
 
-**The only multi-provider MCP client with natural language interface:**
+LLMSwap's MCP differentiator is a small, provider-neutral natural-language interface. MCP support is currently beta and local-stdio focused.
 
 | Feature | LLMSwap | langchain-mcp-tools | mcp-use | Anthropic SDK |
 |---------|---------|---------------------|---------|---------------|
 | **Natural Language** | ✅ Ask in plain English | ❌ Manual JSON | ❌ Manual JSON | ❌ Manual JSON |
-| **Multi-Provider MCP** | ✅ 10 providers | ❌ LangChain only | ⚠️ Limited | ❌ Claude only |
+| **Multi-Provider MCP** | ✅ 5 tool-capable providers | ❌ LangChain only | ⚠️ Limited | ❌ Claude only |
 | **Latest Models** | ✅ Pass-through support | ⚠️ Delayed updates | ⚠️ Delayed updates | ✅ Claude only |
 | **Beautiful CLI** | ✅ Bordered UI | ❌ No CLI | ❌ Basic | ❌ No CLI |
 | **Setup Time** | 🟢 30 seconds | 🔴 Hours (LangChain) | 🟡 Medium | 🟢 Fast |
-| **Production Ready** | ✅ Circuit breakers | ❌ DIY | ❌ DIY | ⚠️ Limited |
+| **Production Ready** | 🧪 Beta (stdio verified) | ❌ DIY | ❌ DIY | ⚠️ Limited |
 | **Cost Optimization** | ✅ Auto caching | ❌ Manual | ❌ Manual | ❌ No |
 | **Learning Curve** | 🟢 10 lines | 🔴 Complex | 🟡 Medium | 🟢 Easy |
-| **Remote MCP** | ✅ SSE/HTTP | ⚠️ Limited | ⚠️ Limited | ✅ Yes |
+| **Remote MCP** | 🧪 Legacy/experimental | ⚠️ Limited | ⚠️ Limited | ✅ Yes |
 | **Zero Lock-in** | ✅ Switch providers | ❌ Locked to LangChain | ⚠️ Limited | ❌ Claude only |
 
 **Why LLMSwap for MCP?**
 - **Natural language**: Just ask "List all PDFs" - no JSON schemas
-- **Universal**: Works with 10 implemented providers, not just one
-- **Production-ready**: Circuit breakers, health checks, monitoring built-in
+- **Multi-provider**: Works with Anthropic, OpenAI, Gemini, Groq, and xAI
+- **Focused today**: Verified local stdio workflow, with modern remote transport still to be implemented
 - **Latest models**: Provider pass-through lets you use new model IDs as soon as your provider enables them
 
 ---
@@ -1140,7 +1152,7 @@ llmswap debug --error "IndexError: list index out of range"
 import openai  # Locked to OpenAI forever
 client = openai.Client(api_key="YOUR_OPENAI_API_KEY")
 response = client.chat.completions.create(
-    model="gpt-5.2",
+    model="gpt-5.6",
     messages=[{"role": "user", "content": "Hello"}]
 )
 # To switch to Claude? Rewrite everything.
@@ -1564,7 +1576,7 @@ export ANTHROPIC_API_KEY="your-key-here"
 llmswap ask "Explain Docker in simple terms"
 ```
 
-**💡 Smart Defaults:** llmswap comes pre-configured with sensible model defaults for all 8 providers. No configuration needed to get started!
+**💡 Smart Defaults:** llmswap comes pre-configured with model defaults for all 10 providers. Configure at least one API key or a local Ollama server to get started.
 
 ```python
 from llmswap import LLMClient
@@ -1869,24 +1881,26 @@ llmswap providers
 ============================================================
 | Provider   | Default Model              | Status            | Issue                    |
 |============|============================|===================|==========================|
-| ANTHROPIC  | claude-sonnet-4-20250514   | ✅ CONFIGURED     |                          |
-| OPENAI     | gpt-5.2                    | ❌ NOT CONFIGURED | OPENAI_API_KEY missing   |
-| GEMINI     | gemini-3-pro-preview       | ✅ CONFIGURED     |                          |
+| ANTHROPIC  | claude-sonnet-5            | ✅ CONFIGURED     |                          |
+| OPENAI     | gpt-5.6                    | ❌ NOT CONFIGURED | OPENAI_API_KEY missing   |
+| GEMINI     | gemini-3.6-flash           | ✅ CONFIGURED     |                          |
 | COHERE     | command-a-plus-05-2026     | ❌ NOT CONFIGURED | COHERE_API_KEY missing   |
 | PERPLEXITY | sonar-pro                  | ✅ CONFIGURED     |                          |
-| WATSONX    | ibm/granite-3-3-8b-instruct | ✅ CONFIGURED    |                          |
+| WATSONX    | ibm/granite-4-h-small      | ✅ CONFIGURED     |                          |
 | GROQ       | openai/gpt-oss-120b        | ✅ CONFIGURED     |                          |
-| OLLAMA     | llama3.1                   | ⚠️ NOT RUNNING   | Local server not running |
+| OLLAMA     | qwen3.5:9b                 | ⚠️ NOT RUNNING   | Local server not running |
+| XAI        | grok-4.5                   | ❌ NOT CONFIGURED | XAI_API_KEY missing      |
+| SARVAM     | sarvam-105b                | ❌ NOT CONFIGURED | SARVAM_API_KEY missing   |
 
-📊 Summary: 5/8 providers available
+📊 Summary: 5/10 providers available
 ```
 
 **🔧 Model Configuration:**
 ```bash
 # Update any provider's default model
-llmswap config set provider.models.openai gpt-5.2
+llmswap config set provider.models.openai gpt-5.6
 llmswap config set provider.models.cohere command-a-plus-05-2026
-llmswap config set provider.models.anthropic claude-sonnet-4-20250514
+llmswap config set provider.models.anthropic claude-sonnet-5
 
 # Set default provider
 llmswap config set provider.default anthropic
@@ -2301,7 +2315,7 @@ response = client.chat("What's the weather in Tokyo?", tools=[weather])
 ## 📊 Why Thousands Choose llmswap
 
 - ⚡ **12,000+ Downloads** - Trusted by developers worldwide
-- 🚀 **v5.5.8** - LLMSwap Arena, current provider defaults, cleaner packaging, and universal tool calling
+- 🚀 **v5.6.0** - Audited current defaults, Gemini SDK migration, and reliable Arena routing
 - 🔓 **MIT License** - 100% open source, free forever
 - 🐍 **Python 3.9+** - Works on all platforms
 - 🌍 **10 Providers** - Anthropic, OpenAI, Gemini, Groq, xAI, Cohere, Perplexity, Sarvam, IBM watsonx, Ollama
@@ -2327,4 +2341,4 @@ response = client.chat("What's the weather in Tokyo?", tools=[weather])
 
 Built with ❤️ for developers who ship. Star us on [GitHub](https://github.com/sreenathmmenon/llmswap) if llmswap helps you build faster!
 
-**Latest:** v5.5.8 - LLMSwap Arena, current provider defaults, and universal tool calling 🚀
+**Latest:** v5.6.0 - current model defaults, Gemini SDK migration, and reliable Arena routing 🚀

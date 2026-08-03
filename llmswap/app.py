@@ -24,6 +24,7 @@ from pathlib import Path
 from .client import LLMClient
 from .exceptions import LLMSwapError
 from .config import LLMSwapConfig, get_config
+from .provider_registry import PROVIDER_SPECS, get_provider_names
 
 
 def cmd_ask(args):
@@ -1252,9 +1253,10 @@ def cmd_providers(args):
 
     # Original behavior (no verification, just show configured status)
     try:
-        # Initialize client to get provider order
         config = get_config()
-        provider_order = config.get("provider.fallback_order", [])
+        # A status report covers every implemented provider, independently of
+        # the user's customized fallback order.
+        provider_order = get_provider_names()
         provider_models = config.get("provider.models", {})
 
         # Check each provider status
@@ -1262,46 +1264,13 @@ def cmd_providers(args):
         available_count = 0
 
         for provider in provider_order:
+            default_model = provider_models.get(provider, "NOT CONFIGURED")
+
             # Check if provider has required credentials
             status = "❌ NOT CONFIGURED"
             status_detail = ""
 
-            if provider == "anthropic":
-                if os.getenv("ANTHROPIC_API_KEY"):
-                    status = "✅ CONFIGURED"
-                    available_count += 1
-                else:
-                    status_detail = "ANTHROPIC_API_KEY missing"
-
-            elif provider == "openai":
-                if os.getenv("OPENAI_API_KEY"):
-                    status = "✅ CONFIGURED"
-                    available_count += 1
-                else:
-                    status_detail = "OPENAI_API_KEY missing"
-
-            elif provider == "gemini":
-                if os.getenv("GEMINI_API_KEY"):
-                    status = "✅ CONFIGURED"
-                    available_count += 1
-                else:
-                    status_detail = "GEMINI_API_KEY missing"
-
-            elif provider == "cohere":
-                if os.getenv("COHERE_API_KEY"):
-                    status = "✅ CONFIGURED"
-                    available_count += 1
-                else:
-                    status_detail = "COHERE_API_KEY missing"
-
-            elif provider == "perplexity":
-                if os.getenv("PERPLEXITY_API_KEY"):
-                    status = "✅ CONFIGURED"
-                    available_count += 1
-                else:
-                    status_detail = "PERPLEXITY_API_KEY missing"
-
-            elif provider == "watsonx":
+            if provider == "watsonx":
                 if os.getenv("WATSONX_API_KEY") and os.getenv("WATSONX_PROJECT_ID"):
                     status = "✅ CONFIGURED"
                     available_count += 1
@@ -1313,13 +1282,6 @@ def cmd_providers(args):
                         missing.append("WATSONX_PROJECT_ID")
                     status_detail = f"{', '.join(missing)} missing"
 
-            elif provider == "groq":
-                if os.getenv("GROQ_API_KEY"):
-                    status = "✅ CONFIGURED"
-                    available_count += 1
-                else:
-                    status_detail = "GROQ_API_KEY missing"
-
             elif provider == "ollama":
                 # Check if Ollama is running
                 try:
@@ -1329,8 +1291,25 @@ def cmd_providers(args):
                         "http://localhost:11434/api/tags", timeout=2
                     )
                     if response.status_code == 200:
-                        status = "✅ AVAILABLE"
-                        available_count += 1
+                        installed_models = {
+                            model_id
+                            for item in response.json().get("models", [])
+                            for model_id in (item.get("name"), item.get("model"))
+                            if model_id
+                        }
+                        configured_names = {
+                            default_model,
+                            f"{default_model}:latest",
+                        }
+                        if default_model.endswith(":latest"):
+                            configured_names.add(default_model.removesuffix(":latest"))
+
+                        if installed_models.intersection(configured_names):
+                            status = "✅ AVAILABLE"
+                            available_count += 1
+                        else:
+                            status = "⚠️ MODEL MISSING"
+                            status_detail = f"Run: ollama pull {default_model}"
                     else:
                         status = "⚠️ NOT RUNNING"
                         status_detail = "Local server not responding"
@@ -1338,8 +1317,13 @@ def cmd_providers(args):
                     status = "⚠️ NOT RUNNING"
                     status_detail = "Local server not running"
 
-            # Get default model
-            default_model = provider_models.get(provider, "NOT CONFIGURED")
+            else:
+                env_key = PROVIDER_SPECS[provider].env_key
+                if env_key and os.getenv(env_key):
+                    status = "✅ CONFIGURED"
+                    available_count += 1
+                else:
+                    status_detail = f"{env_key} missing"
 
             providers_data.append(
                 [provider.upper(), default_model, status, status_detail]
@@ -1688,6 +1672,26 @@ def cmd_web(args):
         return 1
 
 
+def cmd_mcp(args):
+    """Connect to an MCP server using the natural-language MCP client."""
+    from .cli.mcp_cli import NaturalLanguageMCPSession
+
+    session = NaturalLanguageMCPSession(
+        url=args.url,
+        command=args.mcp_server_command,
+        provider=args.mcp_provider or args.provider or "auto",
+        model=args.model,
+        api_key=args.api_key,
+        quiet=args.mcp_quiet or args.quiet,
+        no_color=args.no_color,
+    )
+    try:
+        session.run()
+        return 0
+    finally:
+        session.close()
+
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
@@ -1698,6 +1702,7 @@ def main():
 Examples:
   llmswap ask "What is Python?"
   llmswap chat
+  llmswap mcp --command npx -y @modelcontextprotocol/server-filesystem /tmp
   llmswap providers                                           # View all providers status
   llmswap config set provider.models.cohere command-a-plus-05-2026
   llmswap review app.py --focus security
@@ -2026,6 +2031,38 @@ Examples:
         "--no-browser", action="store_true", help="Do not automatically open browser"
     )
 
+    # mcp command - natural-language client for local or remote MCP servers
+    mcp_parser = subparsers.add_parser(
+        "mcp", help="Chat with an MCP server using natural language"
+    )
+    mcp_connection = mcp_parser.add_mutually_exclusive_group(required=True)
+    mcp_connection.add_argument(
+        "--url", help="Legacy remote MCP URL (experimental; not Streamable HTTP)"
+    )
+    mcp_connection.add_argument(
+        "--command",
+        dest="mcp_server_command",
+        nargs=argparse.REMAINDER,
+        metavar="CMD",
+        help="Command used to start a local MCP server",
+    )
+    mcp_parser.add_argument(
+        "--provider",
+        dest="mcp_provider",
+        choices=["auto", "anthropic", "openai", "gemini", "groq", "xai"],
+        help="Reasoning provider (default: auto-detect)",
+    )
+    mcp_parser.add_argument("--model", help="Specific model ID")
+    mcp_parser.add_argument(
+        "--api-key", help="Provider API key (environment variable preferred)"
+    )
+    mcp_parser.add_argument(
+        "--quiet", dest="mcp_quiet", action="store_true", help="Minimal output"
+    )
+    mcp_parser.add_argument(
+        "--no-color", action="store_true", help="Disable colors and rich UI"
+    )
+
     config_parser.add_argument(
         "--file", "-f", help="File path for import/export operations"
     )
@@ -2059,6 +2096,7 @@ Examples:
         "providers": cmd_providers,
         "workspace": cmd_workspace,
         "web": cmd_web,
+        "mcp": cmd_mcp,
     }
 
     return commands[args.command](args)

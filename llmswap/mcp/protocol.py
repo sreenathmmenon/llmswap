@@ -69,6 +69,8 @@ class JSONRPCResponse:
 class MCPProtocol:
     """MCP protocol handler"""
 
+    PROTOCOL_VERSION = "2025-11-25"
+
     @staticmethod
     def create_request(
         method: str,
@@ -103,11 +105,17 @@ class MCPProtocol:
         return MCPProtocol.create_request(
             method="initialize",
             params={
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": MCPProtocol.PROTOCOL_VERSION,
                 "clientInfo": client_info,
-                "capabilities": {"roots": {"listChanged": True}, "sampling": {}},
+                # Only advertise capabilities the client actually implements.
+                "capabilities": {},
             },
         )
+
+    @staticmethod
+    def initialized() -> JSONRPCRequest:
+        """Create the notification that completes MCP initialization."""
+        return MCPProtocol.create_notification(method="notifications/initialized")
 
     @staticmethod
     def list_tools() -> JSONRPCRequest:

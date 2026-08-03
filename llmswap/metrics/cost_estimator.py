@@ -32,70 +32,48 @@ class CostEstimator:
             try:
                 with open(self.pricing_file, "r") as f:
                     data = json.load(f)
-                    self.pricing = data.get("pricing", {})
-                    self.last_updated = data.get("last_updated")
+                    if data.get("version") != "5.6.0":
+                        self._initialize_default_pricing()
+                    else:
+                        self.pricing = data.get("pricing", {})
+                        self.last_updated = data.get("last_updated")
             except Exception:
                 self._initialize_default_pricing()
         else:
             self._initialize_default_pricing()
 
     def _initialize_default_pricing(self):
-        """Initialize with default pricing (as of May 2026)."""
+        """Initialize with default pricing audited on 2026-08-03."""
         # These prices will be automatically updated when online
         self.pricing = {
             "openai": {
-                "gpt-5.2": {"input": 0.005, "output": 0.02},
-                "gpt-5.2-pro": {"input": 0.015, "output": 0.12},
-                "gpt-5-mini": {"input": 0.00025, "output": 0.002},
-                "gpt-5-nano": {"input": 0.00005, "output": 0.0004},
-                "gpt-4o": {"input": 0.0025, "output": 0.01},
-                "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
+                "gpt-5.6": {"input": 0.005, "output": 0.030},
+                "gpt-5.6-terra": {"input": 0.0025, "output": 0.015},
+                "gpt-5.6-luna": {"input": 0.001, "output": 0.006},
+                "gpt-5.5": {"input": 0.005, "output": 0.030},
+                "gpt-5.4": {"input": 0.0025, "output": 0.015},
+                "gpt-5.4-mini": {"input": 0.00075, "output": 0.0045},
+                "gpt-4.1": {"input": 0.002, "output": 0.008},
             },
             "anthropic": {
-                "claude-opus-4-1-20250805": {"input": 0.015, "output": 0.075},
-                "claude-opus-4-20250514": {"input": 0.015, "output": 0.075},
-                "claude-sonnet-4-20250514": {"input": 0.003, "output": 0.015},
-                "claude-3-7-sonnet-20250219": {"input": 0.003, "output": 0.015},
+                "claude-fable-5": {"input": 0.010, "output": 0.050},
+                "claude-opus-5": {"input": 0.005, "output": 0.025},
+                "claude-sonnet-5": {"input": 0.003, "output": 0.015},
+                "claude-sonnet-4-6": {"input": 0.003, "output": 0.015},
                 "claude-haiku-4-5": {"input": 0.001, "output": 0.005},
-                "claude-3-haiku": {"input": 0.00025, "output": 0.00125},
             },
             "gemini": {
-                "gemini-3-pro-preview": {
-                    "input": 0.002,
-                    "output": 0.012,
-                },
-                "gemini-3-deep-think": {
-                    "input": 0.0035,
-                    "output": 0.014,
-                },
-                "gemini-2.5-pro": {
-                    "input": 0.00125,
-                    "output": 0.01,
-                },  # $1.25/$10.00 per million
-                "gemini-2.5-flash": {
-                    "input": 0.000075,
-                    "output": 0.0003,
-                },
-                "gemini-2.5-flash-lite": {
-                    "input": 0.000075,
-                    "output": 0.0003,
-                },
+                "gemini-3.6-flash": {"input": 0.0015, "output": 0.0075},
+                "gemini-3.5-flash": {"input": 0.0015, "output": 0.009},
+                "gemini-3.5-flash-lite": {"input": 0.0003, "output": 0.0025},
+                "gemini-3.1-pro-preview": {"input": 0.002, "output": 0.012},
             },
             "watsonx": {
-                "ibm/granite-3-3-8b-instruct": {
-                    "input": 0.0002,
-                    "output": 0.0002,
+                "ibm/granite-4-h-small": {
+                    "input": 0.0000636,
+                    "output": 0.000265,
                 },
-                "granite-3.1-8b-instruct": {
-                    "input": 0.0002,
-                    "output": 0.0002,
-                },  # $0.20 per million tokens
-                "granite-3.1-2b-instruct": {
-                    "input": 0.0001,
-                    "output": 0.0001,
-                },  # Lower cost for smaller model
-                "granite-13b": {"input": 0.0002, "output": 0.0002},  # Updated pricing
-                "granite-7b": {"input": 0.0002, "output": 0.0002},  # Updated pricing
+                "openai/gpt-oss-120b": {"input": 0.000159, "output": 0.000636},
             },
             "groq": {
                 "openai/gpt-oss-120b": {
@@ -106,38 +84,22 @@ class CostEstimator:
                     "input": 0.000075,
                     "output": 0.0003,
                 },
-                "llama-3.1-8b-instant": {
-                    "input": 0.00005,
-                    "output": 0.00008,
-                },  # $0.05/$0.08 per M
-                "llama-3.3-70b-versatile": {
-                    "input": 0.00059,
-                    "output": 0.00079,
-                },  # $0.59/$0.79 per M
+                "qwen/qwen3.6-27b": {"input": 0.0006, "output": 0.003},
             },
             "cohere": {
                 "command-a-plus-05-2026": {
-                    "input": 0.0025,
-                    "output": 0.01,
+                    "input": 0,
+                    "output": 0,
                 },
-                "command-r-03-2024": {
-                    "input": 0.0005,
-                    "output": 0.0015,
-                },  # $0.50/$1.50 per million
-                "aya-expanse-8b": {
-                    "input": 0.0005,
-                    "output": 0.0015,
-                },  # $0.50/$1.50 per million
-                "aya-expanse-32b": {
-                    "input": 0.0005,
-                    "output": 0.0015,
-                },  # $0.50/$1.50 per million
+                "command-a-03-2025": {"input": 0.0025, "output": 0.010},
+                "command-a-reasoning-08-2025": {
+                    "input": 0.0025,
+                    "output": 0.010,
+                },
             },
             "perplexity": {
-                "sonar-pro": {
-                    "input": 0.001,
-                    "output": 0.003,
-                },  # Estimated $1/$3 per million
+                "sonar": {"input": 0.001, "output": 0.001},
+                "sonar-pro": {"input": 0.003, "output": 0.015},
                 "sonar-reasoning-pro": {
                     "input": 0.002,
                     "output": 0.008,
@@ -146,14 +108,14 @@ class CostEstimator:
                     "input": 0.002,
                     "output": 0.008,
                 },
-                "pplx-7b-online": {
-                    "input": 0.0002,
-                    "output": 0.0008,
-                },  # Estimated low-end pricing
-                "pplx-70b-online": {
-                    "input": 0.001,
-                    "output": 0.004,
-                },  # Estimated mid-range pricing
+            },
+            "xai": {
+                "grok-4.5": {"input": 0.002, "output": 0.006},
+                "grok-4.3": {"input": 0.00125, "output": 0.0025},
+            },
+            "sarvam": {
+                "sarvam-105b": {"input": 0.0005, "output": 0.0015},
+                "sarvam-30b": {"input": 0.00025, "output": 0.00075},
             },
             "ollama": {"all_models": {"input": 0, "output": 0}},
         }
@@ -166,7 +128,7 @@ class CostEstimator:
         data = {
             "pricing": self.pricing,
             "last_updated": self.last_updated,
-            "version": "4.0.0",
+            "version": "5.6.0",
         }
 
         with open(self.pricing_file, "w") as f:
@@ -270,7 +232,7 @@ class CostEstimator:
     ) -> Dict[str, Any]:
         """Estimate cost for Gemini models."""
         gemini_pricing = self.pricing["gemini"]
-        model_key = model if model in gemini_pricing else "gemini-3-pro-preview"
+        model_key = model if model in gemini_pricing else "gemini-3.6-flash"
 
         if "input" in gemini_pricing[model_key] and "output" in gemini_pricing[model_key]:
             return self._estimate_token_based_cost(
@@ -317,14 +279,16 @@ class CostEstimator:
         """
         if models is None:
             models = {
-                "openai": "gpt-5.2",
-                "anthropic": "claude-sonnet-4-20250514",
-                "gemini": "gemini-3-pro-preview",
+                "openai": "gpt-5.6",
+                "anthropic": "claude-sonnet-5",
+                "gemini": "gemini-3.6-flash",
                 "cohere": "command-a-plus-05-2026",
                 "perplexity": "sonar-pro",  # Main model
-                "watsonx": "ibm/granite-3-3-8b-instruct",
+                "watsonx": "ibm/granite-4-h-small",
                 "groq": "openai/gpt-oss-120b",
-                "ollama": "llama3",  # Free local
+                "ollama": "qwen3.5:9b",  # Free local
+                "xai": "grok-4.5",
+                "sarvam": "sarvam-105b",
             }
 
         comparison = {}

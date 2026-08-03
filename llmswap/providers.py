@@ -92,6 +92,8 @@ def classify_and_raise_error(
         api_key: API key to remove from error messages (security)
     """
     error_text = str(error).lower()
+    response = getattr(error, "response", None)
+    status_code = getattr(response, "status_code", None)
 
     # Extract retry-after from rate limit responses (if present)
     retry_after = None
@@ -102,19 +104,20 @@ def classify_and_raise_error(
         if match:
             retry_after = int(match.group(1))
 
-    # Check for authentication errors (401, invalid key, unauthorized)
-    if any(
-        word in error_text
-        for word in [
-            "401",
-            "unauthorized",
-            "invalid",
-            "authentication",
-            "api key",
-            "forbidden",
-            "403",
-        ]
-    ):
+    # Check for authentication errors. Avoid broad markers such as "invalid"
+    # because provider SDKs use names like "invalid_request_error" for HTTP 400.
+    auth_markers = [
+        "unauthorized",
+        "authentication failed",
+        "authentication error",
+        "invalid api key",
+        "incorrect api key",
+        "invalid_api_key",
+        "forbidden",
+    ]
+    if status_code in (401, 403) or any(
+        marker in error_text for marker in auth_markers
+    ) or any(code in error_text for code in ["error code: 401", "error code: 403"]):
         raise AuthenticationError(
             provider_name,
             "Authentication failed. Check your API key is valid and active.",
@@ -331,7 +334,7 @@ class OpenAIProvider(BaseProvider):
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=4000,
+                max_completion_tokens=4000,
             )
 
             latency = time.time() - start_time
@@ -360,7 +363,7 @@ class OpenAIProvider(BaseProvider):
         start_time = time.time()
         try:
             response = self.client.chat.completions.create(
-                model=self.model, messages=messages, max_tokens=4000
+                model=self.model, messages=messages, max_completion_tokens=4000
             )
 
             latency = time.time() - start_time
@@ -393,9 +396,19 @@ class OpenAIProvider(BaseProvider):
             # Convert Tool objects to OpenAI format
             openai_tools = [tool.to_openai_format() for tool in tools]
 
-            response = self.client.chat.completions.create(
-                model=self.model, messages=messages, max_tokens=4000, tools=openai_tools
-            )
+            request_options = {
+                "model": self.model,
+                "messages": messages,
+                "max_completion_tokens": 4000,
+                "tools": openai_tools,
+            }
+            if self.model and self.model.startswith("gpt-5"):
+                # GPT-5 function tools on Chat Completions require reasoning to
+                # be disabled. LLMSwap can retain its provider-neutral message
+                # and tool loop while newer OpenAI-native flows use Responses.
+                request_options["reasoning_effort"] = "none"
+
+            response = self.client.chat.completions.create(**request_options)
 
             latency = time.time() - start_time
 
@@ -435,55 +448,67 @@ class GeminiProvider(BaseProvider):
         # Validate API key before attempting to use it
         validate_api_key(self.api_key, "gemini")
 
-        self.model_instance = None
-        self._genai = None
+        self.client = None
+        self._types = None
 
     def _initialize(self):
         """Lazy initialization of Gemini client."""
-        if self.model_instance is not None:
+        if self.client is not None:
             return
 
         try:
-            import google.generativeai as genai
+            from google import genai
+            from google.genai import types
 
-            self._genai = genai
-            # Set environment variable to cleaned key (Google SDK may read from env)
-            os.environ["GEMINI_API_KEY"] = self.api_key
-            self._genai.configure(api_key=self.api_key)
-            self.model_instance = self._genai.GenerativeModel(self.model)
+            self.client = genai.Client(api_key=self.api_key)
+            self._types = types
         except ImportError:
             raise ConfigurationError(
-                "google-generativeai package not installed. Run: pip install google-generativeai"
+                "google-genai package not installed. Run: pip install google-genai"
             )
+
+    def _convert_messages(self, messages: list) -> list:
+        """Convert llmswap conversation messages to google-genai contents."""
+        contents = []
+        for message in messages:
+            role = message.get("role", "user")
+            role = "model" if role in ("assistant", "model") else "user"
+            if "parts" in message:
+                parts = message["parts"]
+            else:
+                content = message.get("content", "")
+                parts = content if isinstance(content, list) else [{"text": content}]
+            contents.append({"role": role, "parts": parts})
+        return contents
+
+    @staticmethod
+    def _usage(response) -> dict:
+        usage = getattr(response, "usage_metadata", None)
+        if not usage:
+            return {}
+        data = {
+            "prompt_token_count": getattr(usage, "prompt_token_count", None),
+            "candidates_token_count": getattr(usage, "candidates_token_count", None),
+            "total_token_count": getattr(usage, "total_token_count", None),
+        }
+        if data["prompt_token_count"] is not None:
+            data["input_tokens"] = data["prompt_token_count"]
+        if data["candidates_token_count"] is not None:
+            data["output_tokens"] = data["candidates_token_count"]
+        return data
 
     def query(self, prompt: str) -> LLMResponse:
         self._initialize()
         start_time = time.time()
         try:
-            response = self.model_instance.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model, contents=prompt
+            )
 
             latency = time.time() - start_time
             content = response.text
 
-            # Extract usage data if available (Gemini provides usage_metadata)
-            usage_data = {}
-            if hasattr(response, "usage_metadata"):
-                usage_data = {
-                    "prompt_token_count": getattr(
-                        response.usage_metadata, "prompt_token_count", None
-                    ),
-                    "candidates_token_count": getattr(
-                        response.usage_metadata, "candidates_token_count", None
-                    ),
-                    "total_token_count": getattr(
-                        response.usage_metadata, "total_token_count", None
-                    ),
-                }
-                # Map to standard field names for analytics
-                if usage_data.get("prompt_token_count"):
-                    usage_data["input_tokens"] = usage_data["prompt_token_count"]
-                if usage_data.get("candidates_token_count"):
-                    usage_data["output_tokens"] = usage_data["candidates_token_count"]
+            usage_data = self._usage(response)
 
             return LLMResponse(
                 content=content,
@@ -505,56 +530,14 @@ class GeminiProvider(BaseProvider):
         self._initialize()
         start_time = time.time()
         try:
-            # Convert message format for Gemini
-            chat_history = []
-            for msg in messages[:-1]:  # All except the last message
-                role = "user" if msg["role"] == "user" else "model"
-                # Handle messages that already have parts (from format_tool_results)
-                if "parts" in msg:
-                    # Message already formatted for Gemini
-                    if msg["role"] == "function":
-                        # Function role stays as is
-                        chat_history.append({"role": "function", "parts": msg["parts"]})
-                    else:
-                        chat_history.append({"role": role, "parts": msg["parts"]})
-                else:
-                    # Standard message with content
-                    chat_history.append({"role": role, "parts": [msg["content"]]})
-
-            # Start chat with history
-            chat = self.model_instance.start_chat(history=chat_history)
-
-            # Send the current message
-            last_msg = messages[-1]
-            if "parts" in last_msg:
-                # Message already has parts
-                response = chat.send_message(last_msg["parts"])
-            else:
-                # Standard message with content
-                response = chat.send_message(last_msg["content"])
+            response = self.client.models.generate_content(
+                model=self.model, contents=self._convert_messages(messages)
+            )
 
             latency = time.time() - start_time
             content = response.text
 
-            # Extract usage data if available (Gemini provides usage_metadata)
-            usage_data = {}
-            if hasattr(response, "usage_metadata"):
-                usage_data = {
-                    "prompt_token_count": getattr(
-                        response.usage_metadata, "prompt_token_count", None
-                    ),
-                    "candidates_token_count": getattr(
-                        response.usage_metadata, "candidates_token_count", None
-                    ),
-                    "total_token_count": getattr(
-                        response.usage_metadata, "total_token_count", None
-                    ),
-                }
-                # Map to standard field names for analytics
-                if usage_data.get("prompt_token_count"):
-                    usage_data["input_tokens"] = usage_data["prompt_token_count"]
-                if usage_data.get("candidates_token_count"):
-                    usage_data["output_tokens"] = usage_data["candidates_token_count"]
+            usage_data = self._usage(response)
 
             return LLMResponse(
                 content=content,
@@ -578,74 +561,27 @@ class GeminiProvider(BaseProvider):
         self._initialize()
         start_time = time.time()
         try:
-            # Convert Tool objects to Gemini format
-            gemini_tool_defs = []
-            for tool in tools:
-                tool_dict = tool.to_gemini_format()
-                # Create FunctionDeclaration
-                func_decl = self._genai.protos.FunctionDeclaration(
-                    name=tool_dict["name"],
-                    description=tool_dict["description"],
-                    parameters=tool_dict["parameters"],
-                )
-                gemini_tool_defs.append(func_decl)
-
-            # Create Tool wrapper
-            gemini_tools = self._genai.protos.Tool(
-                function_declarations=gemini_tool_defs
+            gemini_tools = self._types.Tool(
+                function_declarations=[tool.to_gemini_format() for tool in tools]
             )
-
-            # Convert message format for Gemini
-            chat_history = []
-            for msg in messages[:-1]:  # All except the last message
-                role = "user" if msg["role"] == "user" else "model"
-                # Handle messages that already have parts (from format_tool_results)
-                if "parts" in msg:
-                    # Message already formatted for Gemini
-                    if msg["role"] == "function":
-                        # Function role stays as is
-                        chat_history.append({"role": "function", "parts": msg["parts"]})
-                    else:
-                        chat_history.append({"role": role, "parts": msg["parts"]})
-                else:
-                    # Standard message with content
-                    chat_history.append({"role": role, "parts": [msg["content"]]})
-
-            # Start chat with history and tools
-            chat = self.model_instance.start_chat(history=chat_history)
-
-            # Send the current message with tools
-            last_msg = messages[-1]
-            if "parts" in last_msg:
-                # Message already has parts
-                response = chat.send_message(last_msg["parts"], tools=[gemini_tools])
-            else:
-                # Standard message with content
-                response = chat.send_message(last_msg["content"], tools=[gemini_tools])
+            config = self._types.GenerateContentConfig(
+                tools=[gemini_tools],
+                automatic_function_calling=self._types.AutomaticFunctionCallingConfig(
+                    disable=True
+                ),
+            )
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=self._convert_messages(messages),
+                config=config,
+            )
 
             latency = time.time() - start_time
 
             # Use enhanced response to extract tool calls
             enhanced = create_enhanced_response(response, "gemini")
 
-            # Extract usage data
-            usage_data = {}
-            if hasattr(response, "usage_metadata"):
-                usage_data = {
-                    "prompt_token_count": getattr(
-                        response.usage_metadata, "prompt_token_count", None
-                    ),
-                    "candidates_token_count": getattr(
-                        response.usage_metadata, "candidates_token_count", None
-                    ),
-                    "total_token_count": getattr(
-                        response.usage_metadata, "total_token_count", None
-                    ),
-                }
-                if usage_data.get("prompt_token_count"):
-                    usage_data["input_tokens"] = usage_data["prompt_token_count"]
-                if usage_data.get("candidates_token_count"):
-                    usage_data["output_tokens"] = usage_data["candidates_token_count"]
+            usage_data = self._usage(response)
 
             return LLMResponse(
                 content=enhanced.content,

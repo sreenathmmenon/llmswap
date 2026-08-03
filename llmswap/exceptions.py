@@ -42,7 +42,7 @@ class ProviderError(LLMSwapError):
                 f"   • Set API key: export {self.provider.upper()}_API_KEY=your-key\n"
             )
             msg += (
-                "   • Or: LLMClient(provider='{self.provider}', api_key='your-key')\n"
+                f"   • Or: LLMClient(provider='{self.provider}', api_key='your-key')\n"
             )
         elif self.error_type == "timeout":
             msg += "\n💡 Try:\n"

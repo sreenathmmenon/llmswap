@@ -1,0 +1,20 @@
+[
+  {
+    "ticket_id": "SUP-101",
+    "customer": "Acme Retail",
+    "plan": "Growth",
+    "message": "Our daily CSV export is empty and finance cannot close today's reconciliation."
+  },
+  {
+    "ticket_id": "SUP-102",
+    "customer": "Northstar Labs",
+    "plan": "Enterprise",
+    "message": "SSO login started looping after we rotated our identity-provider certificate."
+  },
+  {
+    "ticket_id": "SUP-103",
+    "customer": "Maple Studio",
+    "plan": "Starter",
+    "message": "The new dashboard looks great. Can we export the chart as a PNG?"
+  }
+]
