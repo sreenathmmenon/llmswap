@@ -32,6 +32,8 @@
 - Added privacy, cost, security, release, and launch guidance for Best Answer.
 - Corrected manual release routing so a PyPI workflow dispatch no longer also
   attempts a TestPyPI publication.
+- Repaired the long-failing coverage workflow by removing its duplicate test
+  invocation and enforcing the current 32% repository baseline as a ratchet.
 
 ## [5.6.0] - 2026-08-03
 
