@@ -18,8 +18,9 @@ def test_provider_status_reports_missing_configured_ollama_model(capsys):
     }
     args = SimpleNamespace(verify=False, format="json", provider=None, timeout=10)
 
-    with patch("llmswap.app.get_config", return_value=config), patch(
-        "requests.get", return_value=response
+    with (
+        patch("llmswap.app.get_config", return_value=config),
+        patch("requests.get", return_value=response),
     ):
         assert cmd_providers(args) == 0
 

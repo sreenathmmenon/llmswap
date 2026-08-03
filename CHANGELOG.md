@@ -32,8 +32,9 @@
 - Added privacy, cost, security, release, and launch guidance for Best Answer.
 - Corrected manual release routing so a PyPI workflow dispatch no longer also
   attempts a TestPyPI publication.
-- Repaired the long-failing coverage workflow by removing its duplicate test
-  invocation and enforcing the current 32% repository baseline as a ratchet.
+- Repaired long-failing CI checks: removed a duplicate coverage invocation,
+  enforced the current 32% repository baseline as a ratchet, installed the web
+  extra for integration tests, and aligned tracked Python files with Black.
 
 ## [5.6.0] - 2026-08-03
 

@@ -7,7 +7,6 @@ from pathlib import Path
 import llmswap
 from llmswap.mcp.client import MCPClient
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

@@ -15,7 +15,6 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any
 
-
 # Audited against provider documentation on 2026-08-03. Prices are USD per
 # million input/output tokens and exclude provider-specific search/tool fees.
 DEFAULT_MODELS = {

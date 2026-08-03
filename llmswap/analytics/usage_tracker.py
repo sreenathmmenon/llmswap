@@ -32,8 +32,7 @@ class UsageTracker:
         """Initialize SQLite database with privacy-first schema."""
         with sqlite3.connect(self.db_path) as conn:
             # Main usage statistics table
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS usage_stats (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp TEXT NOT NULL,
@@ -66,12 +65,10 @@ class UsageTracker:
                     file_type TEXT,  -- e.g., "python", "javascript" (extension only)
                     operation_type TEXT  -- e.g., "review", "debug", "chat"
                 )
-            """
-            )
+            """)
 
             # Daily aggregated statistics
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS daily_stats (
                     date TEXT PRIMARY KEY,
                     total_queries INTEGER DEFAULT 0,
@@ -90,12 +87,10 @@ class UsageTracker:
                     created_at TEXT,
                     updated_at TEXT
                 )
-            """
-            )
+            """)
 
             # Budget tracking
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS budget_tracking (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     period_type TEXT NOT NULL,  -- 'daily', 'weekly', 'monthly'
@@ -107,8 +102,7 @@ class UsageTracker:
                     created_at TEXT,
                     updated_at TEXT
                 )
-            """
-            )
+            """)
 
             # Create indexes for performance
             conn.execute(

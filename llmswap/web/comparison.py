@@ -90,9 +90,7 @@ def _query_model(client, model: str, prompt: str) -> Dict[str, Any]:
             # is therefore unsafe to share across concurrent comparisons.
             from llmswap import LLMClient
 
-            active_client = LLMClient(
-                provider=provider, model=model, fallback=False
-            )
+            active_client = LLMClient(provider=provider, model=model, fallback=False)
         else:
             active_client = client
             active_client.set_provider(provider, model=model)

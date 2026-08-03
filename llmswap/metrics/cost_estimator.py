@@ -234,7 +234,10 @@ class CostEstimator:
         gemini_pricing = self.pricing["gemini"]
         model_key = model if model in gemini_pricing else "gemini-3.6-flash"
 
-        if "input" in gemini_pricing[model_key] and "output" in gemini_pricing[model_key]:
+        if (
+            "input" in gemini_pricing[model_key]
+            and "output" in gemini_pricing[model_key]
+        ):
             return self._estimate_token_based_cost(
                 input_tokens, output_tokens, "gemini", model_key
             )

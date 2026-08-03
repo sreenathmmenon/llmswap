@@ -119,9 +119,7 @@ class LLMSwapConfig:
             if os.path.exists(self.config_path):
                 with open(self.config_path, "r") as f:
                     self._config_data = yaml.safe_load(f) or {}
-                self._config_data, migrated = self._migrate_config(
-                    self._config_data
-                )
+                self._config_data, migrated = self._migrate_config(self._config_data)
             else:
                 # First run - create config file with defaults
                 print(f"🔧 Creating config file at {self.config_path}")
