@@ -731,6 +731,7 @@ class AsyncSarvamProvider(AsyncBaseProvider):
                     "model": self.model,
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": kwargs.get("max_tokens", 4000),
+                    "reasoning_effort": kwargs.get("reasoning_effort"),
                 }
 
             headers = {
@@ -754,6 +755,8 @@ class AsyncSarvamProvider(AsyncBaseProvider):
                 content = (
                     result.get("choices", [{}])[0].get("message", {}).get("content", "")
                 )
+                if not isinstance(content, str) or not content.strip():
+                    raise ProviderError("sarvam", "Provider returned an empty response")
 
             # Extract usage info if available
             usage = {}
@@ -765,6 +768,7 @@ class AsyncSarvamProvider(AsyncBaseProvider):
                 provider="sarvam",
                 model=self.model,
                 latency=latency,
+                usage=usage,
                 metadata={
                     "endpoint": endpoint,
                     "model_type": (
@@ -772,7 +776,6 @@ class AsyncSarvamProvider(AsyncBaseProvider):
                         if self.model in ["mayura", "sarvam-translate"]
                         else "chat"
                     ),
-                    "usage": usage,
                 },
             )
         except Exception as e:

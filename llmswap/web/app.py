@@ -38,6 +38,10 @@ def create_app(testing=False):
     app = Flask(__name__)
     app.config["TESTING"] = testing
 
+    from llmswap.best_answer import load_customer_env
+
+    load_customer_env()
+
     # Enable CORS
     CORS(app)
 
@@ -115,6 +119,82 @@ def create_app(testing=False):
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+
+    @app.route("/best-answer", methods=["POST"])
+    def best_answer():
+        """Synthesize already-generated Arena responses without querying twice."""
+        from llmswap import LLMClient
+        from llmswap.best_answer import CandidateAnswer, synthesize_best_answer
+        from llmswap.exceptions import BestAnswerError, CrossProviderSharingError
+        from llmswap.web.models import get_model_provider
+
+        data = request.get_json() or {}
+        prompt = str(data.get("prompt") or "").strip()
+        raw_candidates = data.get("candidates") or []
+        if not prompt:
+            return jsonify({"error": "Prompt is required"}), 400
+        if not isinstance(raw_candidates, list) or not 2 <= len(raw_candidates) <= 5:
+            return jsonify({"error": "Select between two and five answers"}), 400
+
+        candidates = []
+        try:
+            for index, item in enumerate(raw_candidates):
+                model = str(item.get("model") or "").strip()
+                content = item.get("response")
+                if not model or not isinstance(content, str) or not content.strip():
+                    raise ValueError("Every candidate needs a model and response")
+                candidates.append(
+                    CandidateAnswer(
+                        label=chr(ord("A") + index),
+                        provider=get_model_provider(model),
+                        model=model,
+                        content=content,
+                        latency=float(item.get("time") or 0),
+                        usage={"total_tokens": int(item.get("tokens") or 0)},
+                    )
+                )
+        except (AttributeError, TypeError, ValueError) as error:
+            return jsonify({"error": str(error)}), 400
+
+        judge_model = str(data.get("judge") or candidates[0].model)
+        judge_provider = get_model_provider(judge_model)
+        allow_sharing = data.get("allow_cross_provider_sharing") is True
+        if (
+            any(item.provider != judge_provider for item in candidates)
+            and not allow_sharing
+        ):
+            return (
+                jsonify(
+                    {
+                        "error": "Explicit consent is required before candidate "
+                        "answers are sent to a judge on another provider."
+                    }
+                ),
+                403,
+            )
+
+        try:
+            judge_client = LLMClient(
+                provider=judge_provider,
+                model=judge_model,
+                fallback=False,
+                cache_enabled=False,
+                workspace_enabled=False,
+            )
+            result = synthesize_best_answer(
+                primary_client=judge_client,
+                prompt=prompt,
+                candidates=candidates,
+                judge=f"{judge_provider}:{judge_model}",
+                allow_cross_provider_sharing=allow_sharing,
+            )
+            return jsonify(result.to_dict())
+        except CrossProviderSharingError as error:
+            return jsonify({"error": str(error)}), 403
+        except BestAnswerError as error:
+            return jsonify({"error": str(error)}), 400
+        except Exception as error:
+            return jsonify({"error": str(error)}), 500
 
     @app.route("/api/workspaces", methods=["GET"])
     def get_workspaces():

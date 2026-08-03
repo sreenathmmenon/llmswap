@@ -1,5 +1,38 @@
 # Changelog
 
+## Unreleased
+
+## [5.7.0] - 2026-08-03
+
+### Added
+
+- Added **Best Answer** across the Python SDK, CLI, and Arena. It generates or
+  reuses two to five independent responses, anonymizes them for a judge model,
+  and returns one synthesis with agreement, disagreements, cautions, latency,
+  and normalized token usage. Cross-provider output sharing requires explicit
+  consent.
+- Added `llmswap doctor`, a secret-safe installation and readiness diagnostic
+  covering Python/CLI environment mismatches, `.env` discovery, configuration,
+  provider credentials and SDKs, configured models, MCP prerequisites, optional
+  live verification, actionable fixes, JSON output, and CI-friendly exit codes.
+
+### Fixed
+
+- Disabled Sarvam hidden reasoning by default for normal query/chat calls so
+  reasoning cannot consume the output budget and return empty visible content;
+  callers can still opt into `low`, `medium`, or `high` reasoning effort.
+- Treat empty provider responses as failures in Best Answer and live provider
+  verification instead of reporting them as successful.
+
+### Changed
+
+- Reframed the README and package metadata around LLMSwap's primary product
+  promise: one interface for every supported LLM and one optional, cross-checked
+  Best Answer.
+- Added privacy, cost, security, release, and launch guidance for Best Answer.
+- Corrected manual release routing so a PyPI workflow dispatch no longer also
+  attempts a TestPyPI publication.
+
 ## [5.6.0] - 2026-08-03
 
 ### Changed

@@ -14,9 +14,9 @@ import pytest
 import sys
 import json
 import time
+from importlib.metadata import version
 from unittest.mock import patch, Mock, MagicMock
 from io import StringIO
-
 
 # ============================================================================
 # SECTION 1: Optional Dependency Tests
@@ -52,9 +52,9 @@ def test_optional_dependency_versions():
     try:
         import flask
 
-        version = flask.__version__.split(".")
-        major = int(version[0])
-        assert major >= 3, f"Flask version {flask.__version__} < 3.0.0"
+        flask_version = version("flask")
+        major = int(flask_version.split(".")[0])
+        assert major >= 3, f"Flask version {flask_version} < 3.0.0"
     except ImportError:
         pytest.skip("Flask not installed")
 
@@ -140,6 +140,55 @@ def test_compare_route_requires_models(client):
     """Test /compare requires models list in request"""
     response = client.post("/compare", json={"prompt": "test"})
     assert response.status_code == 400
+
+
+def test_best_answer_route_requires_explicit_cross_provider_consent(client):
+    response = client.post(
+        "/best-answer",
+        json={
+            "prompt": "Question",
+            "candidates": [
+                {"model": "gpt-5.6", "response": "First"},
+                {"model": "sarvam-105b", "response": "Second"},
+            ],
+            "judge": "gpt-5.6",
+        },
+    )
+
+    assert response.status_code == 403
+    assert "consent" in response.get_json()["error"].lower()
+
+
+def test_best_answer_route_reuses_arena_results(client):
+    expected = {
+        "best_answer": "Combined",
+        "agreement": [],
+        "disagreements": [],
+        "cautions": [],
+        "agreement_level": "high",
+    }
+    result = Mock()
+    result.to_dict.return_value = expected
+
+    with (
+        patch("llmswap.LLMClient"),
+        patch("llmswap.best_answer.synthesize_best_answer", return_value=result) as run,
+    ):
+        response = client.post(
+            "/best-answer",
+            json={
+                "prompt": "Question",
+                "candidates": [
+                    {"model": "gpt-5.6", "response": "First", "tokens": 10},
+                    {"model": "gpt-5.6", "response": "Second", "tokens": 12},
+                ],
+                "judge": "gpt-5.6",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.get_json()["best_answer"] == "Combined"
+    assert len(run.call_args.kwargs["candidates"]) == 2
 
 
 def test_compare_route_valid_request(client):
@@ -415,6 +464,13 @@ def test_page_includes_compare_button(client):
 
     assert "button" in html.lower()
     assert "compare" in html.lower() or "submit" in html.lower()
+
+
+def test_page_includes_best_answer_action_and_privacy_consent(client):
+    html = client.get("/").data.decode("utf-8")
+
+    assert "Create Best Answer" in html
+    assert "Allow answers to cross providers" in html
 
 
 def test_page_uses_tailwind_css(client):

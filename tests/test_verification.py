@@ -24,3 +24,18 @@ def test_provider_verification_disables_fallback(monkeypatch):
     )
     assert result["api_key_valid"] is True
     assert result["model"] == "gemini-3.6-flash"
+
+
+def test_provider_verification_rejects_empty_response(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "g" * 32)
+    client = Mock()
+    client.query.return_value = LLMResponse(
+        content=None, provider="gemini", model="gemini-3.6-flash"
+    )
+
+    with patch("llmswap.verification.LLMClient", return_value=client):
+        result = verify_provider("gemini")
+
+    assert result["api_key_valid"] is False
+    assert result["status"] == "error"
+    assert "empty response" in result["error"]["message"]

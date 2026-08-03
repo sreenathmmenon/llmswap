@@ -1,6 +1,6 @@
 # Provider and Model Support
 
-Last audited: **2026-08-03** for llmswap **5.6.0**.
+Last audited: **2026-08-03** for llmswap **5.7.0**.
 
 LLMSwap has two layers of model support:
 

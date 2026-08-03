@@ -785,9 +785,9 @@ class LLMClient:
             input_tokens = response.usage.get("input_tokens") or response.usage.get(
                 "prompt_tokens", 0
             )
-            output_tokens = response.usage.get(
-                "output_tokens"
-            ) or response.usage.get("completion_tokens", 0)
+            output_tokens = response.usage.get("output_tokens") or response.usage.get(
+                "completion_tokens", 0
+            )
             tokens = response.usage.get("total_tokens") or (
                 input_tokens + output_tokens
             )
@@ -807,6 +807,30 @@ class LLMClient:
 
         # No local conversation storage - provider handles everything
         return response
+
+    def best_answer(
+        self,
+        prompt: str,
+        models: Optional[List[Any]] = None,
+        judge: Optional[Any] = None,
+        candidate_count: int = 3,
+        allow_cross_provider_sharing: bool = False,
+    ):
+        """Produce one cross-checked answer from independent candidate responses.
+
+        Candidate outputs never cross provider boundaries unless
+        ``allow_cross_provider_sharing`` is explicitly enabled.
+        """
+        from .best_answer import generate_best_answer
+
+        return generate_best_answer(
+            primary_client=self,
+            prompt=prompt,
+            models=models,
+            judge=judge,
+            candidate_count=candidate_count,
+            allow_cross_provider_sharing=allow_cross_provider_sharing,
+        )
 
     def get_usage_stats(self) -> Optional[Dict[str, Any]]:
         """
@@ -1005,7 +1029,7 @@ class LLMClient:
 
         try:
             # Create MCP client
-            mcp_client = MCPClient(client_name="llmswap", client_version="5.6.0")
+            mcp_client = MCPClient(client_name="llmswap", client_version="5.7.0")
 
             # Connect based on transport type
             if command:

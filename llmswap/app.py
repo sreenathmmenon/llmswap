@@ -89,7 +89,9 @@ Provide a detailed, educational response that helps the student understand both 
                 response = client.query(enhanced_question)
 
             except ImportError:
-                print("⚠️ Enhanced explanation mode not available - using standard mode")
+                print(
+                    "⚠️ Enhanced explanation mode not available - using standard mode"
+                )
                 response = client.query(args.question)
         else:
             # Auto-detect if question seems like it wants explanation
@@ -116,6 +118,89 @@ Provide a detailed, educational response that helps the student understand both 
 
     except LLMSwapError as e:
         print(f"Error: {e}")
+        return 1
+
+
+def cmd_best(args):
+    """Produce one cross-checked answer from independent LLM responses."""
+    from .best_answer import load_customer_env
+
+    load_customer_env()
+    try:
+        client = LLMClient(
+            provider=args.provider or "auto",
+            model=args.best_model,
+            fallback=False,
+            cache_enabled=False,
+            workspace_enabled=False,
+        )
+        if args.format != "json" and not args.quiet:
+            source = (
+                f"{len(args.models)} selected models"
+                if args.models
+                else f"{args.candidates} independent candidates"
+            )
+            print(f"Consulting {source} and synthesizing the Best Answer...\n")
+
+        result = client.best_answer(
+            args.question,
+            models=args.models,
+            judge=args.judge,
+            candidate_count=args.candidates,
+            allow_cross_provider_sharing=args.allow_cross_provider_sharing,
+        )
+
+        if args.format == "json":
+            print(json.dumps(result.to_dict(), indent=2))
+            return 0
+
+        print("BEST ANSWER")
+        print("=" * 72)
+        print(result.best_answer)
+
+        if result.agreement:
+            print("\nAGREEMENT")
+            print("-" * 72)
+            for item in result.agreement:
+                print(f"- {item}")
+
+        if result.disagreements:
+            print("\nDISAGREEMENTS")
+            print("-" * 72)
+            for item in result.disagreements:
+                print(f"- {item}")
+
+        if result.cautions:
+            print("\nCAUTIONS")
+            print("-" * 72)
+            for item in result.cautions:
+                print(f"- {item}")
+
+        if args.show_candidates:
+            print("\nCANDIDATE ANSWERS")
+            print("-" * 72)
+            for candidate in result.candidates:
+                print(
+                    f"[{candidate.label}] {candidate.provider}:{candidate.model} "
+                    f"({candidate.latency:.2f}s)"
+                )
+                print(candidate.content or f"ERROR: {candidate.error}")
+                print()
+
+        print("\nRUN SUMMARY")
+        print("-" * 72)
+        print(f"Agreement level: {result.agreement_level}")
+        print(f"Candidates: {len(result.candidates)}")
+        print(f"Judge: {result.judge_provider}:{result.judge_model}")
+        print(f"Total tokens: {result.total_usage['total_tokens']}")
+        print(f"Total time: {result.latency:.2f}s")
+        print(
+            "Cross-provider sharing: "
+            f"{'yes (explicitly allowed)' if result.cross_provider_sharing else 'no'}"
+        )
+        return 0
+    except LLMSwapError as error:
+        print(f"Best Answer error: {error}")
         return 1
 
 
@@ -1377,6 +1462,65 @@ def cmd_providers(args):
         return 1
 
 
+def cmd_doctor(args):
+    """Diagnose installation, provider, model, and MCP readiness."""
+    from .doctor import diagnose
+
+    report = diagnose(
+        live=args.live,
+        provider=args.provider,
+        timeout=args.timeout,
+    )
+
+    if args.format == "json":
+        print(json.dumps(report, indent=2))
+        return 0 if report["healthy"] else 1
+
+    health = "READY" if report["healthy"] else "ATTENTION NEEDED"
+    print(f"LLMSwap Doctor: {health}")
+    print("=" * 72)
+    print(
+        f"LLMSwap {report['llmswap_version']} | "
+        f"Python {report['python']['version']}"
+    )
+    print(f"Python: {report['python']['executable']}")
+    print(f"CLI: {report['installation']['cli_path'] or 'not found'}")
+    print(
+        "Environment match: "
+        f"{'yes' if report['installation']['cli_matches_python'] else 'no'}"
+    )
+    loaded_files = report["environment"]["loaded_files"]
+    print(f"Env files: {', '.join(loaded_files) if loaded_files else 'none found'}")
+    print(
+        f"Config: {'valid' if report['configuration']['valid'] else 'invalid'} "
+        f"({report['configuration']['path']})"
+    )
+    print(f"MCP npx: {report['mcp']['npx_path'] or 'not found'}")
+
+    print("\nProviders")
+    print("-" * 72)
+    for item in report["providers"]:
+        credentials = (
+            "local"
+            if item["credentials_configured"] is None
+            else ("configured" if item["credentials_configured"] else "missing")
+        )
+        print(
+            f"{item['name']:<11} {item['status']:<20} "
+            f"{credentials:<11} {item['model']}"
+        )
+
+    if report["recommendations"]:
+        print("\nRecommended fixes")
+        print("-" * 72)
+        for recommendation in report["recommendations"]:
+            print(f"- {recommendation}")
+
+    if not args.live:
+        print("\nTip: add --live to verify configured credentials with real API calls.")
+    return 0 if report["healthy"] else 1
+
+
 def cmd_config(args):
     """Handle 'llmswap config' command - Configuration management"""
     try:
@@ -1696,11 +1840,12 @@ def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
         prog="llmswap",
-        description="Universal LLM CLI for developers with cost analytics",
+        description="Ask, compare, and synthesize answers across LLM providers",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   llmswap ask "What is Python?"
+  llmswap --provider openai best "Explain this decision"
   llmswap chat
   llmswap mcp --command npx -y @modelcontextprotocol/server-filesystem /tmp
   llmswap providers                                           # View all providers status
@@ -1789,6 +1934,49 @@ Examples:
     )
     ask_parser.add_argument(
         "--explain-to", type=str, dest="explain_to", help="Custom audience description"
+    )
+
+    # best command - synthesize independent candidate answers
+    best_parser = subparsers.add_parser(
+        "best", help="Produce one cross-checked answer from independent responses"
+    )
+    best_parser.add_argument("question", help="Question or task to solve")
+    best_parser.add_argument(
+        "--models",
+        nargs="+",
+        metavar="PROVIDER:MODEL",
+        help="Candidate models; defaults to independent drafts from the primary model",
+    )
+    best_parser.add_argument(
+        "--judge",
+        metavar="PROVIDER:MODEL",
+        help="Synthesis model; defaults to the primary provider and model",
+    )
+    best_parser.add_argument(
+        "--model",
+        dest="best_model",
+        help="Primary model override for automatic same-provider mode",
+    )
+    best_parser.add_argument(
+        "--candidates",
+        type=int,
+        choices=range(2, 6),
+        default=3,
+        metavar="2-5",
+        help="Number of automatic candidates (default: 3)",
+    )
+    best_parser.add_argument(
+        "--allow-cross-provider-sharing",
+        action="store_true",
+        help="Consent to send candidate outputs to a judge on another provider",
+    )
+    best_parser.add_argument(
+        "--show-candidates",
+        action="store_true",
+        help="Display the independent responses after the synthesized answer",
+    )
+    best_parser.add_argument(
+        "--format", choices=["text", "json"], default="text", help="Output format"
     )
 
     # chat command
@@ -2001,6 +2189,27 @@ Examples:
         default=10,
         help="Timeout for verification in seconds (default: 10)",
     )
+
+    # doctor command - installation and provider readiness diagnostics
+    doctor_parser = subparsers.add_parser(
+        "doctor", help="Diagnose installation, providers, models, and MCP readiness"
+    )
+    doctor_parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Verify configured credentials with real provider calls",
+    )
+    doctor_parser.add_argument(
+        "--provider",
+        choices=get_provider_names(),
+        help="Limit diagnostics to one provider",
+    )
+    doctor_parser.add_argument(
+        "--format", choices=["table", "json"], default="table", help="Output format"
+    )
+    doctor_parser.add_argument(
+        "--timeout", type=int, default=10, help="Live-check timeout in seconds"
+    )
     config_parser.add_argument(
         "value", nargs="?", help="Configuration value for set action"
     )
@@ -2084,6 +2293,7 @@ Examples:
     # Route to command handlers
     commands = {
         "ask": cmd_ask,
+        "best": cmd_best,
         "chat": cmd_chat,
         "review": cmd_review,
         "debug": cmd_debug,
@@ -2094,6 +2304,7 @@ Examples:
         "costs": cmd_costs,
         "config": cmd_config,
         "providers": cmd_providers,
+        "doctor": cmd_doctor,
         "workspace": cmd_workspace,
         "web": cmd_web,
         "mcp": cmd_mcp,

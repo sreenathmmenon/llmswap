@@ -1,4 +1,4 @@
-"""Provider defaults audited for llmswap 5.6.0 on 2026-08-03."""
+"""Provider defaults audited for llmswap 5.7.0 on 2026-08-03."""
 
 from llmswap import LLMClient
 from llmswap.provider_registry import DEFAULT_PROVIDER_MODELS

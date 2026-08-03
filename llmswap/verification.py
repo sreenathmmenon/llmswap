@@ -92,6 +92,9 @@ def verify_provider(provider_name: str, timeout: int = 10) -> Dict[str, Any]:
         response = client.query(test_query)
         latency = int((time.time() - start_time) * 1000)  # Convert to ms
 
+        if not isinstance(response.content, str) or not response.content.strip():
+            raise ProviderError(provider_name, "Provider returned an empty response")
+
         result["latency_ms"] = latency
         result["api_key_valid"] = True
         result["model"] = getattr(response, "model", None)

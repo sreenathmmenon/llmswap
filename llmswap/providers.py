@@ -51,7 +51,7 @@ def validate_api_key(api_key: Optional[str], provider_name: str) -> None:
         raise AuthenticationError(
             provider_name,
             f"{provider_name.upper()}_API_KEY not found or empty. "
-            f"Set the environment variable or pass api_key parameter."
+            f"Set the environment variable or pass api_key parameter.",
         )
 
     # Check minimum length (most API keys are at least 20 chars)
@@ -59,13 +59,19 @@ def validate_api_key(api_key: Optional[str], provider_name: str) -> None:
         raise AuthenticationError(
             provider_name,
             f"API key appears invalid (too short: {len(api_key)} chars). "
-            f"Check your {provider_name.upper()}_API_KEY."
+            f"Check your {provider_name.upper()}_API_KEY.",
         )
 
     # Check for common placeholder/invalid values
     invalid_patterns = [
-        "your_api_key", "invalid", "test_key", "placeholder",
-        "xxx", "abc123", "sk-test", "demo_key"
+        "your_api_key",
+        "invalid",
+        "test_key",
+        "placeholder",
+        "xxx",
+        "abc123",
+        "sk-test",
+        "demo_key",
     ]
     api_key_lower = api_key.lower()
     for pattern in invalid_patterns:
@@ -73,7 +79,7 @@ def validate_api_key(api_key: Optional[str], provider_name: str) -> None:
             raise AuthenticationError(
                 provider_name,
                 f"API key appears to be a placeholder or test value. "
-                f"Please set a valid {provider_name.upper()}_API_KEY."
+                f"Please set a valid {provider_name.upper()}_API_KEY.",
             )
 
 
@@ -91,6 +97,9 @@ def classify_and_raise_error(
         error: The original exception from any provider
         api_key: API key to remove from error messages (security)
     """
+    if isinstance(error, ProviderError):
+        raise error
+
     error_text = str(error).lower()
     response = getattr(error, "response", None)
     status_code = getattr(response, "status_code", None)
@@ -115,9 +124,11 @@ def classify_and_raise_error(
         "invalid_api_key",
         "forbidden",
     ]
-    if status_code in (401, 403) or any(
-        marker in error_text for marker in auth_markers
-    ) or any(code in error_text for code in ["error code: 401", "error code: 403"]):
+    if (
+        status_code in (401, 403)
+        or any(marker in error_text for marker in auth_markers)
+        or any(code in error_text for code in ["error code: 401", "error code: 403"])
+    ):
         raise AuthenticationError(
             provider_name,
             "Authentication failed. Check your API key is valid and active.",
@@ -1389,6 +1400,9 @@ class SarvamProvider(BaseProvider):
                     "model": self.model,
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": kwargs.get("max_tokens", 4000),
+                    # Thinking is opt-in so it cannot consume the output budget
+                    # and leave the customer with empty visible content.
+                    "reasoning_effort": kwargs.get("reasoning_effort"),
                 }
 
             headers = {
@@ -1409,6 +1423,8 @@ class SarvamProvider(BaseProvider):
                 content = (
                     result.get("choices", [{}])[0].get("message", {}).get("content", "")
                 )
+                if not isinstance(content, str) or not content.strip():
+                    raise ProviderError("sarvam", "Provider returned an empty response")
 
             # Extract usage info if available
             usage = {}
@@ -1450,6 +1466,7 @@ class SarvamProvider(BaseProvider):
                 "model": self.model,
                 "messages": messages,
                 "max_tokens": kwargs.get("max_tokens", 4000),
+                "reasoning_effort": kwargs.get("reasoning_effort"),
             }
 
             headers = {
@@ -1466,6 +1483,8 @@ class SarvamProvider(BaseProvider):
             content = (
                 result.get("choices", [{}])[0].get("message", {}).get("content", "")
             )
+            if not isinstance(content, str) or not content.strip():
+                raise ProviderError("sarvam", "Provider returned an empty response")
             usage = result.get("usage", {})
 
             return LLMResponse(

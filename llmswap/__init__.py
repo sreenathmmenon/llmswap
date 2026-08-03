@@ -28,19 +28,27 @@ import os
 os.environ.setdefault("GRPC_VERBOSITY", "NONE")
 os.environ.setdefault("GLOG_minloglevel", "2")
 
-__version__ = "5.6.0"
+__version__ = "5.7.0"
 __author__ = "Sreenath Menon"
 __description__ = "Universal AI Platform: CLI + Python SDK | Multi-Provider LLM Interface for Any Use Case"
 
 from .client import LLMClient
 from .async_client import AsyncLLMClient
 from .response import LLMResponse
+from .best_answer import (
+    BestAnswerResult,
+    CandidateAnswer,
+    ModelTarget,
+    synthesize_best_answer,
+)
 from .cache import InMemoryCache
 from .exceptions import (
     LLMSwapError,
     ProviderError,
     ConfigurationError,
     AllProvidersFailedError,
+    BestAnswerError,
+    CrossProviderSharingError,
 )
 from .tools import Tool, ToolCall, EnhancedResponse
 
@@ -48,11 +56,17 @@ __all__ = [
     "LLMClient",
     "AsyncLLMClient",
     "LLMResponse",
+    "BestAnswerResult",
+    "CandidateAnswer",
+    "ModelTarget",
+    "synthesize_best_answer",
     "InMemoryCache",
     "LLMSwapError",
     "ProviderError",
     "ConfigurationError",
     "AllProvidersFailedError",
+    "BestAnswerError",
+    "CrossProviderSharingError",
     "Tool",
     "ToolCall",
     "EnhancedResponse",

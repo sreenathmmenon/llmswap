@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llmswap"
-version = "5.6.0"
-description = "Python SDK + CLI for 10 LLM providers: OpenAI GPT-5.6, Claude Sonnet 5, Gemini 3.6 Flash, Grok 4.5, Cohere Command A+, Groq GPT-OSS, Perplexity Sonar, IBM watsonx, Sarvam, and Ollama. Universal tool calling, MCP protocol, automatic fallback, zero vendor lock-in."
+version = "5.7.0"
+description = "Python SDK, CLI, and Arena for 10 LLM providers. Compare models, synthesize a privacy-aware Best Answer, use MCP tools, fallback, caching, and direct BYOK access."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
@@ -15,6 +15,15 @@ authors = [
 keywords = [
     "llm",
     "ai",
+    "best-answer",
+    "llm-ensemble",
+    "multi-model-consensus",
+    "answer-synthesis",
+    "cross-model-validation",
+    "llm-as-a-judge",
+    "byok-ai",
+    "ai-orchestration",
+    "provider-agnostic-ai",
     "tool-calling",
     "function-calling",
     "agents",
@@ -415,6 +424,7 @@ Documentation = "https://github.com/sreenathmmenon/llmswap#readme"
 Repository = "https://github.com/sreenathmmenon/llmswap"
 Issues = "https://github.com/sreenathmmenon/llmswap/issues"
 Changelog = "https://github.com/sreenathmmenon/llmswap/blob/main/CHANGELOG.md"
+Security = "https://github.com/sreenathmmenon/llmswap/security"
 
 [tool.hatch.build.targets.wheel]
 packages = ["llmswap"]
@@ -439,6 +449,7 @@ only-include = [
     "LICENSE",
     "CHANGELOG.md",
     "MODEL_SUPPORT.md",
+    "SECURITY.md",
     "CONTRIBUTORS.md",
     "examples",
 ]

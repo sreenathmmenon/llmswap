@@ -105,3 +105,15 @@ class AllProvidersFailedError(LLMSwapError):
     """Exception raised when all providers fail."""
 
     pass
+
+
+class BestAnswerError(LLMSwapError):
+    """Exception raised when a Best Answer cannot be produced."""
+
+    pass
+
+
+class CrossProviderSharingError(BestAnswerError):
+    """Raised when synthesis would share output without explicit consent."""
+
+    pass

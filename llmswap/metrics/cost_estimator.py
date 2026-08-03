@@ -32,7 +32,7 @@ class CostEstimator:
             try:
                 with open(self.pricing_file, "r") as f:
                     data = json.load(f)
-                    if data.get("version") != "5.6.0":
+                    if data.get("version") != "5.7.0":
                         self._initialize_default_pricing()
                     else:
                         self.pricing = data.get("pricing", {})
@@ -128,7 +128,7 @@ class CostEstimator:
         data = {
             "pricing": self.pricing,
             "last_updated": self.last_updated,
-            "version": "5.6.0",
+            "version": "5.7.0",
         }
 
         with open(self.pricing_file, "w") as f:

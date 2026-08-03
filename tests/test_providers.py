@@ -6,6 +6,7 @@ from llmswap.providers import (
     OpenAIProvider,
     GeminiProvider,
     OllamaProvider,
+    SarvamProvider,
     classify_and_raise_error,
 )
 from llmswap.exceptions import InvalidRequestError
@@ -70,9 +71,7 @@ def test_openai_current_models_use_completion_token_parameter():
     provider.client = Mock()
     provider.client.chat.completions.create.return_value = SimpleNamespace(
         choices=[
-            SimpleNamespace(
-                message=SimpleNamespace(content="ok"), finish_reason="stop"
-            )
+            SimpleNamespace(message=SimpleNamespace(content="ok"), finish_reason="stop")
         ],
         usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1),
     )
@@ -131,3 +130,51 @@ def test_gemini_uses_google_genai_models_api():
     provider.client.models.generate_content.assert_called_once_with(
         model="gemini-3.6-flash", contents="hello"
     )
+
+
+def test_sarvam_disables_reasoning_by_default_to_preserve_visible_answer():
+    provider = SarvamProvider(api_key="s" * 32, model="sarvam-105b")
+    http_response = Mock()
+    http_response.json.return_value = {
+        "choices": [{"message": {"content": "OK"}, "finish_reason": "stop"}],
+        "usage": {"prompt_tokens": 2, "completion_tokens": 1, "total_tokens": 3},
+    }
+
+    with patch("requests.post", return_value=http_response) as post:
+        response = provider.query("Say OK")
+
+    assert response.content == "OK"
+    assert response.usage["total_tokens"] == 3
+    assert post.call_args.kwargs["json"]["reasoning_effort"] is None
+
+
+def test_sarvam_allows_callers_to_enable_reasoning():
+    provider = SarvamProvider(api_key="s" * 32, model="sarvam-105b")
+    http_response = Mock()
+    http_response.json.return_value = {
+        "choices": [{"message": {"content": "Reasoned answer"}}]
+    }
+
+    with patch("requests.post", return_value=http_response) as post:
+        provider.chat(
+            [{"role": "user", "content": "Solve this"}], reasoning_effort="high"
+        )
+
+    assert post.call_args.kwargs["json"]["reasoning_effort"] == "high"
+
+
+def test_sarvam_rejects_empty_visible_response():
+    provider = SarvamProvider(api_key="s" * 32, model="sarvam-105b")
+    http_response = Mock()
+    http_response.json.return_value = {
+        "choices": [
+            {
+                "message": {"content": None, "reasoning_content": "hidden"},
+                "finish_reason": "length",
+            }
+        ]
+    }
+
+    with patch("requests.post", return_value=http_response):
+        with pytest.raises(Exception, match="empty response"):
+            provider.query("Say OK")
