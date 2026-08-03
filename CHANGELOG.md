@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- Granted the GitHub release-asset job its required least-privilege
+  `contents: write` permission and preserved manually authored release notes.
+
 ## [5.7.0] - 2026-08-03
 
 ### Added
