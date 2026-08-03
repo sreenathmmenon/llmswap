@@ -34,7 +34,8 @@
   attempts a TestPyPI publication.
 - Repaired long-failing CI checks: removed a duplicate coverage invocation,
   enforced the current 32% repository baseline as a ratchet, installed the web
-  extra for integration tests, and aligned tracked Python files with Black.
+  extra for Arena and integration tests, and aligned tracked Python files with
+  Black.
 
 ## [5.6.0] - 2026-08-03
 
